@@ -1,0 +1,35 @@
+// Add this match block INSIDE your existing rules_version = '2' service block
+// in the Firebase console (Build > Firestore Database > Rules), alongside the
+// rules you already have for the Connections game and slideshow polls:
+//
+//   match /critterquest/{trainer} {
+//     allow read, write: if true;
+//   }
+//   match /critterquest_trades/{trade} {
+//     allow read, write: if true;
+//   }
+//   match /critterquest_messages/{msg} {
+//     allow read, write: if true;
+//   }
+//
+// The second collection powers Friends & Trading. Trainers need to read each
+// other's documents (to look up a friend by name and see their Critterdex),
+// so both collections are open — appropriate for a classroom game with no
+// sensitive data, but do not store anything private in them.
+//
+// Full example if you were starting from scratch:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /critterquest/{trainer} {
+      allow read, write: if true;
+    }
+    match /critterquest_trades/{trade} {
+      allow read, write: if true;
+    }
+    match /critterquest_messages/{msg} {
+      allow read, write: if true;
+    }
+  }
+}

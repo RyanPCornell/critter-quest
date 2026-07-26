@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Critter Quest</title>
+<style>
+  :root {
+    --ink: #3a2b28;
+    --cream: #fdf6e3;
+    --card: #fffdf5;
+    --accent: #e8703a;
+    --green: #5cb85c;
+    --sky: #bfe6f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Avenir Next", "Segoe UI", -apple-system, "Helvetica Neue", sans-serif;
+    background: #2e4638;
+    color: var(--ink);
+    overflow: hidden;
+  }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ------------------------------------------------ title screen */
+  #title-screen {
+    position: fixed; inset: 0; z-index: 50;
+    background: linear-gradient(180deg, #8fd0ec 0%, #bfe6f7 45%, #8ecf6f 45.2%, #6fae58 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  }
+  .game-logo {
+    font-size: clamp(44px, 7vw, 76px); font-weight: 800; letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 3px 0 #3c6e30, 0 6px 14px rgba(0,0,0,.25);
+    transform: rotate(-2deg);
+  }
+  .game-logo .q { color: #ffd94d; }
+  .tagline { font-size: 17px; color: #2b4a24; font-weight: 600; background: rgba(255,255,255,.55); padding: 6px 18px; border-radius: 999px; }
+  #title-critters { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .title-critter { width: 92px; height: 92px; background: rgba(255,255,255,.7); border-radius: 50%; border: 3px solid rgba(58,43,40,.25); padding: 6px; animation: bob 2.6s ease-in-out infinite; }
+  .title-critter:nth-child(2n) { animation-delay: .5s; }
+  .title-critter:nth-child(3n) { animation-delay: 1.1s; }
+  .title-critter svg { width: 100%; height: 100%; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  .name-row { display: flex; gap: 10px; margin-top: 6px; }
+  #trainer-name-input {
+    font-size: 20px; padding: 12px 18px; border-radius: 14px; border: 3px solid var(--ink);
+    width: 260px; background: var(--card); font-family: inherit; outline: none;
+  }
+  #start-btn {
+    font-size: 20px; font-weight: 700; padding: 12px 28px; border-radius: 14px;
+    border: 3px solid var(--ink); background: #ffd94d; box-shadow: 0 4px 0 #b8912a;
+    transition: transform .08s;
+  }
+  #start-btn:hover { transform: translateY(-2px); }
+  #start-btn:disabled { opacity: .6; }
+  #storage-mode { font-size: 13px; background: rgba(255,255,255,.6); padding: 4px 12px; border-radius: 999px; color: #2b4a24; }
+  .title-foot { font-size: 13px; color: #2b4a24cc; max-width: 560px; text-align: center; line-height: 1.5; }
+
+  /* ------------------------------------------------ game screen  */
+  #game-screen { position: fixed; inset: 0; }
+  #world-wrap { position: absolute; inset: 0; }
+  #world-svg { width: 100%; height: 100%; display: block; background: #2e4638; }
+
+  /* HUD */
+  #hud {
+    position: absolute; top: 12px; left: 12px; z-index: 5;
+    background: var(--card); border: 3px solid var(--ink); border-radius: 16px;
+    padding: 10px 16px; box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    display: flex; align-items: center; gap: 14px;
+  }
+  #hud-name { font-weight: 800; font-size: 17px; }
+  #hud-level { background: #ffd94d; border: 2px solid var(--ink); border-radius: 999px; padding: 1px 10px; font-weight: 700; font-size: 13px; }
+  .xpbar { width: 110px; height: 10px; background: #e8e0cc; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; }
+  #hud-xpbar-fill { height: 100%; background: linear-gradient(90deg, #ffd94d, #f0a429); width: 0; transition: width .4s; }
+  .hud-caught { font-size: 14px; font-weight: 700; }
+  .hud-caught::before { content: "🧭 "; }
+  #hud-buttons { position: absolute; top: 12px; right: 12px; z-index: 5; display: flex; gap: 8px; }
+  .hud-btn {
+    background: var(--card); border: 3px solid var(--ink); border-radius: 14px;
+    padding: 9px 16px; font-size: 15px; font-weight: 700; box-shadow: 0 3px 0 rgba(0,0,0,.25);
+    transition: transform .08s;
+  }
+  .hud-btn:hover { transform: translateY(-2px); }
+  #hint-bar {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); z-index: 5;
+    background: rgba(58,43,40,.82); color: #fdf6e3; font-size: 13.5px;
+    padding: 7px 18px; border-radius: 999px; white-space: nowrap;
+  }
+  #toast {
+    position: absolute; top: 70px; left: 50%; transform: translateX(-50%) translateY(-12px); z-index: 20;
+    background: var(--card); border: 3px solid var(--ink); border-radius: 14px;
+    padding: 9px 20px; font-weight: 700; font-size: 15px; opacity: 0; pointer-events: none;
+    transition: opacity .25s, transform .25s; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ------------------------------------------------ world animations */
+  .sway { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 3.4s ease-in-out infinite; }
+  @keyframes sway { 0%,100% { transform: rotate(-2.4deg);} 50% { transform: rotate(2.4deg);} }
+  .wave { animation: wavefade 3s ease-in-out infinite; }
+  @keyframes wavefade { 0%,100% { opacity: .25; } 50% { opacity: .9; } }
+  .steam { animation: steamrise 2.6s ease-in-out infinite; transform-box: fill-box; }
+  @keyframes steamrise { 0% { transform: translateY(0); opacity:.8; } 100% { transform: translateY(-10px); opacity: 0; } }
+  .glowpulse { animation: glowpulse 1.6s ease-in-out infinite; }
+  @keyframes glowpulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+  .spawn-marker { cursor: pointer; }
+  .spawn-bob { transform-box: fill-box; animation: bob 2s ease-in-out infinite; }
+  #player-sprite .leg-l, #player-sprite .leg-r { transform-box: fill-box; transform-origin: 50% 0%; }
+  #player-sprite.walking .leg-l { animation: stride .34s ease-in-out infinite; }
+  #player-sprite.walking .leg-r { animation: stride .34s ease-in-out infinite reverse; }
+  @keyframes stride { 0%,100% { transform: rotate(14deg);} 50% { transform: rotate(-14deg);} }
+  .player-idle { transform-box: fill-box; }
+
+  /* ------------------------------------------------ modals */
+  .overlay {
+    position: fixed; inset: 0; z-index: 30; display: none;
+    background: rgba(30, 40, 32, .55); backdrop-filter: blur(2px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--cream); border: 4px solid var(--ink); border-radius: 22px;
+    max-width: 860px; width: 100%; max-height: 92vh; overflow-y: auto;
+    padding: 22px 26px; box-shadow: 0 12px 40px rgba(0,0,0,.4); position: relative;
+  }
+  .modal h2 { font-size: 24px; margin-bottom: 4px; }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px; border: 3px solid var(--ink);
+    background: #ffb3c7; border-radius: 12px; width: 38px; height: 38px; font-size: 18px; font-weight: 800;
+  }
+
+  /* encounter */
+  #enc-main { display: flex; gap: 22px; flex-wrap: wrap; }
+  .enc-left { flex: 0 0 280px; text-align: center; }
+  #enc-art { position: relative; width: 250px; height: 250px; margin: 0 auto;
+    background: radial-gradient(circle at 50% 62%, #ffffff 0%, #f3ecd7 60%, #eadfc0 100%);
+    border: 3px solid var(--ink); border-radius: 50%; overflow: visible; }
+  .enc-critter { width: 210px; height: 210px; margin-top: 18px; animation: bob 2.4s ease-in-out infinite; transition: opacity .3s; }
+  .willbar { height: 14px; background: #e8e0cc; border: 2.5px solid var(--ink); border-radius: 999px; overflow: hidden; margin-top: 12px; }
+  #enc-will-fill { height: 100%; width: 100%; background: var(--green); transition: width .5s, background .5s; }
+  .will-label { font-size: 12.5px; font-weight: 700; margin-top: 4px; color: #6e604a; }
+  #enc-escape { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
+  #enc-escape span { width: 22px; height: 22px; border: 2.5px solid var(--ink); border-radius: 7px; background: #fff;
+    font-size: 13px; font-weight: 800; color: transparent; display: flex; align-items: center; justify-content: center; }
+  #enc-escape span.lit { background: #e8703a; color: #fff; }
+  .enc-right { flex: 1 1 380px; min-width: 320px; display: flex; flex-direction: column; }
+  #enc-name { font-size: 23px; font-weight: 800; }
+  #enc-species { color: #8a7a5e; font-weight: 600; margin-bottom: 6px; }
+  .enc-chipline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+  .type-chip { color: #fff; font-size: 12.5px; font-weight: 700; padding: 3px 11px; border-radius: 999px; border: 2px solid rgba(0,0,0,.2); }
+  #enc-hp { font-weight: 700; font-size: 13.5px; background: #fff; border: 2px solid var(--ink); border-radius: 999px; padding: 2px 10px; }
+  #enc-msg { background: #fff; border: 2.5px solid var(--ink); border-radius: 14px; padding: 12px 16px; font-size: 15px; line-height: 1.5; min-height: 66px; }
+  #enc-challenge { margin-top: 14px; }
+  .chal-title { font-weight: 800; font-size: 16px; margin-bottom: 10px; }
+  .lvl-tag { background: #c7a6ff; border: 2px solid var(--ink); font-size: 12px; border-radius: 999px; padding: 1px 10px; margin-left: 6px; }
+  .chal-choice-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .big-btn {
+    font-size: 17px; font-weight: 700; padding: 12px 22px; border-radius: 14px;
+    border: 3px solid var(--ink); background: var(--sky); box-shadow: 0 3px 0 rgba(0,0,0,.25);
+    transition: transform .08s;
+  }
+  .big-btn:hover { transform: translateY(-2px); }
+  .big-btn.go { background: #ffd94d; }
+  .math-q { font-size: 34px; font-weight: 800; text-align: center; background: #fff; border: 3px dashed #b8a88e; border-radius: 14px; padding: 18px; margin-bottom: 12px; }
+  .answer-row { display: flex; gap: 10px; }
+  .answer-input {
+    flex: 1; font-size: 24px; font-weight: 700; padding: 10px 16px; border-radius: 14px;
+    border: 3px solid var(--ink); font-family: inherit; outline: none; min-width: 100px;
+    background: #fff;
+  }
+  .answer-input:focus { border-color: var(--accent); }
+  .spell-flash {
+    font-size: 40px; font-weight: 800; letter-spacing: 2px; text-align: center;
+    background: #fff; border: 3px dashed #b8a88e; border-radius: 14px; padding: 22px; margin-bottom: 8px;
+  }
+  .spell-flash.hidden-word { color: #cbbf9f; }
+  .flash-timer { height: 8px; background: #e8e0cc; border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+  .flash-timer-fill { height: 100%; width: 100%; background: var(--accent); }
+  .flash-timer-fill.run { transition: width 2s linear; width: 0%; }
+  .switch-link { background: none; border: none; color: #5b7fbf; font-weight: 700; font-size: 13.5px; margin-top: 10px; text-decoration: underline; }
+  #enc-run { margin-top: auto; align-self: flex-end; background: #ffb3c7; font-size: 14px; padding: 8px 16px; }
+
+  /* catch result / dex detail shared */
+  .catch-banner { font-size: 26px; font-weight: 800; text-align: center; margin-bottom: 14px; color: #3c6e30; }
+  .catch-body { display: flex; gap: 22px; flex-wrap: wrap; }
+  .catch-art { flex: 0 0 230px; }
+  .catch-art svg { width: 230px; height: 230px; background: radial-gradient(circle at 50% 62%, #fff, #eadfc0); border: 3px solid var(--ink); border-radius: 50%; }
+  .catch-info { flex: 1 1 340px; min-width: 300px; }
+  .catch-name { font-size: 24px; font-weight: 800; }
+  .catch-species { color: #8a7a5e; font-size: 16px; font-weight: 600; }
+  .catch-chips { display: flex; gap: 8px; align-items: center; margin: 8px 0 12px; flex-wrap: wrap; font-weight: 700; }
+  .stat-grid { margin-bottom: 12px; }
+  .stat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .stat-label { width: 66px; font-size: 13px; font-weight: 700; color: #6e604a; }
+  .stat-bar { flex: 1; height: 11px; background: #e8e0cc; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; background: linear-gradient(90deg, #5cb85c, #a3d977); }
+  .stat-val { width: 30px; font-size: 13px; font-weight: 800; text-align: right; }
+  .catch-story { background: #fff; border: 2.5px solid var(--ink); border-radius: 14px; padding: 12px 16px; font-size: 14.5px; line-height: 1.55; font-style: italic; }
+  .catch-xp { margin-top: 10px; font-size: 17px; font-weight: 800; color: #c07f18; }
+  .catch-actions { text-align: center; margin-top: 18px; }
+  .dex-meta { font-size: 13.5px; color: #6e604a; margin-bottom: 10px; }
+  .powers-title { font-weight: 800; margin: 8px 0 4px; }
+  .power-row { font-size: 14px; margin-bottom: 5px; line-height: 1.45; }
+
+  /* orb */
+  .orb {
+    --orb-color: #e85f6a;
+    position: absolute; left: 50%; bottom: -14px; width: 34px; height: 34px; margin-left: -17px;
+    border-radius: 50%; border: 3px solid var(--ink); z-index: 3;
+    background: linear-gradient(180deg, var(--orb-color) 0 46%, var(--ink) 46% 54%, #fdf6e3 54% 100%);
+  }
+  .orb::after { content:""; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+    border-radius: 50%; background: #fff; border: 3px solid var(--ink); }
+  .orb.fly { transition: bottom .6s cubic-bezier(.3,-.4,.6,1.4), transform .6s; bottom: 120px; transform: rotate(400deg); }
+  .orb.shake { animation: orbshake 1.2s ease-in-out .1s 1; }
+  @keyframes orbshake { 0%,100% { transform: rotate(400deg);} 15% { transform: rotate(380deg) translateX(-7px);} 30% { transform: rotate(420deg) translateX(7px);} 45% { transform: rotate(390deg) translateX(-5px);} 60% { transform: rotate(410deg) translateX(5px);} 75% { transform: rotate(398deg);} }
+  .orb.caught { animation: orbcatch .7s ease forwards; }
+  @keyframes orbcatch { 0% { filter: none; } 60% { filter: drop-shadow(0 0 14px #ffd94d); transform: rotate(400deg) scale(1.15);} 100% { filter: drop-shadow(0 0 4px #ffd94d); transform: rotate(400deg) scale(.95);} }
+
+  /* dex */
+  #dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; margin-top: 14px; }
+  .dex-cell {
+    background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 8px;
+    text-align: center; cursor: pointer; transition: transform .1s;
+  }
+  .dex-cell:hover { transform: translateY(-3px); }
+  .dex-cell .dex-art { width: 84px; height: 84px; }
+  .dex-cell.unknown .dex-art { filter: brightness(0) opacity(.55); }
+  .dex-num { font-size: 11.5px; font-weight: 800; color: #8a7a5e; text-align: left; }
+  .dex-cell-name { font-weight: 800; font-size: 14px; margin-top: 2px; }
+  #dex-count { color: #6e604a; font-weight: 700; margin-top: 2px; }
+
+  /* settings */
+  .set-section { background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 14px 18px; margin-top: 14px; }
+  .set-section h3 { font-size: 16px; margin-bottom: 8px; }
+  .radio-row { display: flex; flex-direction: column; gap: 7px; }
+  .radio-row label { display: flex; align-items: baseline; gap: 8px; font-size: 15px; cursor: pointer; }
+  .radio-row input { transform: scale(1.25); accent-color: var(--accent); }
+  .radio-desc { color: #8a7a5e; font-size: 13px; }
+  #custom-words { width: 100%; height: 110px; border: 2.5px solid var(--ink); border-radius: 12px; padding: 10px; font-family: inherit; font-size: 14px; resize: vertical; background: #fff; }
+  #word-count { font-size: 13px; font-weight: 700; color: #6e604a; }
+  .file-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  #reset-save { background: #ffb3c7; border: 3px solid var(--ink); border-radius: 12px; padding: 8px 16px; font-weight: 700; }
+  .check-label { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .check-label input { transform: scale(1.3); accent-color: var(--accent); }
+
+  /* avatar editor */
+  .avatar-editor { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+  #avatar-preview { display: flex; gap: 6px; background: #d8ecc8; border: 3px solid var(--ink); border-radius: 16px; padding: 12px 10px; }
+  #avatar-preview svg { width: 64px; height: 64px; animation: bob 2.4s ease-in-out infinite; }
+  .avatar-opts { flex: 1; min-width: 260px; display: flex; flex-direction: column; gap: 9px; }
+  .av-row { display: flex; align-items: center; gap: 10px; }
+  .av-label { width: 56px; font-size: 13.5px; font-weight: 800; color: #6e604a; }
+  .av-choices { display: flex; gap: 6px; flex-wrap: wrap; }
+  .swatch { width: 27px; height: 27px; border-radius: 50%; border: 2.5px solid var(--ink); cursor: pointer; transition: transform .08s; padding: 0; }
+  .swatch:hover { transform: scale(1.12); }
+  .swatch.sel { box-shadow: 0 0 0 3px #fff, 0 0 0 5.5px var(--accent); }
+  .hat-chip { border: 2.5px solid var(--ink); background: #fff; border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+  .hat-chip.sel { background: #ffd94d; }
+
+  /* flash duration */
+  .flash-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding-top: 10px; border-top: 2px dashed #d8ccb0; }
+  .flash-row .av-label { width: auto; }
+  #flash-range { flex: 1; accent-color: var(--accent); }
+  .flash-value { font-weight: 800; font-size: 15px; background: #fff; border: 2px solid var(--ink); border-radius: 999px; padding: 2px 12px; min-width: 58px; text-align: center; }
+
+  /* legendary aura guard */
+  #enc-guard { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; }
+  .guard-label { font-size: 11.5px; font-weight: 800; color: #b8912a; letter-spacing: .5px; }
+  .guard-pip { width: 24px; height: 24px; border: 2.5px solid var(--ink); border-radius: 8px; background: #e8e0cc;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; opacity: .35; }
+  .guard-pip.intact { opacity: 1; background: #ffe9a3; box-shadow: 0 0 8px #ffd94d; }
+
+  /* HUD avatar */
+  #hud-avatar svg { width: 34px; height: 34px; display: block; }
+  #hud-avatar { background: #d8ecc8; border: 2.5px solid var(--ink); border-radius: 50%; padding: 2px; overflow: hidden; }
+
+  /* orbs — HUD bag button */
+  #btn-bag { position: relative; }
+  #bag-count {
+    position: absolute; top: -8px; right: -8px; background: #b06fd0; color: #fff;
+    border: 2.5px solid var(--ink); border-radius: 999px; min-width: 22px; height: 22px;
+    font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px;
+  }
+  .wild-orb { width: 40px; height: 40px; }
+  .carry-orb { width: 20px; height: 20px; }
+  .spawn-marker .carry-orb { filter: drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+
+  /* encounter orb indicator */
+  #enc-orb { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px;
+    background: #fff; border: 2.5px solid var(--ink); border-radius: 12px; padding: 5px 10px; }
+  #enc-orb.empty { background: #fff2e4; border-color: #d88; }
+  .enc-orb-icon { width: 30px; height: 30px; flex: none; }
+  .enc-orb-txt { font-size: 13px; font-weight: 700; }
+  .enc-orb-txt .out { color: #d8452f; }
+  .enc-orb-txt em { font-weight: 600; color: #8a7a5e; font-size: 12px; }
+  .reward-orbs { margin-top: 10px; font-weight: 800; font-size: 14.5px; color: #6d4f8a;
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .reward-orb { width: 26px; height: 26px; vertical-align: middle; }
+  .evolve-hint { margin-top: 8px; font-size: 13.5px; background: #f3e8ff; border: 2px solid #b98ad4;
+    border-radius: 10px; padding: 8px 12px; line-height: 1.5; }
+
+  /* orb bag modal */
+  .bag-total { font-size: 15px; font-weight: 700; color: #b06fd0; }
+  .bag-intro { font-size: 13.5px; color: #6e604a; line-height: 1.6; margin-top: 4px; }
+  #bag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; }
+  .bag-cell { display: flex; align-items: center; gap: 10px; background: var(--card);
+    border: 3px solid var(--ink); border-radius: 14px; padding: 8px 12px; }
+  .bag-orb { width: 44px; height: 44px; flex: none; }
+  .bag-orb-svg { width: 100%; height: 100%; }
+  .bag-name { font-weight: 800; font-size: 15px; }
+  .bag-name b { color: #6d4f8a; }
+  .bag-use { font-size: 12px; color: #8a7a5e; }
+
+  /* evolution in the dex */
+  .evolve-box { margin-top: 14px; background: #f6efff; border: 3px solid #b98ad4; border-radius: 16px; padding: 14px 16px; }
+  .evolve-box.ready { background: #f3e6ff; border-color: #9a6fc4; box-shadow: 0 0 0 3px #e6d0ff; }
+  .evolve-title { font-weight: 800; font-size: 16px; color: #6d4f8a; margin-bottom: 10px; }
+  .evolve-row { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .evolve-mon { text-align: center; }
+  .evolve-mon svg { width: 82px; height: 82px; }
+  .evolve-mon span { display: block; font-weight: 800; font-size: 13px; }
+  .evolve-rarity { font-size: 11px !important; font-weight: 700; }
+  .evolve-arrow { font-size: 28px; font-weight: 800; color: #b98ad4; }
+  .evolve-cost { margin: 12px 0; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .evolve-orb { width: 26px; height: 26px; }
+  .evolve-bar { flex: 1; min-width: 120px; height: 12px; background: #e6dcf2; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; }
+  .evolve-bar-fill { height: 100%; background: linear-gradient(90deg, #c79ae6, #9a6fc4); }
+  .evolve-need { font-size: 13.5px; color: #6d4f8a; font-weight: 700; line-height: 1.5; }
+  .evolve-source { font-weight: 600; color: #8a6faa; }
+  /* dex evolution flags */
+  .dex-evo-flag { background: #9a6fc4; color: #fff; border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 800; margin-left: 8px; }
+  .dex-cell { position: relative; }
+  .dex-evo-badge { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%;
+    background: #efe7d4; border: 2px solid var(--ink); font-size: 12px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+  .dex-evo-badge.ready { background: #ffe9a3; box-shadow: 0 0 6px #e0a63c; }
+
+  /* kangaroo math */
+  .lvl-tag.kang { background: #ffd08a; }
+  .kang-q { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 10px; line-height: 1.4; }
+  .kang-art { display: flex; justify-content: center; background: #fff; border: 3px dashed #b8a88e;
+    border-radius: 16px; padding: 10px; margin-bottom: 12px; }
+  .kang-art svg { max-width: 100%; height: auto; max-height: 170px; }
+  .kang-choices { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
+  .kang-opt { width: 66px; height: 66px; border: 3px solid var(--ink); border-radius: 14px; background: #fff;
+    box-shadow: 0 3px 0 rgba(0,0,0,.2); cursor: pointer; padding: 6px; transition: transform .08s; }
+  .kang-opt:hover { transform: translateY(-2px); background: #fff6e0; }
+  .kang-opt svg { width: 100%; height: 100%; }
+
+  /* picture-word spelling */
+  .pic-frame { display: flex; align-items: center; justify-content: center; background: #fff;
+    border: 3px dashed #b8a88e; border-radius: 16px; padding: 10px; margin-bottom: 12px; min-height: 120px; }
+  .pic-emoji { font-size: 92px; line-height: 1; }
+  .pic-svg svg { width: 120px; height: 120px; }
+  .letter-boxes { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .letter-box { width: 42px; height: 52px; border: 3px solid var(--ink); border-radius: 10px;
+    font-size: 26px; font-weight: 800; text-transform: uppercase; text-align: center; line-height: 46px;
+    font-family: inherit; }
+  .letter-box.fixed { background: #efe7d4; color: #6e604a; }
+  .letter-box.blank { background: #fff; color: var(--accent); outline: none; padding: 0; }
+  .letter-box.blank:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #ffe0cf; }
+  .answer-row.center { justify-content: center; }
+  .flash-note { font-size: 12px; color: #8a7a5e; }
+
+  /* friends & trading */
+  #btn-friends { position: relative; }
+  #friends-badge {
+    position: absolute; top: -8px; right: -8px; background: #e85f6a; color: #fff;
+    border: 2.5px solid var(--ink); border-radius: 999px; min-width: 22px; height: 22px;
+    font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px;
+  }
+  .soc-section { margin-top: 16px; }
+  .soc-section h3 { font-size: 17px; margin-bottom: 8px; }
+  .soc-empty { color: #8a7a5e; font-size: 14px; font-style: italic; background: var(--card);
+    border: 2.5px dashed #d8ccb0; border-radius: 14px; padding: 12px 16px; }
+  .soc-hint { font-size: 13px; color: #6e604a; margin: 6px 0 10px; }
+  .cloud-note { background: #fff6d8; border: 3px solid var(--ink); border-radius: 16px; padding: 16px 18px; font-size: 14.5px; line-height: 1.6; }
+  .cloud-note code { background: #fff; border: 1px solid #d8ccb0; border-radius: 5px; padding: 1px 5px; font-size: 13px; }
+  .add-friend-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .answer-input.small { font-size: 16px; padding: 8px 14px; flex: 1; min-width: 160px; }
+  .big-btn.small { font-size: 14.5px; padding: 8px 16px; }
+  .big-btn.pink { background: #ffb3c7; }
+  .linkish { background: none; border: none; font-size: 16px; font-weight: 800; color: #b09a7a; padding: 4px 8px; }
+  .linkish:hover { color: #e85f6a; }
+  .friend-card { display: flex; align-items: center; gap: 12px; background: var(--card);
+    border: 3px solid var(--ink); border-radius: 16px; padding: 10px 14px; margin-bottom: 9px; }
+  .friend-av { width: 46px; height: 46px; background: #d8ecc8; border: 2.5px solid var(--ink);
+    border-radius: 50%; overflow: hidden; flex: none; }
+  .friend-av svg { width: 100%; height: 100%; }
+  .friend-info { flex: 1; min-width: 0; }
+  .friend-name { font-weight: 800; font-size: 16px; }
+  .friend-meta { font-size: 13px; color: #6e604a; }
+  .trade-card { background: var(--card); border: 3px solid var(--ink); border-radius: 16px;
+    padding: 12px 16px; margin-bottom: 10px; }
+  .trade-card.pending { opacity: .82; }
+  .trade-who { font-size: 14.5px; margin-bottom: 8px; }
+  .trade-swap { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .trade-side { text-align: center; }
+  .trade-label { font-size: 11.5px; font-weight: 800; color: #8a7a5e; text-transform: uppercase; letter-spacing: .5px; }
+  .trade-arrow { font-size: 24px; font-weight: 800; color: #b09a7a; }
+  .mini-critter { display: flex; flex-direction: column; align-items: center; font-weight: 700; font-size: 13.5px; }
+  .mini-critter svg { width: 56px; height: 56px; }
+  .trade-actions { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+  .trade-warn { font-size: 13px; color: #a8552f; background: #fff2e4; border-radius: 10px;
+    padding: 8px 12px; margin-top: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .trade-title { font-size: 19px; margin: 10px 0 2px; }
+  .trade-pick { background: var(--card); border: 3px solid var(--ink); border-radius: 16px;
+    padding: 12px 14px; margin-top: 12px; }
+  .trade-pick-head { font-weight: 800; font-size: 15px; margin-bottom: 8px; }
+  .pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  .pick-cell { background: #fff; border: 3px solid var(--ink); border-radius: 13px; padding: 5px;
+    display: flex; flex-direction: column; align-items: center; cursor: pointer; font-family: inherit; }
+  .pick-cell svg { width: 52px; height: 52px; }
+  .pick-cell span { font-size: 12px; font-weight: 800; }
+  .pick-cell em { font-size: 11px; color: #8a7a5e; font-style: normal; font-weight: 700; }
+  .pick-cell.sel { background: #ffe9a3; box-shadow: 0 0 0 3px #fff, 0 0 0 5.5px var(--accent); }
+  .pick-cell.thin { opacity: .5; }
+  .trade-send { text-align: center; margin-top: 16px; }
+  .trade-send button[disabled] { opacity: .45; cursor: default; }
+
+  /* ultra legendary marker + catch banner */
+  .ultra-marker { cursor: pointer; }
+  .ultra-marker.revealed circle { stroke-width: 4; }
+  .catch-banner.ultra { color: #e0489c; text-shadow: 0 1px 0 #ffd94d; }
+
+  /* NPC dialog */
+  #npc-body { text-align: center; }
+  .npc-portrait { width: 96px; height: 96px; margin: 6px auto; background: #d8ecc8; border: 3px solid var(--ink); border-radius: 50%; overflow: hidden; }
+  .npc-portrait svg { width: 100%; height: 100%; }
+  .npc-name { font-size: 20px; font-weight: 800; }
+  .npc-line { font-size: 15px; line-height: 1.5; margin: 8px auto; max-width: 420px; color: #4a3f34; }
+  .npc-feedback { font-size: 14px; font-weight: 700; color: #a8552f; min-height: 20px; }
+  .npc-clue { background: #fff6d8; border: 3px solid var(--ink); border-radius: 14px; padding: 14px 16px; font-size: 15px; line-height: 1.6; margin: 12px auto; max-width: 440px; text-align: left; }
+  #npc-body .math-q { max-width: 320px; margin: 10px auto; }
+  #npc-body .answer-row { max-width: 320px; margin: 0 auto; }
+
+  /* shop */
+  .shop-keeper { width: 84px; height: 84px; margin: 0 auto 6px; background: #d8ecc8; border: 3px solid var(--ink); border-radius: 50%; overflow: hidden; }
+  .shop-keeper svg { width: 100%; height: 100%; }
+  .shop-section { background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 14px 16px; margin-top: 12px; }
+  .shop-section h4 { font-size: 15.5px; margin-bottom: 8px; }
+  .shop-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .shop-lbl { font-size: 13px; font-weight: 800; color: #6e604a; width: 92px; }
+  .orb-picks { display: flex; gap: 5px; flex-wrap: wrap; }
+  .orb-pick { border: 2.5px solid var(--ink); background: #fff; border-radius: 11px; padding: 3px 3px 0; cursor: pointer; width: 40px; }
+  .orb-pick.sel { background: #ffe9a3; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent); }
+  .orb-pick-svg { width: 28px; height: 28px; display: block; margin: 0 auto; }
+  .orb-pick em { font-size: 10.5px; font-weight: 800; color: #6e604a; font-style: normal; display: block; text-align: center; }
+  .orb-inline { width: 18px; height: 18px; vertical-align: middle; }
+  .shop-note { font-size: 12.5px; color: #8a7a5e; margin-top: 6px; }
+
+  /* village square message board */
+  #square-body { text-align: center; }
+  .sq-compose { display: flex; gap: 8px; margin: 4px 0 12px; }
+  .sq-compose .answer-input { flex: 1; font-size: 15px; text-align: left; }
+  #sq-list { text-align: left; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+  .sq-note { background: #fffdf5; border: 2.5px solid var(--ink); border-radius: 12px; padding: 8px 12px; }
+  .sq-note-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; }
+  .sq-note-head b { color: #3c6e30; }
+  .sq-note-head span { color: #a89a7e; font-size: 11.5px; }
+  .sq-note-body { font-size: 14.5px; line-height: 1.4; margin-top: 2px; word-break: break-word; }
+
+  /* arena HP display */
+  .arena-def-stats { font-size: 13.5px; font-weight: 700; color: #4a3f34; margin: 6px 0; }
+  .arena-hint { font-size: 13px; font-weight: 600; color: #8a7a5e; }
+  .pick-hp { font-size: 10.5px; color: #6e604a; font-style: normal; font-weight: 700; display: block; }
+
+  /* arena + battle */
+  .arena-defender { display: flex; gap: 16px; align-items: center; background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 12px 14px; margin-top: 10px; flex-wrap: wrap; }
+  .arena-def-art svg { width: 96px; height: 96px; background: radial-gradient(circle at 50% 60%, #fff, #eadfc0); border: 3px solid var(--ink); border-radius: 50%; }
+  .arena-def-info { flex: 1; min-width: 220px; }
+  #battle-arena { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 8px 0 12px; flex-wrap: wrap; }
+  .bt-card { text-align: center; background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 8px 12px; width: 190px; }
+  .bt-art svg { width: 110px; height: 110px; }
+  .bt-name { font-weight: 800; font-size: 15px; }
+  .bt-name span { font-weight: 700; color: #6e604a; font-size: 12.5px; }
+  .bt-hpbar { height: 13px; background: #e8e0cc; border: 2.5px solid var(--ink); border-radius: 999px; overflow: hidden; margin: 5px 0 3px; }
+  .bt-hpfill { height: 100%; transition: width .4s; }
+  .bt-hp { font-size: 12px; font-weight: 800; color: #6e604a; }
+  .bt-vs { font-size: 22px; font-weight: 800; color: #b09a7a; }
+  #battle-msg { background: #fff; border: 2.5px solid var(--ink); border-radius: 14px; padding: 10px 14px; font-size: 15px; min-height: 44px; text-align: center; }
+  #battle-challenge { margin-top: 12px; }
+  #battle-flee { background: #ffb3c7; font-size: 14px; padding: 8px 16px; margin-top: 10px; }
+
+  /* on-screen D-pad (shown on touch devices) */
+  #dpad { display: none; position: absolute; left: 16px; bottom: 16px; z-index: 6;
+    width: 150px; height: 150px; touch-action: none; user-select: none; }
+  .dpad-btn { position: absolute; width: 50px; height: 50px; font-size: 20px; font-weight: 800;
+    background: rgba(255,253,245,.9); border: 3px solid var(--ink); border-radius: 14px; color: var(--ink);
+    box-shadow: 0 3px 0 rgba(0,0,0,.25); touch-action: none; display: flex; align-items: center; justify-content: center; }
+  .dpad-btn:active { background: #ffd94d; transform: translateY(1px); }
+  .dpad-u { left: 50px; top: 0; }
+  .dpad-l { left: 0; top: 50px; }
+  .dpad-r { left: 100px; top: 50px; }
+  .dpad-d { left: 50px; top: 100px; }
+  @media (hover: none) and (pointer: coarse) { #dpad { display: block; } #hint-bar { display: none; } }
+
+  /* touch niceties: no tap-highlight, no double-tap zoom on controls */
+  button, .hud-btn, .big-btn, .dpad-btn, .swatch, .hat-chip, .orb-pick, .pick-cell, .kang-opt, .dex-cell, .letter-box {
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  #world-wrap { touch-action: none; }
+
+  /* help */
+  #help ul { margin: 10px 0 0 22px; line-height: 1.8; font-size: 15px; }
+  kbd { background: #fff; border: 2px solid var(--ink); border-bottom-width: 3.5px; border-radius: 6px; padding: 1px 7px; font-family: inherit; font-weight: 700; font-size: 13px; }
+
+  @media (max-width: 720px) {
+    #hud { padding: 8px 10px; gap: 8px; } .xpbar { width: 70px; }
+    #hint-bar { display: none; }
+    .enc-left { flex: 1 1 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================== TITLE ============================== -->
+<div id="title-screen">
+  <div class="game-logo">Critter <span class="q">Quest</span></div>
+  <div class="tagline">Explore 8 regions · shops, arenas &amp; townsfolk · hunt ✦ Ultra Legendaries · catch 70+ critters!</div>
+  <div id="title-critters"></div>
+  <div class="name-row">
+    <input id="trainer-name-input" maxlength="20" placeholder="Trainer name..." autocomplete="off">
+    <button id="start-btn">Start! →</button>
+  </div>
+  <div id="storage-mode">checking save mode…</div>
+  <div class="title-foot">
+    Roam five hand-drawn regions with the <b>arrow keys</b> (or WASD, or click anywhere to walk there).
+    When a wild critter appears, weaken its will by solving <b>math problems</b> or <b>spelling flash-words</b> —
+    set difficulty in ⚙️ Settings. Your progress saves automatically under your trainer name.
+  </div>
+</div>
+
+<!-- ============================== GAME =============================== -->
+<div id="game-screen" style="display:none">
+  <div id="world-wrap">
+    <svg id="world-svg" viewBox="0 0 960 640" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div id="hud">
+    <span id="hud-avatar"></span>
+    <span id="hud-name"></span>
+    <span id="hud-level"></span>
+    <div class="xpbar"><div id="hud-xpbar-fill"></div></div>
+    <span class="hud-caught" id="hud-caught"></span>
+  </div>
+  <div id="hud-buttons">
+    <button class="hud-btn" id="btn-dex">📖 Critterdex</button>
+    <button class="hud-btn" id="btn-bag">🔮 Orbs<span id="bag-count">0</span></button>
+    <button class="hud-btn" id="btn-friends">🤝 Friends<span id="friends-badge" style="display:none">0</span></button>
+    <button class="hud-btn" id="btn-settings">⚙️ Settings</button>
+    <button class="hud-btn" id="btn-help">❓</button>
+  </div>
+  <div id="hint-bar">🕹️ Arrow keys / WASD to walk · tap the map to travel · tap a critter, orb, shop, arena or ✦ Ultra to visit it</div>
+  <div id="toast"></div>
+  <div id="dpad">
+    <button id="dpad-up"    class="dpad-btn dpad-u" aria-label="up">▲</button>
+    <button id="dpad-left"  class="dpad-btn dpad-l" aria-label="left">◀</button>
+    <button id="dpad-right" class="dpad-btn dpad-r" aria-label="right">▶</button>
+    <button id="dpad-down"  class="dpad-btn dpad-d" aria-label="down">▼</button>
+  </div>
+</div>
+
+<!-- ============================ ENCOUNTER ============================ -->
+<div class="overlay" id="encounter">
+  <div class="modal">
+    <div id="enc-main">
+      <div class="enc-left">
+        <div id="enc-art"></div>
+        <div class="willbar"><div id="enc-will-fill"></div></div>
+        <div class="will-label">WILL TO RESIST — lower it with correct answers</div>
+        <div id="enc-guard" style="display:none"></div>
+        <div id="enc-escape"><span>✕</span><span>✕</span><span>✕</span></div>
+        <div class="will-label">three misses and it flees!</div>
+        <div id="enc-orb"></div>
+      </div>
+      <div class="enc-right">
+        <div id="enc-name"></div>
+        <div id="enc-species"></div>
+        <div class="enc-chipline"><span id="enc-types"></span><span id="enc-rarity"></span><span id="enc-hp"></span></div>
+        <div id="enc-msg"></div>
+        <div id="enc-challenge"></div>
+        <button class="big-btn" id="enc-run">🏃 Run away</button>
+      </div>
+    </div>
+    <div id="enc-result" style="display:none"></div>
+  </div>
+</div>
+
+<!-- =============================== DEX =============================== -->
+<div class="overlay" id="dex">
+  <div class="modal">
+    <button class="modal-close" data-close="dex">✕</button>
+    <h2>📖 Critterdex</h2>
+    <div id="dex-count"></div>
+    <div id="dex-grid"></div>
+    <div id="dex-detail" style="display:none"></div>
+  </div>
+</div>
+
+<!-- =============================== BAG =============================== -->
+<div class="overlay" id="bag">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" data-close="bag">✕</button>
+    <h2>🔮 Orb Bag <span id="bag-total" class="bag-total"></span></h2>
+    <p class="bag-intro">Throw an orb of a critter's home region to catch it. Find orbs lying in the wild
+      (click one to grab it), earn them from critters you catch, and get a batch each time you level up.
+      <b>Prism Orbs</b> catch legendary critters — and can stand in for any other orb in a pinch.</p>
+    <div id="bag-grid"></div>
+  </div>
+</div>
+
+<!-- =============================== NPC =============================== -->
+<div class="overlay" id="npc">
+  <div class="modal" style="max-width:540px">
+    <button class="modal-close" data-close="npc">✕</button>
+    <div id="npc-body"></div>
+  </div>
+</div>
+
+<!-- =============================== SHOP ============================== -->
+<div class="overlay" id="shop">
+  <div class="modal" style="max-width:600px">
+    <button class="modal-close" data-close="shop">✕</button>
+    <h2>🛒 Shop</h2>
+    <div id="shop-body"></div>
+  </div>
+</div>
+
+<!-- ============================== ARENA ============================== -->
+<div class="overlay" id="arena">
+  <div class="modal">
+    <button class="modal-close" data-close="arena">✕</button>
+    <h2>⚔️ Arena</h2>
+    <div id="arena-body"></div>
+  </div>
+</div>
+
+<!-- ========================== VILLAGE SQUARE ======================== -->
+<div class="overlay" id="square">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" data-close="square">✕</button>
+    <h2>🏛️ Village Square</h2>
+    <div id="square-body"></div>
+  </div>
+</div>
+
+<!-- ============================= BATTLE ============================== -->
+<div class="overlay" id="battle">
+  <div class="modal">
+    <h2>⚔️ Battle!</h2>
+    <div id="battle-main">
+      <div id="battle-arena"></div>
+      <div id="battle-msg"></div>
+      <div id="battle-challenge"></div>
+      <button class="big-btn" id="battle-flee">🏃 Forfeit</button>
+    </div>
+    <div id="battle-result" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ============================== FRIENDS ============================ -->
+<div class="overlay" id="friends">
+  <div class="modal">
+    <button class="modal-close" data-close="friends">✕</button>
+    <h2>🤝 Friends &amp; Trading</h2>
+    <div id="friends-body"></div>
+  </div>
+</div>
+
+<!-- ============================= SETTINGS ============================ -->
+<div class="overlay" id="settings">
+  <div class="modal">
+    <button class="modal-close" data-close="settings">✕</button>
+    <h2>⚙️ Settings</h2>
+
+    <div class="set-section">
+      <h3>🧑 My Avatar</h3>
+      <div class="avatar-editor">
+        <div id="avatar-preview"></div>
+        <div class="avatar-opts">
+          <div class="av-row"><span class="av-label">Hat</span><div id="av-hats" class="av-choices"></div></div>
+          <div class="av-row"><span class="av-label">Glasses</span><div id="av-glasses" class="av-choices"></div></div>
+          <div class="av-row"><span class="av-label">Skin</span><div id="av-skins" class="av-choices"></div></div>
+          <div class="av-row"><span class="av-label">Hair</span><div id="av-hairs" class="av-choices"></div></div>
+          <div class="av-row"><span class="av-label">Shirt</span><div id="av-shirts" class="av-choices"></div></div>
+          <div class="av-row"><span class="av-label">Pants</span><div id="av-pants" class="av-choices"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <h3>🎯 Catch challenge type</h3>
+      <div class="radio-row">
+        <label><input type="radio" name="chal" value="ask"> <b>Let me choose each time</b> <span class="radio-desc">pick math or spelling per encounter</span></label>
+        <label><input type="radio" name="chal" value="math"> <b>Always math</b></label>
+        <label><input type="radio" name="chal" value="spell"> <b>Always spelling</b></label>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <h3>🔢 Math difficulty</h3>
+      <div class="radio-row" id="math-levels">
+        <label><input type="radio" name="mathlvl" value="0"> <b>Sprout</b> <span class="radio-desc">addition &amp; subtraction within 20</span></label>
+        <label><input type="radio" name="mathlvl" value="1"> <b>Scout</b> <span class="radio-desc">add/subtract to 100 · times tables</span></label>
+        <label><input type="radio" name="mathlvl" value="2"> <b>Ranger</b> <span class="radio-desc">big multiplication · division · order of operations</span></label>
+        <label><input type="radio" name="mathlvl" value="3"> <b>Master</b> <span class="radio-desc">negatives · percents · solve for x</span></label>
+        <label><input type="radio" name="mathlvl" value="4"> <b>🦘 Kangaroo</b> <span class="radio-desc">visual puzzles — Grade 3–4 Math-Kangaroo style (count shapes, dice, patterns, balance scales, clocks…)</span></label>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <h3>🔤 Spelling difficulty</h3>
+      <div class="radio-row">
+        <label><input type="radio" name="spelllvl" value="4"> <b>🖼️ Picture Words</b> <span class="radio-desc">easiest — see a picture, fill in the missing letters (no timer)</span></label>
+        <label><input type="radio" name="spelllvl" value="0"> <b>Hatchling</b> <span class="radio-desc">short, friendly words (3–5 letters)</span></label>
+        <label><input type="radio" name="spelllvl" value="1"> <b>Fledgling</b> <span class="radio-desc">everyday words (6–8 letters)</span></label>
+        <label><input type="radio" name="spelllvl" value="2"> <b>Wordsmith</b> <span class="radio-desc">tricky spellings &amp; long words</span></label>
+        <label><input type="radio" name="spelllvl" value="3"> <b>My Word Bank</b> <span class="radio-desc">your own words (below)</span></label>
+      </div>
+      <div class="flash-row">
+        <span class="av-label">Flash time</span>
+        <input type="range" id="flash-range" min="500" max="6000" step="250" value="2000">
+        <span id="flash-label" class="flash-value">2 s</span>
+        <span class="flash-note">(how long the word shows in the timed spelling levels)</span>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <h3>📚 My Word Bank</h3>
+      <p style="font-size:13.5px; color:#6e604a; margin-bottom:8px">
+        Paste words below (one per line, or separated by commas), or upload a <b>.txt / .csv</b> file.
+        Great for weekly spelling lists!
+      </p>
+      <textarea id="custom-words" placeholder="wonderful&#10;butterfly&#10;magnet&#10;..."></textarea>
+      <div class="file-row">
+        <input type="file" id="word-file" accept=".txt,.csv,text/plain">
+        <span id="word-count"></span>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <h3>🦘 Legendary challenge</h3>
+      <label class="check-label"><input type="checkbox" id="legendary-kangaroo"> Legendary critters always require <b>Kangaroo Math</b></label>
+      <div class="radio-desc" style="margin-top:6px">When on, every legendary encounter gives only a visual Kangaroo puzzle — no math-level or spelling choice.</div>
+    </div>
+
+    <div class="set-section">
+      <h3>🔊 Sound &amp; data</h3>
+      <label class="check-label"><input type="checkbox" id="sound-toggle"> Sound effects</label>
+      <div style="margin-top:12px"><button id="reset-save">🗑️ Erase my progress</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== HELP ============================== -->
+<div class="overlay" id="help">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" data-close="help">✕</button>
+    <h2>❓ How to play</h2>
+    <ul>
+      <li>Walk with <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> — or just <b>click</b> where you want to go.</li>
+      <li>Wild critters and <b>🔮 loose orbs</b> pop up in wild patches. Click a critter bubble to chase it; <b>click a lone orb to grab it instantly</b>. Some critters guard an orb you also get if you catch them.</li>
+      <li>Each region has its own critters — explore the <b>meadow, woods, lake, volcanic ridge, desert, snowy tundra, glowing marsh, and crystal caverns</b>. Seven legendary critters roam everywhere...</li>
+      <li><b>Orbs catch critters.</b> You throw an orb from a critter's home region (see your 🔮 Orbs bag). Find them in the wild, earn them from catches, and get a batch every level-up. <b>Prism Orbs</b> catch legendaries and work on anything in a pinch.</li>
+      <li><b>Evolve</b> your critters! Feed a critter enough orbs of its region (shown on its Critterdex page) to grow it into a stronger form.</li>
+      <li>Add classmates by trainer name in <b>🤝 Friends</b>, then <b>trade critters</b> with them. You can only offer a critter you have two or more of, so your Critterdex stays complete.</li>
+      <li>In an encounter, answer <b>math problems</b> or <b>spell words</b> to weaken the critter's will and throw your orb. The easiest spelling mode shows a <b>picture</b> and you fill in the missing letters!</li>
+      <li>Miss three times and it flees! Rarer critters resist more throws — and <b>legendaries carry an ⚡ aura guard</b> that takes extra correct answers to crack before any orb can fly.</li>
+      <li>Make the trainer yours: pick your <b>hat, hair, skin, shirt, and pants</b> in ⚙️ Settings → My Avatar.</li>
+      <li>Fill your <b>📖 Critterdex</b> — catching a critter reveals its stats, powers, and story.</li>
+      <li>Chat with <b>townsfolk</b> (people dotted around the map) — solve their math problem and they'll give a clue to where an <b>✦ Ultra Legendary</b> is hiding. Ultra Legendaries (like <b>Sergio</b> the Maine Coon!) wait in one spot until you find them — catch one and a new one appears somewhere new.</li>
+      <li>Visit <b>🛒 Shops</b> to trade orbs for other orb types or buy an Ultra Compass, and <b>⚔️ Arenas</b> to battle the critter left guarding it — pick your champion, answer to attack, and win to leave your own critter on guard.</li>
+      <li>On a <b>phone or iPad</b>, use the on-screen ⬍ D-pad (or just tap where you want to go).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Firebase (compat) — optional; the game falls back to local saves -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script src="js/creatures.js"></script>
+<script src="js/art-critters-1.js"></script>
+<script src="js/art-critters-2.js"></script>
+<script src="js/art-critters-3.js"></script>
+<script src="js/art-critters-4.js"></script>
+<script src="js/art-critters-5.js"></script>
+<script src="js/art-critters-6.js"></script>
+<script src="js/world.js"></script>
+<script src="js/avatar.js"></script>
+<script src="js/orbs.js"></script>
+<script src="js/pictures.js"></script>
+<script src="js/kangaroo.js"></script>
+<script src="js/challenges.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/social.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
