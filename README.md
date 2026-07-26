@@ -1,8 +1,11 @@
 # Critter Quest
 
+**▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
+
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **70 original critters** by solving **math
+hand-drawn SVG world and catch **73 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
+Works great on desktop and iPad.
 
 ## How it works
 
@@ -41,9 +44,12 @@ problems** or **spelling words** (including a picture-based fill-in mode).
   marker) until a trainer finds it — catch one and a brand-new one appears
   somewhere else. One is **Sergio**, a very fluffy Maine Coon. They need Prism
   Orbs and a 3-layer aura guard to catch.
-- **Townsfolk:** people are dotted around the map. Solve their math problem and
-  they share a clue to an active Ultra Legendary's region — clues update
+- **Townsfolk:** eight people are dotted around the map. Solve their math problem
+  and they share a clue to an active Ultra Legendary's region — clues update
   automatically as Ultras are caught and new ones appear.
+- **Village Square:** talk to the Bulletin Keeper and answer two problems in a
+  row to earn the right to **pin a message to a shared board that every player
+  sees** (stored in Firebase). Anyone can read the board.
 - **Shops** (🛒): walk in to trade orbs for other orb types (3:1, or 8:1 to
   Prism) or buy an **Ultra Compass** that reveals where an Ultra Legendary hides.
 - **Arenas** (⚔️): battle the critter left guarding the arena. Pick your
@@ -76,12 +82,18 @@ problems** or **spelling words** (including a picture-based fill-in mode).
 ## Saves / Firebase
 
 Progress saves automatically under the trainer name entered at the title
-screen. If `firebase-config.js` is configured **and** the `critterquest` +
-`critterquest_trades` collections are allowed in your Firestore rules (see
-`firestore.rules`), saves sync to the cloud so a student can continue from any
-device **and Friends/Trading turn on**. Otherwise the game silently falls back
-to localStorage — fully playable solo either way, and the Friends panel
-explains what to enable.
+screen. Cloud sync (and Friends/Trading + the Village Square message board)
+needs three collections allowed in your Firestore rules (see `firestore.rules`):
+`critterquest`, `critterquest_trades`, and `critterquest_messages`. Without them
+the game silently falls back to localStorage — fully playable solo either way,
+and the cloud-only panels explain what to enable.
+
+## Deploying
+
+It's a static site, live on GitHub Pages at
+**https://ryanpcornell.github.io/critter-quest/** (repo `RyanPCornell/critter-quest`).
+To publish an update: `git add -A && git commit -m "..." && git push` — Pages
+rebuilds automatically.
 
 ## Running
 
