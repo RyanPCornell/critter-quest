@@ -1497,8 +1497,9 @@
   function renderPois() {
     var html = "";
     (map.pois || []).forEach(function (poi) {
+      var tf = 'transform="translate(' + (poi.tx * TILE) + ',' + (poi.ty * TILE) + ')"';
       if (poi.kind === "npc") {
-        html += '<g class="poi-marker npc-poi" data-poi="' + poi.id + '">' +
+        html += '<g class="poi-marker npc-poi" data-poi="' + poi.id + '" ' + tf + '>' +
           '<ellipse cx="24" cy="48" rx="13" ry="4" fill="#000" opacity=".18"/>' +
           '<circle cx="24" cy="26" r="21" fill="#fff6d8" opacity=".55" class="glowpulse"/>' +
           '<g class="poi-bob"><svg x="5" y="6" width="38" height="44" viewBox="0 0 48 48">' + AVATAR.art("down", poi.av) + "</svg>" +
@@ -1506,14 +1507,14 @@
           poiBanner("💬 " + poi.name, 24) +
           '<rect x="0" y="6" width="48" height="46" fill="none" pointer-events="all"/></g>';
       } else if (poi.kind === "portal") {
-        html += '<g class="poi-marker" data-poi="' + poi.id + '">' +
+        html += '<g class="poi-marker" data-poi="' + poi.id + '" ' + tf + '>' +
           '<ellipse cx="24" cy="46" rx="15" ry="4" fill="#000" opacity=".16"/>' +
           '<g class="poi-bob"><svg x="0" y="0" width="48" height="48" viewBox="0 0 48 48">' + PORTAL_ART + "</svg></g>" +
           poiBanner(poi.name, 24) +
           '<rect x="0" y="0" width="48" height="48" fill="none" pointer-events="all"/></g>';
       } else {
         var icon = poi.kind === "shop" ? "🛒" : poi.kind === "arena" ? "⚔️" : "🏛️";
-        html += '<g class="poi-marker" data-poi="' + poi.id + '">' +
+        html += '<g class="poi-marker" data-poi="' + poi.id + '" ' + tf + '>' +
           '<g class="poi-bob"><rect x="' + (TILE - 17) + '" y="-24" width="34" height="26" rx="9" fill="#ffd94d" stroke="' + OL + '" stroke-width="2.4"/>' +
           '<text x="' + TILE + '" y="-5" font-size="16" text-anchor="middle">' + icon + "</text></g>" +
           poiBanner(poi.name, TILE) +
