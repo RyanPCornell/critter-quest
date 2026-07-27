@@ -485,6 +485,27 @@
   #battle-msg { background: #fff; border: 2.5px solid var(--ink); border-radius: 14px; padding: 10px 14px; font-size: 15px; min-height: 44px; text-align: center; }
   #battle-challenge { margin-top: 12px; }
   #battle-flee { background: #ffb3c7; font-size: 14px; padding: 8px 16px; margin-top: 10px; }
+  /* battle animations */
+  .bt-card { position: relative; transition: transform .18s ease; }
+  .bt-card.lunge-right { animation: lungeR .42s ease; }
+  .bt-card.lunge-left  { animation: lungeL .42s ease; }
+  @keyframes lungeR { 0%,100% { transform: translateX(0); } 45% { transform: translateX(26px) scale(1.05); } }
+  @keyframes lungeL { 0%,100% { transform: translateX(0); } 45% { transform: translateX(-26px) scale(1.05); } }
+  .bt-card.hit-shake { animation: hitShake .5s ease; }
+  .bt-card.hit-shake .bt-art { animation: hitFlash .5s ease; }
+  @keyframes hitShake { 0%,100% { transform: translateX(0); } 15% { transform: translateX(-7px) rotate(-2deg); } 35% { transform: translateX(7px) rotate(2deg); } 55% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  @keyframes hitFlash { 0% { filter: none; } 30% { filter: brightness(1.3) drop-shadow(0 0 8px #e85f6a); } 100% { filter: none; } }
+  .dmg-pop { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); font-size: 26px; font-weight: 800;
+    color: #e8452f; text-shadow: 0 2px 0 #fff, 0 0 6px #fff; pointer-events: none; animation: dmgPop .8s ease forwards; }
+  @keyframes dmgPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.6); } 25% { opacity: 1; transform: translate(-50%, -8px) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
+
+  /* POI banners + bob + portal flash */
+  .poi-banner text, .poi-chat text { pointer-events: none; }
+  .poi-bob { transform-box: fill-box; transform-origin: 50% 100%; animation: bob 2.4s ease-in-out infinite; }
+  .npc-poi .poi-bob { animation-duration: 2s; }
+  .poi-chat { transform-box: fill-box; animation: bob 1.4s ease-in-out infinite; }
+  #world-svg.portal-flash { animation: portalFlash .7s ease; }
+  @keyframes portalFlash { 0% { filter: none; } 35% { filter: brightness(1.8) saturate(1.4) hue-rotate(20deg); } 100% { filter: none; } }
 
   /* on-screen D-pad (shown on touch devices) */
   #dpad { display: none; position: absolute; left: 16px; bottom: 16px; z-index: 6;
@@ -520,7 +541,7 @@
 <!-- ============================== TITLE ============================== -->
 <div id="title-screen">
   <div class="game-logo">Critter <span class="q">Quest</span></div>
-  <div class="tagline">Explore 8 regions · shops, arenas &amp; townsfolk · hunt ✦ Ultra Legendaries · catch 70+ critters!</div>
+  <div class="tagline">Explore 9 regions (incl. a secret portal realm) · shops, arenas &amp; townsfolk · hunt ✦ Ultra Legendaries!</div>
   <div id="title-critters"></div>
   <div class="name-row">
     <input id="trainer-name-input" maxlength="20" placeholder="Trainer name..." autocomplete="off">
@@ -773,7 +794,8 @@
       <li>Miss three times and it flees! Rarer critters resist more throws — and <b>legendaries carry an ⚡ aura guard</b> that takes extra correct answers to crack before any orb can fly.</li>
       <li>Make the trainer yours: pick your <b>hat, hair, skin, shirt, and pants</b> in ⚙️ Settings → My Avatar.</li>
       <li>Fill your <b>📖 Critterdex</b> — catching a critter reveals its stats, powers, and story.</li>
-      <li>Chat with <b>townsfolk</b> (people dotted around the map) — solve their math problem and they'll give a clue to where an <b>✦ Ultra Legendary</b> is hiding. Ultra Legendaries (like <b>Sergio</b> the Maine Coon!) wait in one spot until you find them — catch one and a new one appears somewhere new.</li>
+      <li>Chat with the <b>townsfolk</b> — each person on the map now has a floating <b>💬 name banner</b> so they're easy to spot. Solve their math problem for a clue to where an <b>✦ Ultra Legendary</b> is hiding. Ultra Legendaries (like <b>Sergio</b> the Maine Coon!) wait in one spot until you find them — catch one and a new one appears somewhere new.</li>
+      <li>Step onto the <b>✦ Astral Portal</b> near the village to travel to a secret <b>portal-only region</b> — a starry rift full of rare and legendary critters! A Portal Home takes you back.</li>
       <li>Visit <b>🛒 Shops</b> to trade orbs for other orb types or buy an Ultra Compass, and <b>⚔️ Arenas</b> to battle the critter left guarding it — pick your champion, answer to attack, and win to leave your own critter on guard.</li>
       <li>On a <b>phone or iPad</b>, use the on-screen ⬍ D-pad (or just tap where you want to go).</li>
     </ul>

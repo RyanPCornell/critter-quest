@@ -266,6 +266,15 @@
 
   // ----------------------------------------------------------------- spawns
   function pickCreature(zone) {
+    if (zone === "rift") {
+      // the Astral Rift teems with rare and legendary power
+      if (Math.random() < 0.32) {
+        var legs = CREATURES.filter(function (c) { return c.rarity === "legendary"; });
+        return legs[Math.floor(Math.random() * legs.length)];
+      }
+      var rares = CREATURES.filter(function (c) { return c.rarity === "rare" && !c.evolved; });
+      return rares[Math.floor(Math.random() * rares.length)];
+    }
     if (Math.random() < 0.012) { // legendary sighting!
       var legend = CREATURES.filter(function (c) { return c.rarity === "legendary"; });
       return legend[Math.floor(Math.random() * legend.length)];
@@ -284,6 +293,7 @@
   }
 
   function orbForBiome(zone) {
+    if (zone === "rift") return Math.random() < 0.6 ? "prism" : ORB_ORDER[Math.floor(Math.random() * 8)];
     // lone orbs found in a biome are that biome's orb, with a rare prism find
     if (Math.random() < 0.06) return "prism";
     return orbForZone(zone === "any" ? "meadow" : zone);
@@ -1404,6 +1414,15 @@
 
   // ============================================================ PLACES (POIs)
   var OL = "#3a2b28";
+  var PORTAL_ART =
+    '<defs><radialGradient id="pt-swirl" cx="50%" cy="50%" r="50%">' +
+    '<stop offset="0%" stop-color="#f2e0ff"/><stop offset="45%" stop-color="#b06fd0"/><stop offset="80%" stop-color="#6a3f9a"/><stop offset="100%" stop-color="#3a2358"/>' +
+    '</radialGradient></defs>' +
+    '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".2"/>' +
+    '<path d="M8 26 C8 8 40 8 40 26 C40 46 8 46 8 26 Z" fill="#2a1c44" stroke="' + OL + '" stroke-width="2.6"/>' +
+    '<ellipse cx="24" cy="26" rx="14" ry="17" fill="url(#pt-swirl)" stroke="#7a4fa0" stroke-width="2"/>' +
+    '<g fill="none" stroke="#e6c9ff" stroke-width="1.6" opacity=".85"><path d="M24 14 C32 18 32 34 24 38 C16 34 16 18 24 14"><animateTransform attributeName="transform" type="rotate" values="0 24 26;360 24 26" dur="6s" repeatCount="indefinite"/></path></g>' +
+    '<g fill="#fff"><circle cx="24" cy="26" r="2.4" class="glowpulse"/><circle cx="18" cy="20" r="1.2"/><circle cx="30" cy="30" r="1.2"/><circle cx="29" cy="19" r="1"/></g>';
   function hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
   function compassDir(tx, ty) {
     var ns = ty < map.H * 0.34 ? "north" : ty > map.H * 0.66 ? "south" : "";
@@ -1441,7 +1460,27 @@
     if (poi.kind === "shop") openShop(poi);
     else if (poi.kind === "arena") openArena(poi);
     else if (poi.kind === "square") openSquare(poi);
+    else if (poi.kind === "portal") usePortal(poi);
     else openNpc(poi);
+  }
+  function usePortal(poi) {
+    if (!poi.dest) return;
+    sfx("level");
+    // fade the world, teleport, snap the camera
+    svg.classList.add("portal-flash");
+    setTimeout(function () { svg.classList.remove("portal-flash"); }, 700);
+    P.tx = poi.dest.tx; P.ty = poi.dest.ty;
+    P.px = P.tx * TILE; P.py = P.ty * TILE;
+    P.path = []; P.targetPoi = null; P.targetSpawn = null; P.targetUltra = null; P.moving = false;
+    cam.x = Math.max(0, Math.min(map.W * TILE - VIEW.w, P.px + TILE / 2 - VIEW.w / 2));
+    cam.y = Math.max(0, Math.min(map.H * TILE - VIEW.h, P.py + TILE / 2 - VIEW.h / 2));
+    // clear spawns from the old area; repopulate around the new one
+    spawns.slice().forEach(removeSpawn);
+    for (var i = 0; i < 4; i++) trySpawn();
+    var z = map.at(P.tx, P.ty).zone;
+    lastZone = z;
+    toast("✨ " + (poi.enterMsg || ("You step through to " + map.zoneNames[z] + "!")));
+    persist();
   }
   function wireCloses(container) {
     container.querySelectorAll("[data-close]").forEach(function (b) {
@@ -1449,21 +1488,35 @@
     });
   }
 
+  // a floating name banner so places/people are easy to spot on the map
+  function poiBanner(label, cx, w) {
+    var bw = Math.max(46, label.length * 6.6 + 14);
+    return '<g class="poi-banner"><rect x="' + (cx - bw / 2) + '" y="-16" width="' + bw + '" height="17" rx="8.5" fill="#fffdf5" stroke="' + OL + '" stroke-width="2"/>' +
+      '<text x="' + cx + '" y="-3.5" font-size="10.5" font-weight="800" text-anchor="middle" fill="' + OL + '">' + esc(label) + "</text></g>";
+  }
   function renderPois() {
     var html = "";
     (map.pois || []).forEach(function (poi) {
-      var cx = poi.tx * TILE, cy = poi.ty * TILE;
       if (poi.kind === "npc") {
+        html += '<g class="poi-marker npc-poi" data-poi="' + poi.id + '">' +
+          '<ellipse cx="24" cy="48" rx="13" ry="4" fill="#000" opacity=".18"/>' +
+          '<circle cx="24" cy="26" r="21" fill="#fff6d8" opacity=".55" class="glowpulse"/>' +
+          '<g class="poi-bob"><svg x="5" y="6" width="38" height="44" viewBox="0 0 48 48">' + AVATAR.art("down", poi.av) + "</svg>" +
+          '<g class="poi-chat"><circle cx="40" cy="8" r="8.5" fill="#ffd94d" stroke="' + OL + '" stroke-width="2"/><text x="40" y="12" font-size="10" text-anchor="middle" font-weight="800">!</text></g></g>' +
+          poiBanner("💬 " + poi.name, 24) +
+          '<rect x="0" y="6" width="48" height="46" fill="none" pointer-events="all"/></g>';
+      } else if (poi.kind === "portal") {
         html += '<g class="poi-marker" data-poi="' + poi.id + '">' +
-          '<ellipse cx="24" cy="46" rx="12" ry="4" fill="#000" opacity=".16"/>' +
-          '<svg x="6" y="6" width="36" height="42" viewBox="0 0 48 48">' + AVATAR.art("down", poi.av) + "</svg>" +
-          '<g class="poi-bubble"><circle cx="38" cy="4" r="9" fill="#fff" stroke="' + OL + '" stroke-width="2"/><text x="38" y="8" font-size="10" text-anchor="middle">💬</text></g>' +
-          '<rect x="2" y="6" width="44" height="44" fill="none" pointer-events="all"/></g>';
+          '<ellipse cx="24" cy="46" rx="15" ry="4" fill="#000" opacity=".16"/>' +
+          '<g class="poi-bob"><svg x="0" y="0" width="48" height="48" viewBox="0 0 48 48">' + PORTAL_ART + "</svg></g>" +
+          poiBanner(poi.name, 24) +
+          '<rect x="0" y="0" width="48" height="48" fill="none" pointer-events="all"/></g>';
       } else {
-        var icon = poi.kind === "shop" ? "🛒" : "⚔️";
+        var icon = poi.kind === "shop" ? "🛒" : poi.kind === "arena" ? "⚔️" : "🏛️";
         html += '<g class="poi-marker" data-poi="' + poi.id + '">' +
-          '<g class="poi-bubble"><rect x="' + (TILE - 16) + '" y="-20" width="32" height="24" rx="8" fill="#fff" stroke="' + OL + '" stroke-width="2.4"/>' +
-          '<text x="' + TILE + '" y="-2" font-size="15" text-anchor="middle">' + icon + "</text></g>" +
+          '<g class="poi-bob"><rect x="' + (TILE - 17) + '" y="-24" width="34" height="26" rx="9" fill="#ffd94d" stroke="' + OL + '" stroke-width="2.4"/>' +
+          '<text x="' + TILE + '" y="-5" font-size="16" text-anchor="middle">' + icon + "</text></g>" +
+          poiBanner(poi.name, TILE) +
           '<rect x="0" y="0" width="' + (TILE * 2) + '" height="' + (TILE * 2) + '" fill="none" pointer-events="all"/></g>';
       }
     });
@@ -1753,22 +1806,42 @@
     var base = Math.max(4, Math.round(a.atk * 0.42 - d.def * 0.18));
     return Math.round(base * (0.85 + Math.random() * 0.4)) + Math.round(a.level * 0.5);
   }
+  // play a lunge on the attacker and a hit-shake + damage popup on the target
+  function battleAnimate(attackerSide, targetSide, dmg) {
+    var atkCard = $("battle-arena").querySelector(".bt-card." + attackerSide);
+    var tgtCard = $("battle-arena").querySelector(".bt-card." + targetSide);
+    if (atkCard) { atkCard.classList.add(attackerSide === "ply" ? "lunge-right" : "lunge-left"); setTimeout(function () { atkCard.classList.remove("lunge-right", "lunge-left"); }, 460); }
+    if (tgtCard) {
+      setTimeout(function () {
+        tgtCard.classList.add("hit-shake");
+        var pop = document.createElement("div"); pop.className = "dmg-pop"; pop.textContent = "-" + dmg;
+        tgtCard.appendChild(pop);
+        setTimeout(function () { tgtCard.classList.remove("hit-shake"); if (pop.parentNode) pop.remove(); }, 800);
+      }, 200);
+    }
+  }
   function battleResolve(correct, reveal) {
     var B = BATTLE; B.busy = true;
     if (correct) {
       var dmg = attackDamage(B.ply, B.def);
-      B.def.hp = Math.max(0, B.def.hp - dmg); sfx("correct");
+      battleAnimate("ply", "def", dmg);
       battleMsg("💥 Your <b>" + B.ply.creature.name + "</b> attacks for <b>" + dmg + "</b>!");
-      renderBattle();
-      if (B.def.hp <= 0) { setTimeout(function () { endBattle(true); }, 900); return; }
+      sfx("throw");
+      setTimeout(function () {
+        B.def.hp = Math.max(0, B.def.hp - dmg); sfx("correct"); renderBattle();
+        if (B.def.hp <= 0) { setTimeout(function () { endBattle(true); }, 800); return; }
+        setTimeout(function () { B.busy = false; nextChallenge(); }, 800);
+      }, 380);
     } else {
       var dmg2 = attackDamage(B.def, B.ply);
-      B.ply.hp = Math.max(0, B.ply.hp - dmg2); sfx("wrong");
+      battleAnimate("def", "ply", dmg2);
       battleMsg("❌ " + reveal + " <b>" + B.def.creature.name + "</b> strikes back for <b>" + dmg2 + "</b>!");
-      renderBattle();
-      if (B.ply.hp <= 0) { setTimeout(function () { endBattle(false); }, 900); return; }
+      setTimeout(function () {
+        B.ply.hp = Math.max(0, B.ply.hp - dmg2); sfx("wrong"); renderBattle();
+        if (B.ply.hp <= 0) { setTimeout(function () { endBattle(false); }, 800); return; }
+        setTimeout(function () { B.busy = false; nextChallenge(); }, 800);
+      }, 380);
     }
-    setTimeout(function () { B.busy = false; nextChallenge(); }, 1100);
   }
   function endBattle(win) {
     var B = BATTLE;

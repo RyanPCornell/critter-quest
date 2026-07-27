@@ -44,9 +44,15 @@ Works great on desktop and iPad.
   marker) until a trainer finds it — catch one and a brand-new one appears
   somewhere else. One is **Sergio**, a very fluffy Maine Coon. They need Prism
   Orbs and a 3-layer aura guard to catch.
-- **Townsfolk:** eight people are dotted around the map. Solve their math problem
-  and they share a clue to an active Ultra Legendary's region — clues update
-  automatically as Ultras are caught and new ones appear.
+- **Townsfolk:** eight people are dotted around the map, each with a floating
+  name banner so they're easy to find. Solve their math problem and they share a
+  clue to an active Ultra Legendary's region — clues update automatically as
+  Ultras are caught and new ones appear.
+- **Portal region:** step onto the ✦ Astral Portal near the village to teleport
+  to the **Astral Rift** — a starry, portal-only 9th region packed with rare and
+  legendary critters (and Prism Orbs). A Portal Home brings you back.
+- **Battle animations:** attacks lunge, the target shakes and flashes, and a
+  floating damage number pops up on each hit.
 - **Village Square:** talk to the Bulletin Keeper and answer two problems in a
   row to earn the right to **pin a message to a shared board that every player
   sees** (stored in Firebase). Anyone can read the board.

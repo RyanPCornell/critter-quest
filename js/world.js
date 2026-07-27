@@ -1,5 +1,6 @@
 // ============================================================================
-//  CRITTER QUEST — WORLD
+//  CRITTER QUEST — WORLD  (88×52 grid, 9 zones; the Astral Rift east of a void
+//  wall at x=72-73 is reachable only via the village portal)
 //  Hand-drawn SVG tile art, map generation, and rendering.
 //  The map is a 46x36 tile grid with five zones:
 //    Ember Ridge (north), Whispering Woods (west), Sundune Desert (east),
@@ -7,7 +8,7 @@
 // ============================================================================
 
 (function () {
-  var W = 72, H = 52, TILE = 48;
+  var W = 88, H = 52, TILE = 48;
 
   // Deterministic RNG so the world is identical every visit
   function mulberry32(a) {
@@ -23,6 +24,7 @@
     meadow: "Willowmere Meadow", forest: "Whispering Woods", lake: "Lake Lumen",
     ridge: "Ember Ridge", desert: "Sundune Desert",
     tundra: "Frostpeak Tundra", marsh: "Glowfen Marsh", cavern: "Gleamcave Hollows",
+    rift: "the Astral Rift",
   };
 
   // ------------------------------------------------------------------------
@@ -236,6 +238,28 @@
     <circle cx="30" cy="34" r="1.3" fill="#8f7fb0"/>
     <path d="M14 34 L22 30 M28 32 L34 29" stroke="#3d3550" stroke-width="1.6" fill="none" stroke-linecap="round"/>
   </symbol>
+  <symbol id="d-star" viewBox="0 0 48 48" overflow="visible">
+    <path d="M24 10 L27 20 L37 21 L29 28 L32 38 L24 32 L16 38 L19 28 L11 21 L21 20 Z"
+          fill="#ffe9a3" stroke="#d8b45c" stroke-width="1.6" stroke-linejoin="round" class="glowpulse"/>
+    <circle cx="24" cy="24" r="2" fill="#fff"/>
+    <circle cx="12" cy="12" r="1.4" fill="#cfe0ff"/><circle cx="38" cy="34" r="1.4" fill="#cfe0ff"/>
+  </symbol>
+  <symbol id="d-riftcrystal" viewBox="0 0 48 48" overflow="visible">
+    <ellipse cx="24" cy="42" rx="12" ry="3.5" fill="#150f28" opacity=".6"/>
+    <path d="M24 4 L33 26 L28 44 L18 44 L15 26 Z" fill="#b884e6" stroke="#7a4fa0" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M24 6 L29 26 L26 42 L24 42 Z" fill="#e6c9ff" opacity=".85"/>
+    <path d="M11 18 L16 40 L9 42 L6 26 Z" fill="#9a6fd0" stroke="#7a4fa0" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M37 22 L40 42 L33 42 L31 28 Z" fill="#9a6fd0" stroke="#7a4fa0" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="23" cy="22" r="2" fill="#fff" class="glowpulse"/>
+  </symbol>
+  <symbol id="d-riftrock" viewBox="0 0 48 48" overflow="visible">
+    <path d="M8 38 C4 28 12 20 22 20 C34 20 42 28 40 38 C34 42 14 42 8 38 Z"
+          fill="#3a2f58" stroke="#241a3e" stroke-width="2"/>
+    <circle cx="17" cy="30" r="1.6" fill="#b884e6" class="glowpulse"/>
+    <circle cx="30" cy="33" r="1.3" fill="#8f7fc0"/>
+    <path d="M14 34 L22 30 M28 32 L34 29" stroke="#241a3e" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <g fill="#e6d6ff" opacity=".7"><circle cx="24" cy="16" r="1"/><circle cx="36" cy="24" r="0.9"/></g>
+  </symbol>
   <symbol id="d-sign" viewBox="0 0 48 48" overflow="visible">
     <rect x="21" y="24" width="6" height="20" rx="2" fill="#8a663f" stroke="#5f4326" stroke-width="1.8"/>
     <rect x="6" y="8" width="36" height="18" rx="3" fill="#c8a35f" stroke="#5f4326" stroke-width="2"/>
@@ -350,7 +374,8 @@
     for (y = 0; y < H; y++) {
       for (x = 0; x < W; x++) {
         var zone, g;
-        if (y < 10) {
+        if (x >= 74) { zone = "rift"; g = "void"; }   // portal-only Astral Rift (far east)
+        else if (y < 10) {
           if (x < 30) { zone = "tundra"; g = "snow"; }
           else { zone = "ridge"; g = "rock"; }
         }
@@ -422,8 +447,16 @@
         bt.block = true;
         bt.deco = bt.zone === "ridge" ? "rock" : bt.zone === "desert" ? "rock"
                 : bt.zone === "forest" ? "pine" : bt.zone === "tundra" ? "icespire"
-                : bt.zone === "marsh" ? "deadtree" : bt.zone === "cavern" ? "stalag" : "tree";
+                : bt.zone === "marsh" ? "deadtree" : bt.zone === "cavern" ? "stalag"
+                : bt.zone === "rift" ? "riftrock" : "tree";
       }
+    }
+
+    // Void wall (x=72,73) walls the playable world off from the rift so the
+    // Astral Rift is reachable only through a portal.
+    for (y = 0; y < H; y++) for (x = 72; x <= 73; x++) {
+      var vt = T(x, y); vt.block = true; vt.zone = "rift"; vt.g = "void"; vt.wild = false;
+      vt.deco = (x + y) % 3 === 0 ? "riftrock" : null;
     }
 
     // Decorations + wild patches per zone
@@ -461,6 +494,10 @@
           else if (r < 0.16) { t3.deco = "stalag"; t3.block = true; }
           else if (r < 0.20) { t3.deco = "caverock"; t3.block = true; }
           else if (r < 0.40) { t3.deco = "cavemush"; t3.wild = true; }
+        } else if (t3.zone === "rift") {
+          if (r < 0.10) { t3.deco = "riftcrystal"; t3.block = true; }
+          else if (r < 0.34) { t3.deco = "star"; t3.wild = true; }
+          else if (r < 0.44) { t3.deco = "riftrock"; t3.block = true; }
         } else if (t3.zone === "lake") {
           if (r < 0.45) { t3.deco = "reeds"; t3.wild = true; }
         } else { // meadow
@@ -502,6 +539,25 @@
     building(23, 4,  "arena", { kind: "arena", id: "arena-tundra",  name: "Frostpeak Arena", tier: 2 });
     building(33, 29, "square",{ kind: "square", id: "square-village", name: "Willowmere Village Square" });
 
+    // Portals — a 1-tile gateway you step onto. The village portal sends you to
+    // the Astral Rift; a return portal there brings you home.
+    function portal(x, y, id, name, dest, enterMsg) {
+      var t = T(x, y); t.block = false; t.deco = null; t.wild = false; t.g = t.g === "void" ? "void" : t.g;
+      // keep the approach tiles walkable
+      [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]].forEach(function (a) {
+        if (a[0] > 0 && a[1] > 0 && a[0] < W - 1 && a[1] < H - 1) { var at = T(a[0], a[1]); if (at.g !== "water") { at.block = false; at.deco = null; } }
+      });
+      pois.push({ kind: "portal", id: id, name: name, tx: x, ty: y, w: 1, h: 1, dest: dest, enterMsg: enterMsg,
+        approach: [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] });
+    }
+    portal(35, 33, "portal-village", "✦ Astral Portal", { tx: 79, ty: 44 },
+      "You step through the shimmering gateway into the Astral Rift!");
+    portal(79, 46, "portal-return", "Portal Home", { tx: 35, ty: 34 },
+      "You drift back home to Willowmere.");
+    // clear the teleport landing pads so you never arrive on a blocked tile
+    [[79,44],[79,45],[78,44],[80,44],[78,45],[80,45],[35,34],[35,33],[34,34],[36,34],[35,35]]
+      .forEach(function (a) { var t = T(a[0], a[1]); if (t && t.g !== "water") { t.block = false; t.deco = null; t.wild = false; } });
+
     // NPCs — sit on walkable tiles (nudged onto the nearest one). Rendered by
     // the game as little avatar people; give clues about the Ultra Legendaries.
     function npc(x, y, id, name, av) {
@@ -532,6 +588,7 @@
     var ultraCandidates = [
       [33, 20], [9, 30], [48, 24], [58, 26], [40, 4], [10, 6],
       [24, 48], [40, 49], [66, 46], [61, 40], [14, 40], [50, 12], [26, 26],
+      [80, 12], [83, 30], [78, 20],
     ];
     var ultraSpots = ultraCandidates.filter(function (s) {
       var t = T(s[0], s[1]); return t && !t.block && t.g !== "water";
@@ -548,7 +605,7 @@
     sand: ["#eed9a8", "#e7d09b"], rock: ["#b6a68c", "#aca083"],
     path: ["#e0c893", "#dac28c"], water: ["#64b7e2", "#5db0dc"],
     snow: ["#f2f9fd", "#e8f2f8"], bog: ["#6b7f58", "#647851"],
-    cave: ["#3a3450", "#332e48"],
+    cave: ["#3a3450", "#332e48"], void: ["#241a3e", "#1e1636"],
   };
 
   function renderWorld(map, svg) {
