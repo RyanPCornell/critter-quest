@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **73 original critters** by solving **math
+hand-drawn SVG world and catch **80+ original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -18,6 +18,8 @@ Works great on desktop and iPad.
   orbs** appear as bubbles on wild patches; walking through them can also
   trigger surprise encounters. Seven **legendary** critters (Sunwyrm, Lunavis,
   Terravox, Aurorix, Tempestrel, Umbryss, Rimewyrd) roam everywhere, rarely.
+  A new **mythical** tier (★★★★, just below legendary — Nebulyn, Terraken,
+  Sylphine, Glimmerhart) is rarer than rare but not as scarce as a legendary.
 - **Orbs:** you catch a critter by throwing an orb of its home region's type
   (**9 types**, incl. Prism Orbs for legendaries — Prism also substitutes for
   any orb in a pinch). Orbs are found lying in the wild (**click a loose orb and
@@ -50,7 +52,16 @@ Works great on desktop and iPad.
   Ultras are caught and new ones appear.
 - **Portal region:** step onto the ✦ Astral Portal near the village to teleport
   to the **Astral Rift** — a starry, portal-only 9th region packed with rare and
-  legendary critters (and Prism Orbs). A Portal Home brings you back.
+  legendary critters, its own **Rift critters** (Voidkit, Astrilla, Nebulyn), and
+  a region-specific **Astral Orb** (plus Prism Orbs). A Portal Home brings you back.
+- **Quests** (📜): visit the person living in one of five houses (Old Fira's
+  Forge, Elowen's Cabin, Nerys's Boathouse, Rashid's Tent, Vega's Observatory) to
+  start a multi-step story quest — solve a math puzzle in their dialog, collect a
+  glowing magical item or catch a special quest-only critter, then travel to a
+  secret location that only appears on your map once the quest is active and catch
+  its guardian. Each quest introduces its own creature (Cindermane, Gladewing,
+  Sablefin, Dustmaw, Glimmerhart) and items, and grants a big XP + orb reward. The
+  📜 Quests button opens your quest log with every active and available quest.
 - **Battle animations:** attacks lunge, the target shakes and flashes, and a
   floating damage number pops up on each hit.
 - **Village Square:** talk to the Bulletin Keeper and answer two problems in a
@@ -62,7 +73,10 @@ Works great on desktop and iPad.
   champion, then keep answering math/spelling problems — a correct answer
   attacks, a wrong one lets the guardian hit back; first to 0 HP loses. Win to
   earn XP + orbs and **leave one of your own critters to guard the arena** for
-  the next challenger.
+  the next challenger. You **can't battle your own guardian** — return to an
+  arena you hold and it says your critter is defending it, with a button to
+  recall it. If nobody challenges it within about two days it retires on its own
+  and the critter is returned to you with an alert.
 - **Touch / iPad:** fully playable by tapping (walk, pick up orbs, enter places)
   with an on-screen D-pad on touch devices; controls use `touch-action` to avoid
   zoom/scroll interference, and the viewport is locked for a clean full-screen feel.

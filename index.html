@@ -464,6 +464,30 @@
   .sq-note-head span { color: #a89a7e; font-size: 11.5px; }
   .sq-note-body { font-size: 14.5px; line-height: 1.4; margin-top: 2px; word-break: break-word; }
 
+  /* mythical rarity flair */
+  .rarity-mythical { color: #3fb8c9; }
+
+  /* quests */
+  .quest-title { font-size: 19px; font-weight: 800; margin: 8px 0; }
+  .quest-steps { text-align: left; background: var(--card); border: 2.5px solid var(--ink); border-radius: 14px; padding: 10px 14px; margin: 10px 0; }
+  .quest-step { font-size: 14px; line-height: 1.5; padding: 3px 0; color: #6e604a; }
+  .quest-step.now { color: var(--ink); font-weight: 800; }
+  .quest-step.done { color: #7cae62; text-decoration: line-through; }
+  #quest-action .math-q { max-width: 320px; margin: 10px auto; }
+  #quest-action .answer-row { max-width: 320px; margin: 0 auto; }
+  #quest-body { text-align: center; }
+  .ql-section { margin-top: 14px; text-align: left; }
+  .ql-section h3 { font-size: 16px; margin-bottom: 8px; }
+  .ql-card { background: var(--card); border: 3px solid var(--ink); border-radius: 14px; padding: 10px 14px; margin-bottom: 9px; }
+  .ql-card.done { opacity: .7; }
+  .ql-name { font-weight: 800; font-size: 15.5px; }
+  .ql-step { font-size: 14px; margin-top: 3px; }
+  .ql-giver { font-size: 12.5px; color: #8a7a5e; margin-top: 3px; }
+  .quest-marker { cursor: pointer; }
+
+  /* arena — your creature holding it */
+  .arena-hold-badge { background: #fff6d8; border: 2.5px solid #e0a63c; border-radius: 10px; padding: 6px 10px; font-size: 13.5px; font-weight: 800; color: #b8912a; margin: 6px 0; }
+
   /* arena HP display */
   .arena-def-stats { font-size: 13.5px; font-weight: 700; color: #4a3f34; margin: 6px 0; }
   .arena-hint { font-size: 13px; font-weight: 600; color: #8a7a5e; }
@@ -572,6 +596,7 @@
   <div id="hud-buttons">
     <button class="hud-btn" id="btn-dex">📖 Critterdex</button>
     <button class="hud-btn" id="btn-bag">🔮 Orbs<span id="bag-count">0</span></button>
+    <button class="hud-btn" id="btn-quests">📜 Quests</button>
     <button class="hud-btn" id="btn-friends">🤝 Friends<span id="friends-badge" style="display:none">0</span></button>
     <button class="hud-btn" id="btn-settings">⚙️ Settings</button>
     <button class="hud-btn" id="btn-help">❓</button>
@@ -658,6 +683,23 @@
     <button class="modal-close" data-close="arena">✕</button>
     <h2>⚔️ Arena</h2>
     <div id="arena-body"></div>
+  </div>
+</div>
+
+<!-- ========================== QUEST GIVER =========================== -->
+<div class="overlay" id="quest">
+  <div class="modal" style="max-width:540px">
+    <button class="modal-close" data-close="quest">✕</button>
+    <div id="quest-body"></div>
+  </div>
+</div>
+
+<!-- ============================ QUEST LOG =========================== -->
+<div class="overlay" id="questlog">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" data-close="questlog">✕</button>
+    <h2>📜 Quest Log</h2>
+    <div id="questlog-body"></div>
   </div>
 </div>
 
@@ -814,11 +856,13 @@
 <script src="js/art-critters-4.js"></script>
 <script src="js/art-critters-5.js"></script>
 <script src="js/art-critters-6.js"></script>
+<script src="js/art-critters-7.js"></script>
 <script src="js/world.js"></script>
 <script src="js/avatar.js"></script>
 <script src="js/orbs.js"></script>
 <script src="js/pictures.js"></script>
 <script src="js/kangaroo.js"></script>
+<script src="js/quests.js"></script>
 <script src="js/challenges.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/social.js"></script>

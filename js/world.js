@@ -558,6 +558,12 @@
     [[79,44],[79,45],[78,44],[80,44],[78,45],[80,45],[35,34],[35,33],[34,34],[36,34],[35,35]]
       .forEach(function (a) { var t = T(a[0], a[1]); if (t && t.g !== "water") { t.block = false; t.deco = null; t.wild = false; } });
 
+    // Quest-giver houses — enter one to meet the person who offers a quest.
+    (window.QUESTS || []).forEach(function (q) {
+      var h = q.house;
+      building(h.tx, h.ty, h.deco || "house1", { kind: "house", id: h.id, name: h.name, questId: q.id });
+    });
+
     // NPCs — sit on walkable tiles (nudged onto the nearest one). Rendered by
     // the game as little avatar people; give clues about the Ultra Legendaries.
     function npc(x, y, id, name, av) {
@@ -641,6 +647,7 @@
     deco.sort(function (a, b) { return a.y - b.y; });
     parts.push('<g id="deco-layer">' + deco.map(function (d) { return d.html; }).join("") + "</g>");
     parts.push('<g id="poi-layer"></g>');
+    parts.push('<g id="quest-layer"></g>');
     parts.push('<g id="ultra-layer"></g>');
     parts.push('<g id="spawn-layer"></g>');
     parts.push('<g id="player-layer"><g id="player-sprite" class="player-idle">' + PLAYER_ART.down + "</g></g>");

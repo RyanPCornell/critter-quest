@@ -7,7 +7,7 @@
 
 (function () {
   var TILE = WORLD.TILE;
-  var map, svg, spriteEl, spawnLayer, poiLayer, ultraLayer;
+  var map, svg, spriteEl, spawnLayer, poiLayer, ultraLayer, questLayer;
   var VIEW = { w: 960, h: 640 };
 
   // ------------------------------------------------------------------ state
@@ -20,7 +20,8 @@
     friends: [],          // slugs of friended trainers
     orbs: {},             // orb-type-key -> count
     ultras: null,         // active Ultra Legendaries: [{id, tx, ty}]
-    arenas: {},           // arenaId -> {creatureId, level, owner}
+    arenas: {},           // arenaId -> {creatureId, level, owner, placedAt}
+    quests: {},           // questId -> {status, step, items}
     pos: null,            // {tx, ty}
   };
 
@@ -139,7 +140,7 @@
     SaveStore.save(S.name, {
       name: S.name, xp: S.xp, dex: S.dex, settings: S.settings,
       customWords: S.customWords, friends: S.friends, orbs: S.orbs,
-      ultras: S.ultras, arenas: S.arenas, pos: S.pos, updated: Date.now(),
+      ultras: S.ultras, arenas: S.arenas, quests: S.quests, pos: S.pos, updated: Date.now(),
     });
   }
 
@@ -193,13 +194,23 @@
       lastZone = t.zone;
       toast("📍 " + map.zoneNames[t.zone]);
     }
-    // reached a targeted spawn: pick up an orb, or engage a critter
+    // reached a targeted spawn: pick up an orb / item, or engage a critter
     if (P.targetSpawn) {
       var sp = P.targetSpawn;
       if (Math.abs(sp.tx - P.tx) + Math.abs(sp.ty - P.ty) <= 1) {
         P.path = []; P.targetSpawn = null;
         if (sp.kind === "orb") { pickUpOrb(sp); return; }
+        if (sp.kind === "questitem") { pickUpQuestItem(sp); return; }
         startEncounter(sp.creature, sp);
+        return;
+      }
+    }
+    // reached a targeted quest location
+    if (P.targetQuest) {
+      var tq = P.targetQuest;
+      if (Math.abs(tq.step.tx - P.tx) + Math.abs(tq.step.ty - P.ty) <= 1) {
+        P.path = []; P.targetQuest = null;
+        reachQuestLoc(tq.qid, tq.step);
         return;
       }
     }
@@ -251,7 +262,7 @@
     }
     if (dx || dy) {
       queuedDir = null;
-      P.path = []; P.targetSpawn = null; P.targetPoi = null; P.targetUltra = null;
+      P.path = []; P.targetSpawn = null; P.targetPoi = null; P.targetUltra = null; P.targetQuest = null;
       beginStep(P.tx + dx, P.ty + dy);
       return;
     }
@@ -265,35 +276,37 @@
   }
 
   // ----------------------------------------------------------------- spawns
+  // quest-only creatures are handled by the quest system, never the wild pool
+  function wildCandidate(c, zone) { return c.zone === zone && !c.evolved && !c.quest; }
   function pickCreature(zone) {
     if (zone === "rift") {
-      // the Astral Rift teems with rare and legendary power
-      if (Math.random() < 0.32) {
+      // the Astral Rift teems with rare, mythical and legendary power
+      var rr = Math.random();
+      if (rr < 0.15) {
         var legs = CREATURES.filter(function (c) { return c.rarity === "legendary"; });
         return legs[Math.floor(Math.random() * legs.length)];
       }
-      var rares = CREATURES.filter(function (c) { return c.rarity === "rare" && !c.evolved; });
-      return rares[Math.floor(Math.random() * rares.length)];
+      var riftPool = CREATURES.filter(function (c) { return (c.zone === "rift" || c.rarity === "mythical") && !c.evolved && !c.quest; });
+      return riftPool[Math.floor(Math.random() * riftPool.length)];
     }
     if (Math.random() < 0.012) { // legendary sighting!
       var legend = CREATURES.filter(function (c) { return c.rarity === "legendary"; });
       return legend[Math.floor(Math.random() * legend.length)];
     }
-    // evolved forms are obtained by evolving, not caught in the wild
-    var pool = CREATURES.filter(function (c) { return c.zone === zone && !c.evolved; });
-    if (!pool.length) pool = CREATURES.filter(function (c) { return c.zone === "meadow" && !c.evolved; });
-    var weights = { common: 6, uncommon: 3, rare: 1 };
-    var total = pool.reduce(function (s, c) { return s + weights[c.rarity]; }, 0);
+    var pool = CREATURES.filter(function (c) { return wildCandidate(c, zone); });
+    if (!pool.length) pool = CREATURES.filter(function (c) { return wildCandidate(c, "meadow"); });
+    var weights = { common: 6, uncommon: 3, rare: 1, mythical: 0.3 };
+    var total = pool.reduce(function (s, c) { return s + (weights[c.rarity] || 1); }, 0);
     var r = Math.random() * total;
     for (var i = 0; i < pool.length; i++) {
-      r -= weights[pool[i].rarity];
+      r -= (weights[pool[i].rarity] || 1);
       if (r <= 0) return pool[i];
     }
     return pool[0];
   }
 
   function orbForBiome(zone) {
-    if (zone === "rift") return Math.random() < 0.6 ? "prism" : ORB_ORDER[Math.floor(Math.random() * 8)];
+    if (zone === "rift") return Math.random() < 0.35 ? "prism" : "rift";
     // lone orbs found in a biome are that biome's orb, with a rare prism find
     if (Math.random() < 0.06) return "prism";
     return orbForZone(zone === "any" ? "meadow" : zone);
@@ -310,6 +323,8 @@
       if (!t.wild || t.block) continue;
       if (Math.abs(tx - P.tx) + Math.abs(ty - P.ty) < 3) continue; // not on top of player
       if (spawns.some(function (s) { return s.tx === tx && s.ty === ty; })) continue;
+      // active quests seed their creatures / items with priority
+      if (Math.random() < 0.4 && trySpawnQuest(tx, ty, t)) return;
       if (Math.random() < 0.35) {
         // a lone orb resting in the wild — click to grab it
         addSpawn({ kind: "orb", orb: orbForBiome(t.zone) }, tx, ty);
@@ -327,8 +342,14 @@
     var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.setAttribute("class", "spawn-marker");
     g.setAttribute("transform", "translate(" + (tx * TILE) + "," + (ty * TILE) + ")");
-    var sp = { kind: spec.kind, tx: tx, ty: ty, creature: spec.creature, orb: spec.orb, el: g, born: performance.now() };
-    if (spec.kind === "orb") {
+    var sp = { kind: spec.kind, tx: tx, ty: ty, creature: spec.creature, orb: spec.orb, el: g, born: performance.now(),
+               quest: spec.quest, questId: spec.questId, item: spec.item };
+    if (spec.kind === "questitem") {
+      g.innerHTML =
+        '<ellipse cx="24" cy="42" rx="11" ry="3.5" fill="#000" opacity=".16"/>' +
+        '<circle cx="24" cy="24" r="18" fill="#ffe066" opacity=".3" class="glowpulse"/>' +
+        '<g class="spawn-bob"><text x="24" y="32" font-size="26" text-anchor="middle">' + (spec.emoji || "✨") + "</text></g>";
+    } else if (spec.kind === "orb") {
       var oc = (ORB_TYPES[spec.orb] || {}).color || "#888";
       g.innerHTML =
         '<ellipse cx="24" cy="42" rx="11" ry="3.5" fill="#000" opacity=".16"/>' +
@@ -365,15 +386,23 @@
     checkEvolveReady();
   }
 
+  function pickUpQuestItem(sp) {
+    sfx("spawn");
+    var qid = sp.questId;
+    removeSpawn(sp);
+    questOnItem(qid);
+  }
+
   function clickSpawn(sp) {
     if (mode !== "world") return;
     var dist = Math.abs(sp.tx - P.tx) + Math.abs(sp.ty - P.ty);
-    // walk to the orb / critter, then pick up or engage on arrival
+    // walk to the orb / item / critter, then pick up or engage on arrival
     if (dist <= 1) {
       if (sp.kind === "orb") { pickUpOrb(sp); return; }
+      if (sp.kind === "questitem") { pickUpQuestItem(sp); return; }
       startEncounter(sp.creature, sp); return;
     }
-    // path to the spawn's tile (orbs sit on walkable wild tiles) or a tile next to it
+    // path to the spawn's tile (orbs/items sit on walkable wild tiles) or adjacent
     var best = null;
     [[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(function (d) {
       var ax = sp.tx + d[0], ay = sp.ty + d[1];
@@ -383,8 +412,8 @@
     });
     if (best) {
       P.path = best; P.targetSpawn = sp;
-      toast(sp.kind === "orb"
-        ? "Walking over to the " + ORB_TYPES[sp.orb].name + "..."
+      toast(sp.kind === "orb" ? "Walking over to the " + ORB_TYPES[sp.orb].name + "..."
+        : sp.kind === "questitem" ? "Going to collect the " + sp.item + "..."
         : "Heading toward the " + sp.creature.name + "...");
     }
   }
@@ -451,12 +480,12 @@
   // ================================================================ ENCOUNTER
   var ENC = null; // {creature, will, misses, spawn, method}
 
-  function startEncounter(creature, spawn, ultraRec) {
+  function startEncounter(creature, spawn, ultraRec, questId) {
     mode = "encounter";
     var isLeg = creature.rarity === "legendary" || creature.rarity === "ultra";
     ENC = { creature: creature, will: 1, misses: 0, spawn: spawn, method: null, busy: false,
             guard: creature.guard || 0, attachedOrb: spawn && spawn.orb || null,
-            ultra: ultraRec || null,
+            ultra: ultraRec || null, questId: questId || (spawn && spawn.quest) || null,
             forceKangaroo: isLeg && !!S.settings.legendaryKangaroo };
     if (spawn) removeSpawn(spawn);
     sfx("spawn");
@@ -830,6 +859,7 @@
       '<div class="catch-actions"><button class="big-btn go" id="enc-continue">Continue exploring</button></div>';
     $("enc-continue").onclick = closeEncounter;
     if (ENC.ultra) onUltraCaught(ENC.ultra);
+    questOnCatch(c.id);
     grantXP(xp);
     updateHUD();
     persist();
@@ -1374,7 +1404,7 @@
       var DIRS = { ArrowUp: [0,-1], KeyW: [0,-1], ArrowDown: [0,1], KeyS: [0,1], ArrowLeft: [-1,0], KeyA: [-1,0], ArrowRight: [1,0], KeyD: [1,0] };
       if (mode === "world" && DIRS[e.code]) { queuedDir = DIRS[e.code]; queuedAt = performance.now(); }
       if (e.code === "Escape") {
-        ["dex","settings","help","friends","bag","npc","shop","arena","square"].forEach(function (m) {
+        ["dex","settings","help","friends","bag","npc","shop","arena","square","quest","questlog"].forEach(function (m) {
           if (mode === m) closeModal(m);
         });
       }
@@ -1397,6 +1427,7 @@
 
     $("btn-dex").onclick = openDex;
     $("btn-bag").onclick = openBag;
+    $("btn-quests").onclick = openQuestLog;
     $("btn-friends").onclick = openFriends;
     $("btn-settings").onclick = openSettings;
     $("btn-help").onclick = function () { mode = "help"; $("help").classList.add("open"); };
@@ -1461,6 +1492,7 @@
     else if (poi.kind === "arena") openArena(poi);
     else if (poi.kind === "square") openSquare(poi);
     else if (poi.kind === "portal") usePortal(poi);
+    else if (poi.kind === "house") openQuestGiver(poi);
     else openNpc(poi);
   }
   function usePortal(poi) {
@@ -1480,6 +1512,11 @@
     var z = map.at(P.tx, P.ty).zone;
     lastZone = z;
     toast("✨ " + (poi.enterMsg || ("You step through to " + map.zoneNames[z] + "!")));
+    // advance any quest whose current step is "go through this portal"
+    activeQuestList().forEach(function (q) {
+      var step = curStep(q.id);
+      if (step && step.kind === "goto" && step.loc === poi.id) advanceQuest(q.id);
+    });
     persist();
   }
   function wireCloses(container) {
@@ -1512,6 +1549,14 @@
           '<g class="poi-bob"><svg x="0" y="0" width="48" height="48" viewBox="0 0 48 48">' + PORTAL_ART + "</svg></g>" +
           poiBanner(poi.name, 24) +
           '<rect x="0" y="0" width="48" height="48" fill="none" pointer-events="all"/></g>';
+      } else if (poi.kind === "house") {
+        var qs = poi.questId ? questStatus(poi.questId) : "done";
+        var badge = qs === "done" ? "" :
+          '<g class="poi-bob"><rect x="' + (TILE - 17) + '" y="-24" width="34" height="26" rx="9" fill="' + (qs === "active" ? "#ffd94d" : "#e85f6a") + '" stroke="' + OL + '" stroke-width="2.4"/>' +
+          '<text x="' + TILE + '" y="-5" font-size="15" text-anchor="middle">' + (qs === "active" ? "📜" : "❗") + "</text></g>";
+        html += '<g class="poi-marker" data-poi="' + poi.id + '" ' + tf + '>' + badge +
+          poiBanner(poi.name, TILE) +
+          '<rect x="0" y="0" width="' + (TILE * 2) + '" height="' + (TILE * 2) + '" fill="none" pointer-events="all"/></g>';
       } else {
         var icon = poi.kind === "shop" ? "🛒" : poi.kind === "arena" ? "⚔️" : "🏛️";
         html += '<g class="poi-marker" data-poi="' + poi.id + '" ' + tf + '>' +
@@ -1730,10 +1775,30 @@
     "arena-village": { creatureId: "verdantler", level: 6 },
     "arena-tundra":  { creatureId: "glacierne",  level: 10 },
   };
+  var ARENA_HOLD_MS = 2 * 24 * 3600 * 1000; // your critter guards for ~2 days
   var BATTLE = null;
+
+  // Return any of the player's own arena creatures whose 2-day hold has run out.
+  function checkArenaExpiry() {
+    if (!S.arenas) return;
+    var now = Date.now();
+    Object.keys(S.arenas).forEach(function (id) {
+      var a = S.arenas[id];
+      if (a && a.owner === S.name && a.placedAt && now - a.placedAt > ARENA_HOLD_MS) {
+        var poiName = arenaName(id), critName = (CREATURE_BY_ID[a.creatureId] || {}).name || "critter";
+        delete S.arenas[id];
+        toast("🏟️ You held " + poiName + " for two days — your " + critName + " has returned home!", 4200);
+      }
+    });
+    persist();
+  }
+  function arenaName(id) {
+    var poi = (map.pois || []).filter(function (p) { return p.id === id; })[0];
+    return poi ? poi.name : "the arena";
+  }
   function arenaDefender(poi) {
     var saved = S.arenas[poi.id];
-    if (saved && CREATURE_BY_ID[saved.creatureId]) return { creatureId: saved.creatureId, level: saved.level, owner: saved.owner || "a challenger" };
+    if (saved && CREATURE_BY_ID[saved.creatureId]) return { creatureId: saved.creatureId, level: saved.level, owner: saved.owner || "a challenger", placedAt: saved.placedAt, mine: saved.owner === S.name };
     var d = ARENA_DEFAULTS[poi.id] || { creatureId: "sylvyrn", level: 6 };
     return { creatureId: d.creatureId, level: d.level, owner: "the arena keeper" };
   }
@@ -1743,11 +1808,36 @@
   }
   function openArena(poi) {
     mode = "arena";
+    checkArenaExpiry();
     var def = arenaDefender(poi);
     var dc = CREATURE_BY_ID[def.creatureId];
     var defHp = combatStats(def.creatureId, def.level).maxHp;
     var pLevel = Math.max(3, levelOf(S.xp));
     var owned = Object.keys(S.dex);
+    // if YOUR creature is guarding this arena, you can't battle it — show a
+    // holding screen instead, with the time remaining and a recall option.
+    if (def.mine) {
+      var left = ARENA_HOLD_MS - (Date.now() - (def.placedAt || Date.now()));
+      var hrs = Math.max(0, Math.round(left / 3600000));
+      var timeStr = hrs >= 24 ? Math.floor(hrs / 24) + "d " + (hrs % 24) + "h" : hrs + "h";
+      var body0 = $("arena-body");
+      body0.innerHTML =
+        '<div class="arena-defender"><div class="arena-def-art"><svg viewBox="0 0 120 120">' + (CRITTER_ART[def.creatureId] || "") + "</svg></div>" +
+        '<div class="arena-def-info"><div class="catch-name">' + dc.name + " <span class=\"catch-species\">Lv " + def.level + "</span></div>" +
+        '<div class="arena-hold-badge">🛡️ Your ' + dc.name + " is currently holding this arena!</div>" +
+        '<div class="arena-def-stats">❤ <b>' + defHp + "</b> HP · ⚔ <b>" + dc.atk + "</b> · 🛡 <b>" + dc.def + "</b></div>" +
+        '<div class="npc-line">It stands guard until another trainer defeats it — or about <b>' + timeStr + "</b> from now, when it returns home to you. You can't battle your own champion!</div></div></div>" +
+        '<div class="catch-actions"><button class="big-btn go" id="arena-recall">Recall my ' + dc.name + " now</button>" +
+        '<button class="big-btn" data-close="arena">Leave arena</button></div>';
+      $("arena-recall").onclick = function () {
+        delete S.arenas[poi.id]; persist();
+        toast("🏠 " + dc.name + " has returned home. The arena is open again!");
+        openArena(poi);
+      };
+      wireCloses(body0);
+      $("arena").classList.add("open");
+      return;
+    }
     var grid = owned.length
       ? '<div class="pick-grid">' + owned.map(function (id) {
           var c = CREATURE_BY_ID[id];
@@ -1869,9 +1959,9 @@
       r.querySelectorAll("[data-leave]").forEach(function (b) {
         b.onclick = function () {
           var id = b.getAttribute("data-leave");
-          S.arenas[B.poi.id] = { creatureId: id, level: Math.max(4, levelOf(S.xp)), owner: S.name };
+          S.arenas[B.poi.id] = { creatureId: id, level: Math.max(4, levelOf(S.xp)), owner: S.name, placedAt: Date.now() };
           persist();
-          toast("🛡️ Your " + CREATURE_BY_ID[id].name + " now guards " + B.poi.name + "!");
+          toast("🛡️ Your " + CREATURE_BY_ID[id].name + " now guards " + B.poi.name + " for the next two days!", 4000);
           closeModal("battle");
         };
       });
@@ -1971,6 +2061,237 @@
     });
   }
 
+  // ================================================================= QUESTS
+  //  State: S.quests[id] = { status:'active'|'done', step:N, items:N }.
+  var questState = null; // dialog state for the open quest-giver
+
+  function initQuests() { if (!S.quests) S.quests = {}; }
+  function questStatus(id) { var q = S.quests && S.quests[id]; return q ? q.status : "available"; }
+  function questDef(id) { return QUEST_BY_ID[id]; }
+  function curStep(id) {
+    var st = S.quests && S.quests[id]; var def = questDef(id);
+    if (!st || st.status !== "active" || !def) return null;
+    return def.steps[st.step] || null;
+  }
+  function activeQuestList() {
+    return (window.QUESTS || []).filter(function (q) { return questStatus(q.id) === "active"; });
+  }
+
+  // ---- quest-giver dialog (entering a house) ----
+  function openQuestGiver(poi) {
+    mode = "quest";
+    var qid = poi.questId;
+    questState = { poi: poi, qid: qid, prob: null };
+    renderQuestGiver();
+    $("quest").classList.add("open");
+  }
+  function renderQuestGiver() {
+    var poi = questState.poi, def = questDef(questState.qid), body = $("quest-body");
+    if (!def) { body.innerHTML = '<div class="npc-line">Nobody seems to be home.</div><button class="big-btn" data-close="quest">Leave</button>'; wireCloses(body); return; }
+    var av = '<div class="npc-portrait">' + AVATAR.svg("down", def.giverAv) + "</div>";
+    var head = av + '<div class="npc-name">' + esc(def.giverName) + "</div>";
+    var status = questStatus(def.id);
+
+    if (status === "available") {
+      body.innerHTML = head +
+        '<div class="quest-title" style="color:' + def.color + '">' + def.icon + " " + esc(def.name) + "</div>" +
+        '<div class="npc-line">' + esc(def.intro) + "</div>" +
+        '<div class="catch-actions"><button class="big-btn go" id="quest-accept">Accept the quest!</button>' +
+        '<button class="big-btn" data-close="quest">Not now</button></div>';
+      $("quest-accept").onclick = function () {
+        S.quests[def.id] = { status: "active", step: 0, items: 0 };
+        persist(); renderPois(); renderQuestMarkers();
+        toast("📜 Quest started: " + def.name + "!");
+        renderQuestGiver();
+      };
+      wireCloses(body); return;
+    }
+    if (status === "done") {
+      body.innerHTML = head +
+        '<div class="quest-title" style="color:' + def.color + '">' + def.icon + " " + esc(def.name) + " ✓</div>" +
+        '<div class="npc-line">' + esc(def.outro) + '</div><div class="npc-line">Thank you again, hero.</div>' +
+        '<button class="big-btn go" data-close="quest">You\'re welcome!</button>';
+      wireCloses(body); return;
+    }
+    // active — show the current step
+    var st = S.quests[def.id], step = def.steps[st.step];
+    var listHtml = def.steps.map(function (s, i) {
+      var done = i < st.step, now = i === st.step;
+      var prog = (now && s.kind === "item") ? " (" + (st.items || 0) + "/" + s.count + ")" : "";
+      return '<div class="quest-step ' + (done ? "done" : now ? "now" : "") + '">' +
+        (done ? "✅ " : now ? "▶️ " : "○ ") + esc(s.text) + prog + "</div>";
+    }).join("");
+    body.innerHTML = head +
+      '<div class="quest-title" style="color:' + def.color + '">' + def.icon + " " + esc(def.name) + "</div>" +
+      '<div class="quest-steps">' + listHtml + "</div>" +
+      '<div id="quest-action"></div>' +
+      '<button class="switch-link" data-close="quest">Close</button>';
+    var act = $("quest-action");
+    if (step.kind === "math") {
+      var prob = makeMathProblem(step.level || 1); questState.prob = prob;
+      act.innerHTML = '<div class="npc-line">"' + esc(step.giverLine || "Solve this to continue!") + '"</div>' +
+        '<div class="math-q">' + prob.q + "</div>" +
+        '<div class="answer-row center"><input class="answer-input" id="quest-input" type="number" placeholder="answer" autocomplete="off"><button class="big-btn go" id="quest-go">Answer</button></div>' +
+        '<div class="npc-feedback" id="quest-feedback"></div>';
+      var input = $("quest-input");
+      function submit() {
+        if (input.value.trim() === "") return;
+        if (Math.abs(parseFloat(input.value) - prob.a) < 1e-9) { sfx("correct"); advanceQuest(def.id); renderQuestGiver(); }
+        else { sfx("wrong"); $("quest-feedback").textContent = "❌ The answer was " + prob.a + " — here's another!"; setTimeout(renderQuestGiver, 1400); }
+      }
+      $("quest-go").onclick = submit;
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+      setTimeout(function () { input.focus(); }, 60);
+    } else {
+      var hint = step.kind === "catch" ? "Go catch the " + (CREATURE_BY_ID[step.creature] || {}).name + "! It's appearing in the wild now."
+        : step.kind === "item" ? "Look for the glowing " + step.itemName + "s out in the world."
+        : step.kind === "goto" ? "Head to " + step.locName + " — it's marked on your map."
+        : "Head to the marked spot and catch what appears!";
+      act.innerHTML = '<div class="npc-line">' + esc(hint) + "</div>";
+    }
+    wireCloses(body);
+  }
+
+  function advanceQuest(id) {
+    var st = S.quests[id], def = questDef(id);
+    if (!st || st.status !== "active") return;
+    st.step++; st.items = 0;
+    if (st.step >= def.steps.length) { completeQuest(id); return; }
+    persist(); renderPois(); renderQuestMarkers();
+    var s = def.steps[st.step];
+    toast("📜 " + def.name + ": " + s.text, 3600);
+  }
+  function completeQuest(id) {
+    var def = questDef(id);
+    S.quests[id] = { status: "done", step: def.steps.length };
+    var rw = def.reward || {};
+    if (rw.xp) grantXP(rw.xp);
+    if (rw.orbs) Object.keys(rw.orbs).forEach(function (k) { giveOrb(k, rw.orbs[k]); });
+    persist(); renderPois(); renderQuestMarkers(); updateHUD();
+    sfx("level");
+    toast("🎉 Quest complete: " + def.name + "!  +" + (rw.xp || 0) + " XP", 4200);
+  }
+
+  // ---- quest world content: location markers, creature & item spawns ----
+  function renderQuestMarkers() {
+    var html = "";
+    activeQuestList().forEach(function (q) {
+      var step = curStep(q.id);
+      if (!step) return;
+      if ((step.kind === "goto" || step.kind === "boss") && step.tx != null && step.loc !== "portal-village") {
+        var cx = step.tx * TILE, cy = step.ty * TILE;
+        var boss = step.kind === "boss";
+        html += '<g class="quest-marker" data-questloc="' + q.id + '" transform="translate(' + cx + "," + cy + ')">' +
+          '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".18"/>' +
+          '<circle cx="24" cy="24" r="20" fill="none" stroke="' + q.color + '" stroke-width="3" class="glowpulse"/>' +
+          '<circle cx="24" cy="24" r="15" fill="#fffdf5" opacity=".85" stroke="' + q.color + '" stroke-width="2.4"/>' +
+          '<text x="24" y="30" font-size="18" text-anchor="middle">' + (boss ? "❗" : q.icon) + "</text>" +
+          '<rect x="2" y="2" width="44" height="44" fill="none" pointer-events="all"/></g>';
+      }
+    });
+    if (questLayer) {
+      questLayer.innerHTML = html;
+      questLayer.onclick = function (e) {
+        e.stopPropagation();
+        var g = e.target.closest ? e.target.closest("[data-questloc]") : null;
+        if (!g) return;
+        var q = questDef(g.getAttribute("data-questloc"));
+        var step = curStep(q.id);
+        if (step) approachQuestLoc(q.id, step);
+      };
+    }
+  }
+  function approachQuestLoc(qid, step) {
+    if (mode !== "world") return;
+    var here = Math.abs(step.tx - P.tx) + Math.abs(step.ty - P.ty) <= 1;
+    if (here) { reachQuestLoc(qid, step); return; }
+    var best = null;
+    [[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(function (d) {
+      var ax = step.tx + d[0], ay = step.ty + d[1];
+      if (!walkable(ax, ay)) return;
+      var p = findPath(P.tx, P.ty, ax, ay);
+      if (p && (!best || p.length < best.length)) best = p;
+    });
+    if (best) { P.path = best; P.targetQuest = { qid: qid, step: step }; P.targetSpawn = null; P.targetPoi = null; P.targetUltra = null;
+      toast("Heading to " + (step.locName || "the marked spot") + "..."); }
+  }
+  function reachQuestLoc(qid, step) {
+    if (step.kind === "goto") { advanceQuest(qid); }
+    else if (step.kind === "boss") {
+      // the quest creature appears — encounter it
+      startEncounter(CREATURE_BY_ID[step.creature], null, null, qid);
+    }
+  }
+
+  // spawn quest creatures / items while their step is active (called from trySpawn)
+  function trySpawnQuest(tx, ty, t) {
+    var acts = activeQuestList();
+    for (var i = 0; i < acts.length; i++) {
+      var q = acts[i], step = curStep(q.id);
+      if (!step) continue;
+      if (step.kind === "catch" && step.zone === t.zone && CREATURE_BY_ID[step.creature]) {
+        addSpawn({ kind: "creature", creature: CREATURE_BY_ID[step.creature], orb: null, quest: q.id }, tx, ty);
+        return true;
+      }
+      if (step.kind === "item" && step.zone === t.zone) {
+        addSpawn({ kind: "questitem", questId: q.id, item: step.item, emoji: step.emoji }, tx, ty);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // called on any successful catch to advance catch/boss steps
+  function questOnCatch(creatureId) {
+    activeQuestList().forEach(function (q) {
+      var step = curStep(q.id);
+      if (step && (step.kind === "catch" || step.kind === "boss") && step.creature === creatureId) advanceQuest(q.id);
+    });
+  }
+  function questOnItem(questId) {
+    var st = S.quests[questId], def = questDef(questId); if (!st) return;
+    var step = def.steps[st.step];
+    if (!step || step.kind !== "item") return;
+    st.items = (st.items || 0) + 1;
+    persist();
+    if (st.items >= step.count) { toast("✨ Collected all the " + step.itemName + "s!"); advanceQuest(questId); }
+    else toast("✨ " + step.itemName + " " + st.items + "/" + step.count);
+  }
+
+  // ---- Quest Log ----
+  function openQuestLog() {
+    mode = "questlog";
+    var body = $("questlog-body");
+    var active = activeQuestList();
+    var avail = (window.QUESTS || []).filter(function (q) { return questStatus(q.id) === "available"; });
+    var done = (window.QUESTS || []).filter(function (q) { return questStatus(q.id) === "done"; });
+    var html = "";
+    html += '<div class="ql-section"><h3>▶️ Active</h3>';
+    if (!active.length) html += '<div class="soc-empty">No active quests. Enter a house with a 📜 or ❗ to find one!</div>';
+    active.forEach(function (q) {
+      var st = S.quests[q.id], step = q.steps[st.step];
+      html += '<div class="ql-card" style="border-color:' + q.color + '"><div class="ql-name">' + q.icon + " " + esc(q.name) + "</div>" +
+        '<div class="ql-step">▶️ ' + esc(step.text) + (step.kind === "item" ? " (" + (st.items || 0) + "/" + step.count + ")" : "") + "</div>" +
+        '<div class="ql-giver">from ' + esc(q.giverName) + " · " + esc(q.house.name) + "</div></div>";
+    });
+    html += "</div>";
+    if (avail.length) {
+      html += '<div class="ql-section"><h3>❗ Available</h3>';
+      avail.forEach(function (q) {
+        html += '<div class="ql-card"><div class="ql-name">' + q.icon + " " + esc(q.name) + "</div>" +
+          '<div class="ql-giver">Visit ' + esc(q.house.name) + " to begin.</div></div>";
+      });
+      html += "</div>";
+    }
+    if (done.length) {
+      html += '<div class="ql-section"><h3>✅ Completed (' + done.length + ")</h3>";
+      done.forEach(function (q) { html += '<div class="ql-card done"><div class="ql-name">' + q.icon + " " + esc(q.name) + " ✓</div></div>"; });
+      html += "</div>";
+    }
+    body.innerHTML = html;
+    $("questlog").classList.add("open");
+  }
+
   // ================================================================== TITLE
   function decorateTitle() {
     var ids = ["bloomble", "emberling", "puddlet", "owlume", "duneling", "pyrewing"];
@@ -1990,6 +2311,7 @@
       S.orbs = save.orbs || null;
       S.ultras = save.ultras || null;
       S.arenas = save.arenas || {};
+      S.quests = save.quests || {};
       if (save.pos && walkable(save.pos.tx, save.pos.ty)) { P.tx = save.pos.tx; P.ty = save.pos.ty; }
     }
     if (!S.orbs || !Object.keys(S.orbs).length) S.orbs = startingOrbs();
@@ -2007,7 +2329,10 @@
     toast("📍 " + map.zoneNames[lastZone] + " — welcome, " + S.name + "!");
     // a few creatures right away so the world feels alive
     for (var i = 0; i < 4; i++) trySpawn();
+    checkArenaExpiry();
+    initQuests();
     renderPois();
+    renderQuestMarkers();
     initUltras();
     renderUltras();
     persist();
@@ -2024,6 +2349,7 @@
     spawnLayer = $("spawn-layer");
     poiLayer = $("poi-layer");
     ultraLayer = $("ultra-layer");
+    questLayer = $("quest-layer");
     var saveMode = SaveStore.init();
     var badge = $("storage-mode");
     badge.textContent = saveMode === "cloud" ? "☁️ Cloud save" : "💾 Local save";
@@ -2058,6 +2384,13 @@
       window.__cqEncounter = function (id) {
         var c = CREATURE_BY_ID[id];
         if (c && mode === "world") startEncounter(c, null);
+      };
+      window.__cqDebug = {
+        questGiver: function (id) { openQuestGiver(map.pois.find(function (p) { return p.id === id; })); },
+        questLog: openQuestLog,
+        quests: function () { return S.quests; },
+        advance: function (id) { advanceQuest(id); },
+        state: S,
       };
     }
     frame();

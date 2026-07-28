@@ -15,6 +15,7 @@ window.RARITY_INFO = {
   common:    { label: "Common",    stars: 1, baseCatch: 0.72, xp: 20,  color: "#8aa877" },
   uncommon:  { label: "Uncommon",  stars: 2, baseCatch: 0.52, xp: 45,  color: "#5f9ec7" },
   rare:      { label: "Rare",      stars: 3, baseCatch: 0.34, xp: 100, color: "#a678c9" },
+  mythical:  { label: "Mythical",  stars: 4, baseCatch: 0.26, xp: 175, color: "#3fb8c9", glyph: "❖" },
   legendary: { label: "Legendary", stars: 4, baseCatch: 0.20, xp: 250, color: "#e0a63c" },
   ultra:     { label: "Ultra Legendary", stars: 5, baseCatch: 0.16, xp: 600, color: "#e0489c" },
 };
@@ -793,6 +794,112 @@ window.CREATURES = [
       { n: "Iceberg Breach", d: "Surges up through solid ice like it were bathwater, then settles without a splash." },
     ],
     story: "Glacior drifts through the deep cold places of the world, so vast and slow that sailors have built lighthouses on its back mistaking it for an island. It is unfailingly gentle; the only creature it has ever startled is itself, once, in a very still mirror-lake. The northern lights are said to be Glacior dreaming.",
+  },
+
+  // ---------------------- ASTRAL RIFT (portal region) ----------------------
+  {
+    id: "voidkit", name: "Voidkit", species: "Void Kit", types: ["Shade", "Gem"],
+    zone: "rift", rarity: "rare", hp: 60, atk: 62, def: 48, spd: 74,
+    height: "0.4 m", weight: "0.2 kg",
+    powers: [
+      { n: "Blink Step", d: "Winks out of existence and back a few paces away, trailing stardust." },
+      { n: "Gravity Curl", d: "Curls into a tiny singularity that tugs loose objects — and foes — off balance." },
+    ],
+    story: "A Voidkit is a scrap of the night sky that tumbled through the rift and grew paws. It collects little bright things — dewdrops, coins, misplaced wishes — and hides them in pockets of empty space only it can reach. On quiet nights you can hear one purring, and the stars seem to purr back.",
+  },
+  {
+    id: "astrilla", name: "Astrilla", species: "Astral Ray", types: ["Aqua", "Lumen"],
+    zone: "rift", rarity: "rare", hp: 66, atk: 58, def: 56, spd: 68,
+    height: "1.8 m (wingspan)", weight: "6 kg",
+    powers: [
+      { n: "Cosmic Glide", d: "Soars on ribbons of starlight as though the void were a warm sea." },
+      { n: "Meteor Veil", d: "Sheds a shimmer of falling-star scales that dazzle anything watching." },
+    ],
+    story: "Astrilla swims through the Astral Rift the way a manta glides through a reef, banking around drifting islands of crystal. Sailors of old swore that catching a glimpse of one meant calm seas ahead; nobody told the sailors the Astrilla lives nowhere near the sea.",
+  },
+  {
+    id: "nebulyn", name: "Nebulyn", species: "Nebula Wisp", types: ["Lumen", "Gale"],
+    zone: "rift", rarity: "mythical", hp: 74, atk: 78, def: 58, spd: 82,
+    height: "1.0 m", weight: "0.05 kg",
+    powers: [
+      { n: "Starbirth", d: "Swirls its cloudy body until a brand-new pinprick star kindles at its heart." },
+      { n: "Cosmic Hush", d: "Exhales a nebula-cloud so peaceful that time itself seems to slow inside it." },
+    ],
+    story: "A Nebulyn is a baby nebula — a whole galaxy's worth of someday-stars, drifting and dreaming. It is mythical because so few trainers ever reach the rift to find one, and those who do describe the same thing: a feeling, for just a moment, of being very small and very safe at once.",
+  },
+
+  // --------------------------- MYTHICAL (roaming) --------------------------
+  {
+    id: "terraken", name: "Terraken", species: "Mountain Sentinel", types: ["Stone", "Ember"],
+    zone: "ridge", rarity: "mythical", hp: 88, atk: 80, def: 90, spd: 40,
+    height: "3.0 m", weight: "1,400 kg",
+    powers: [
+      { n: "Bastion Stance", d: "Plants its feet and becomes, briefly, as immovable as the mountain itself." },
+      { n: "Magma Vein", d: "Cracks in its stone hide glow molten, and the ground trembles in answer." },
+    ],
+    story: "Terraken has stood watch over Ember Ridge for so long that hikers mistake it for a peak and picnic in its shadow. It moves perhaps once a decade, always to shield a smaller creature from a rockslide, and then settles again, patient as stone, to keep watching.",
+  },
+  {
+    id: "sylphine", name: "Sylphine", species: "Aurora Deer", types: ["Frost", "Lumen"],
+    zone: "tundra", rarity: "mythical", hp: 78, atk: 76, def: 66, spd: 84,
+    height: "1.6 m", weight: "70 kg",
+    powers: [
+      { n: "Aurora Leap", d: "Bounds across the sky, hoofprints glowing like the northern lights." },
+      { n: "Frostlace", d: "Breathes a lacework of frost so beautiful foes forget to be fierce." },
+    ],
+    story: "On the longest, coldest nights of Frostpeak, a Sylphine steps down from the aurora to walk the snow, and everywhere it treads, frost-flowers bloom in colors that have no names. Tundra children leave out ribbons for it; a Sylphine always takes exactly one, and leaves a single glowing hoofprint in thanks.",
+  },
+
+  // ---------------------- QUEST CREATURES (quest-only) ---------------------
+  {
+    id: "cindermane", name: "Cindermane", species: "Cinder Lion", types: ["Ember"],
+    zone: "ridge", rarity: "rare", quest: "q-emberheart", hp: 70, atk: 74, def: 56, spd: 62,
+    height: "1.3 m", weight: "60 kg",
+    powers: [
+      { n: "Emberheart Roar", d: "Roars with the old warmth of the ridge, rekindling dying coals for miles." },
+      { n: "Cinder Pounce", d: "Leaps in a streak of sparks, landing in a soft shower of warm ash." },
+    ],
+    story: "When the Emberheart Shrine's flame nearly guttered out, its last warmth curled itself into a lion and set off to find someone worthy of relighting it. A Cindermane only appears to a trainer who has proven their heart is warm — and their arithmetic sound.",
+  },
+  {
+    id: "gladewing", name: "Gladewing", species: "Grove Sprite", types: ["Leaf", "Gale"],
+    zone: "forest", rarity: "rare", quest: "q-greenheart", hp: 58, atk: 60, def: 52, spd: 78,
+    height: "0.5 m", weight: "1.1 kg",
+    powers: [
+      { n: "Seedstorm", d: "Spins up a gentle cyclone of seeds that root wherever they land." },
+      { n: "Hollow Hush", d: "Vanishes into a knothole and giggles from somewhere impossible to find." },
+    ],
+    story: "Gladewing is the keeper of the Whispering Woods' oldest secret: the hidden Greenheart Hollow, where the very first seed still sleeps. It reveals itself only to trainers the forest has decided to trust — usually after they've helped a few things grow.",
+  },
+  {
+    id: "sablefin", name: "Sablefin", species: "Deepcurrent Eel", types: ["Aqua", "Shade"],
+    zone: "lake", rarity: "rare", quest: "q-tidecaller", hp: 64, atk: 70, def: 54, spd: 66,
+    height: "2.6 m", weight: "40 kg",
+    powers: [
+      { n: "Undertow Song", d: "Hums a low current that pulls the whole lake into a slow, spiralling dance." },
+      { n: "Ink Veil", d: "Clouds the water with shimmering dark ink flecked with tiny lights." },
+    ],
+    story: "Sablefin coils at the very bottom of Lake Lumen, where the water turns to ink and the reflections of stars sink to rest. It surfaces only when a Tidecaller sings the right notes — and the right numbers — to call it up from the deep.",
+  },
+  {
+    id: "dustmaw", name: "Dustmaw", species: "Dune Wyrm", types: ["Sand", "Stone"],
+    zone: "desert", rarity: "rare", quest: "q-sandsong", hp: 76, atk: 78, def: 64, spd: 52,
+    height: "4.2 m", weight: "520 kg",
+    powers: [
+      { n: "Sandsong Surge", d: "Surfaces in a booming wave of sand that hums like a struck drum." },
+      { n: "Quartz Gnash", d: "Bites with teeth of desert glass forged in a thousand noons." },
+    ],
+    story: "The Dustmaw sleeps beneath the singing dunes of Sundune, and the desert's eerie hum is the sound of it snoring. To wake one on purpose you must play the ancient Sandsong — a rhythm of numbers passed down by the desert nomads — perfectly, and without fear.",
+  },
+  {
+    id: "glimmerhart", name: "Glimmerhart", species: "Wishing Stag", types: ["Lumen", "Song"],
+    zone: "any", rarity: "mythical", quest: "q-starfall", hp: 86, atk: 82, def: 72, spd: 80,
+    height: "1.9 m", weight: "84 kg",
+    powers: [
+      { n: "Wishfall", d: "Shakes its antlers and a soft rain of granted little wishes drifts down." },
+      { n: "Starlit Bound", d: "Leaps so high it briefly joins the constellations, then lands without a sound." },
+    ],
+    story: "Once a century a star falls that is really a Glimmerhart coming home. It carries every small wish ever made on a shooting star tangled in its glowing antlers, and it grants one to the trainer clever and kind enough to follow the Starfall all the way to where it lands.",
   },
 ];
 
