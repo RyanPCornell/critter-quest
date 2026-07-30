@@ -96,6 +96,52 @@ window.QUESTS = [
     reward: { xp: 550, orbs: { rift: 4, prism: 2 } },
     outro: "The Glimmerhart lowers its glowing antlers and grants your smallest wish. You have caught a falling star.",
   },
+
+  // ---- HARD / LONG QUESTS ----------------------------------------------
+  {
+    id: "q-frostcrown", name: "The Frostcrown Trials", color: "#5fa8de", icon: "❄️",
+    house: { id: "house-frost", name: "Yuki's Lodge", tx: 8, ty: 4, deco: "house2" },
+    giverName: "Elder Yuki", giverAv: { skin: 1, hair: 0, shirt: 5, pants: 1, hat: "beanie", glasses: "round" },
+    intro: "Atop Frostpeak, the ancient Frost Warden Auravern sealed itself in the Frostcrown Spire, vowing to serve only a trainer who could pass its three Trials of mind and heart. Many have frozen trying. I have watched you, and I believe you are ready. But be warned — the Trials do not forgive a careless mind.",
+    steps: [
+      { kind: "math", level: 3, text: "First Trial: solve the Riddle of Ice.", giverLine: "The First Trial is of the mind. Solve the Riddle of Ice — and no guessing." },
+      { kind: "item", item: "frost-sigil", itemName: "Frost Sigil", emoji: "❄️", count: 4, zone: "tundra",
+        text: "Gather 4 Frost Sigils frozen into the Frostpeak drifts." },
+      { kind: "catch", creature: "woolhorn", zone: "tundra", text: "Earn the trust of a Woolhorn to carry you through the blizzard." },
+      { kind: "math", level: 3, text: "Second Trial: the Warden's Reckoning.", giverLine: "The Second Trial is harder still. Reckon this exactly." },
+      { kind: "catch", creature: "glacimoth", zone: "tundra", text: "A Glacimoth lights the storm — catch it to find your way." },
+      { kind: "item", item: "aurora-shard", itemName: "Aurora Shard", emoji: "🌌", count: 4, zone: "tundra",
+        text: "Collect 4 Aurora Shards fallen from the northern lights." },
+      { kind: "goto", loc: "loc-frostcrown", locName: "the Frostcrown Spire", tx: 4, ty: 3, zone: "tundra",
+        text: "Climb to the Frostcrown Spire, now revealed on your map." },
+      { kind: "boss", creature: "auravern", loc: "loc-frostcrown", tx: 4, ty: 3, zone: "tundra",
+        text: "Third Trial: the Frost Warden Auravern awakens. Catch it — its crown of frost will resist you." },
+    ],
+    reward: { xp: 700, orbs: { tundra: 6, prism: 3 } },
+    outro: "The Frostcrown Spire falls silent, and Auravern lowers its crowned head to you at last. Frostpeak has a new Warden's friend — and it is you.",
+  },
+  {
+    id: "q-crystalcrown", name: "Heart of the Gleamcave", color: "#b06fe0", icon: "💎",
+    house: { id: "house-cavern", name: "Garnet's Dig", tx: 66, ty: 44, deco: "house1" },
+    giverName: "Prospector Garnet", giverAv: { skin: 3, hair: 2, shirt: 3, pants: 3, hat: "cap", glasses: "shades" },
+    intro: "Deep under the Gleamcave sleeps Prismegis, the Crystal Sovereign, whose heartgem once lit every tunnel in the mountain. A cave-in stole its light and its slumber both, and the deep dark has crept back in. Help me forge the Gleamkey and wake the Sovereign — but the old locks answer only to sharp arithmetic.",
+    steps: [
+      { kind: "math", level: 3, text: "Garnet's assay: prove you can reckon carats.", giverLine: "No fool wakes a Sovereign. Assay this figure exactly." },
+      { kind: "item", item: "raw-geode", itemName: "Raw Geode", emoji: "🪨", count: 4, zone: "cavern",
+        text: "Pry 4 Raw Geodes from the walls of the Gleamcave." },
+      { kind: "catch", creature: "glowbat", zone: "cavern", text: "Follow a Glowbat's light deeper into the dark." },
+      { kind: "math", level: 3, text: "Cut the Gleamkey — a puzzle of exact angles.", giverLine: "One wrong cut ruins the key. Solve it precisely." },
+      { kind: "catch", creature: "gleamkit", zone: "cavern", text: "A Gleamkit lights the sealed door — catch it to pass." },
+      { kind: "item", item: "prism-facet", itemName: "Prism Facet", emoji: "💠", count: 4, zone: "cavern",
+        text: "Gather 4 Prism Facets to complete the Gleamkey." },
+      { kind: "goto", loc: "loc-crystalthrone", locName: "the Crystal Throne", tx: 70, ty: 49, zone: "cavern",
+        text: "Carry the Gleamkey to the Crystal Throne, now on your map." },
+      { kind: "boss", creature: "prismegis", loc: "loc-crystalthrone", tx: 70, ty: 49, zone: "cavern",
+        text: "The Gleamkey turns — Prismegis wakes! Catch the Sovereign; its refractions will guard it." },
+    ],
+    reward: { xp: 720, orbs: { cavern: 6, prism: 3 } },
+    outro: "Prismegis' heartgem blazes, and light floods every tunnel of the Gleamcave at once. The Crystal Sovereign walks at your side, and the mountain shines for you.",
+  },
 ];
 
 window.QUEST_BY_ID = {};

@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **80+ original critters** by solving **math
+hand-drawn SVG world and catch **90+ original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -54,14 +54,19 @@ Works great on desktop and iPad.
   to the **Astral Rift** — a starry, portal-only 9th region packed with rare and
   legendary critters, its own **Rift critters** (Voidkit, Astrilla, Nebulyn), and
   a region-specific **Astral Orb** (plus Prism Orbs). A Portal Home brings you back.
-- **Quests** (📜): visit the person living in one of five houses (Old Fira's
-  Forge, Elowen's Cabin, Nerys's Boathouse, Rashid's Tent, Vega's Observatory) to
-  start a multi-step story quest — solve a math puzzle in their dialog, collect a
-  glowing magical item or catch a special quest-only critter, then travel to a
-  secret location that only appears on your map once the quest is active and catch
-  its guardian. Each quest introduces its own creature (Cindermane, Gladewing,
-  Sablefin, Dustmaw, Glimmerhart) and items, and grants a big XP + orb reward. The
-  📜 Quests button opens your quest log with every active and available quest.
+- **Quests** (📜): visit the person living in one of **seven houses** to start a
+  multi-step story quest — solve a math puzzle in their dialog, collect a glowing
+  magical item or catch a special quest-only critter, then travel to a secret
+  location that only appears on your map once the quest is active and catch its
+  guardian. Each quest introduces its own creature and items and grants a big
+  XP + orb reward. The 📜 Quests button opens your quest log with every active
+  and available quest. The five starter quests (Old Fira's Forge, Elowen's Cabin,
+  Nerys's Boathouse, Rashid's Tent, Vega's Observatory) run 4–5 steps; two
+  **epic quests** are longer and harder — **The Frostcrown Trials** (Yuki's
+  Lodge, in the tundra) and **Heart of the Gleamcave** (Garnet's Dig, in the
+  caverns) each run **eight steps** with tougher math and a **mythical boss that
+  fights back through an aura guard** (Auravern the Frost Warden, Prismegis the
+  Crystal Sovereign).
 - **Battle animations:** attacks lunge, the target shakes and flashes, and a
   floating damage number pops up on each hit.
 - **Village Square:** talk to the Bulletin Keeper and answer two problems in a

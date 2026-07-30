@@ -901,6 +901,113 @@ window.CREATURES = [
     ],
     story: "Once a century a star falls that is really a Glimmerhart coming home. It carries every small wish ever made on a shooting star tangled in its glowing antlers, and it grants one to the trainer clever and kind enough to follow the Starfall all the way to where it lands.",
   },
+
+  // =========================== SECOND WAVE ===============================
+  // ------------------------------ WILD ----------------------------------
+  {
+    id: "emberfly", name: "Emberfly", species: "Cinder Moth", types: ["Ember"],
+    zone: "ridge", rarity: "uncommon", hp: 40, atk: 46, def: 30, spd: 68,
+    height: "0.3 m", weight: "0.4 kg",
+    powers: [
+      { n: "Ashwing Drift", d: "Scatters warm cinders from its wings that drift like slow orange snow." },
+      { n: "Flicker", d: "Blinks in and out like a dying ember, hard to catch and easy to underestimate." },
+    ],
+    story: "Emberflies gather over Ember Ridge's warm vents at dusk, their wings glowing brighter the colder the night. Ridge folk say a cloud of them settling on your porch means a warm winter is coming.",
+  },
+  {
+    id: "thornsprout", name: "Thornsprout", species: "Bramble Pup", types: ["Leaf"],
+    zone: "forest", rarity: "common", hp: 44, atk: 42, def: 40, spd: 46,
+    height: "0.4 m", weight: "3 kg",
+    powers: [
+      { n: "Prickle Guard", d: "Bristles its thorny coat so nothing dares to pick it up the wrong way." },
+      { n: "Rootbite", d: "Sinks tiny roots into the soil for a quick sip of strength mid-scuffle." },
+    ],
+    story: "A Thornsprout is what happens when a seed decides it would rather walk than wait. They trundle through the Whispering Woods leaving little gardens wherever they nap, and are fiercely proud of every single thorn.",
+  },
+  {
+    id: "rilllet", name: "Rilllet", species: "Brook Tadpole", types: ["Aqua"],
+    zone: "lake", rarity: "common", hp: 42, atk: 38, def: 36, spd: 58,
+    height: "0.3 m", weight: "1 kg",
+    powers: [
+      { n: "Ripple Dash", d: "Skips across the surface of Lake Lumen faster than the eye can follow." },
+      { n: "Bubble Wall", d: "Puffs a shimmering curtain of bubbles to hide behind." },
+    ],
+    story: "Rilllets are the chattiest residents of Lake Lumen's shallows, forever racing each other between the reeds. Where the water is clearest and the pebbles brightest, you'll always find a school of them showing off.",
+  },
+  {
+    id: "dunepip", name: "Dunepip", species: "Seedpod Hopper", types: ["Sand"],
+    zone: "desert", rarity: "common", hp: 46, atk: 44, def: 42, spd: 50,
+    height: "0.4 m", weight: "2 kg",
+    powers: [
+      { n: "Sand Skip", d: "Bounces over the dunes on springy legs, never sinking, never slowing." },
+      { n: "Husk Curl", d: "Tucks into its seed-husk shell and rolls clear of trouble." },
+    ],
+    story: "Dunepips travel the Sundune Desert in bouncing lines, following the wind to wherever rain last fell. Each one carries a single precious seed inside its husk, waiting for the one green day a year the desert allows.",
+  },
+  {
+    id: "breezel", name: "Breezel", species: "Dandelion Sprite", types: ["Gale"],
+    zone: "meadow", rarity: "uncommon", hp: 38, atk: 40, def: 34, spd: 72,
+    height: "0.3 m", weight: "0.3 kg",
+    powers: [
+      { n: "Puffstep", d: "Rides a stray gust so lightly its feet never quite touch the meadow." },
+      { n: "Seedscatter", d: "Bursts into a cloud of floating seeds and reappears a few steps away." },
+    ],
+    story: "Every dandelion clock you ever blew sent a Breezel somewhere new. They tumble over Willowmere Meadow on the softest winds, and catching one is said to be as lucky as making a wish come true.",
+  },
+  {
+    id: "murklet", name: "Murklet", species: "Bog Wisp", types: ["Shade"],
+    zone: "marsh", rarity: "uncommon", hp: 46, atk: 50, def: 38, spd: 54,
+    height: "0.5 m", weight: "2 kg",
+    powers: [
+      { n: "Marshlight", d: "Kindles a pale lantern-glow that lures the curious deeper into the fen." },
+      { n: "Fogfold", d: "Wraps itself in a coil of bog-mist and all but vanishes." },
+    ],
+    story: "Murklets are the friendly cousins of the will-o'-the-wisp, drifting through Glowfen Marsh with their soft blue lanterns. Follow one with a kind heart and it leads you to solid ground; follow one greedily and, well — mind the mud.",
+  },
+
+  // ------------------ QUEST CREATURES — Frostcrown Trials ---------------
+  {
+    id: "glacimoth", name: "Glacimoth", species: "Blizzard Moth", types: ["Frost", "Lumen"],
+    zone: "tundra", rarity: "rare", quest: "q-frostcrown", hp: 60, atk: 62, def: 54, spd: 74,
+    height: "0.9 m", weight: "6 kg",
+    powers: [
+      { n: "Auroralight", d: "Its wings shed a soft aurora that reveals safe paths across the deepest snow." },
+      { n: "Rime Powder", d: "Dusts the air with glittering frost that stills a blizzard for a moment." },
+    ],
+    story: "A Glacimoth appears only in the heart of a Frostpeak blizzard, its glowing wings the one warm-looking thing for miles. Elder Yuki says it is sent by the Frost Warden to test whether a trainer can keep calm — and keep counting — when the world turns white.",
+  },
+  {
+    id: "auravern", name: "Auravern", species: "Frost Warden", types: ["Frost", "Gale"],
+    zone: "tundra", rarity: "mythical", quest: "q-frostcrown", guard: 2, hp: 94, atk: 88, def: 84, spd: 78,
+    height: "3.4 m", weight: "310 kg",
+    powers: [
+      { n: "Crown of Frost", d: "Raises a crown of aurora-ice that turns aside all but the truest challenger." },
+      { n: "Winterbreath", d: "Exhales the first wind of winter, patient and absolute." },
+    ],
+    story: "Long ago the Frost Warden Auravern sealed itself inside the Frostcrown Spire, vowing to serve only a trainer who could pass its three Trials of mind and heart. For generations the Spire has stood silent. Pass the Trials, and the oldest guardian of Frostpeak will bow its crowned head to you.",
+  },
+
+  // ------------------ QUEST CREATURES — Heart of the Gleamcave ----------
+  {
+    id: "gleamkit", name: "Gleamkit", species: "Geode Fox", types: ["Gem"],
+    zone: "cavern", rarity: "rare", quest: "q-crystalcrown", hp: 58, atk: 64, def: 52, spd: 70,
+    height: "0.6 m", weight: "9 kg",
+    powers: [
+      { n: "Facet Flash", d: "Catches the faintest cave-light in its crystal fur and throws back a dazzling beam." },
+      { n: "Vein Sense", d: "Twitches its ears toward hidden seams of gemstone deep in the rock." },
+    ],
+    story: "Gleamkits are the Gleamcave's living lanterns, their crystal coats storing light by day to glow softly through the dark. Prospector Garnet swears one led them to the sealed door of the Crystal Throne — then sat down and refused to go a step further without a clever trainer along.",
+  },
+  {
+    id: "prismegis", name: "Prismegis", species: "Crystal Sovereign", types: ["Gem", "Lumen"],
+    zone: "cavern", rarity: "mythical", quest: "q-crystalcrown", guard: 2, hp: 96, atk: 86, def: 90, spd: 62,
+    height: "2.8 m", weight: "1,900 kg",
+    powers: [
+      { n: "Heartgem Radiance", d: "The living gem in its chest blazes, and every crystal in the cavern answers with light." },
+      { n: "Refraction Ward", d: "Splits an incoming blow into a dozen harmless rainbows." },
+    ],
+    story: "Prismegis, the Crystal Sovereign, once lit every tunnel of the Gleamcave with the gem that beats in its chest. A great cave-in stole its light and its slumber both. Forge the Gleamkey, wake the Sovereign with the answers it asks, and the whole mountain will shine again.",
+  },
 ];
 
 window.CREATURE_BY_ID = {};
