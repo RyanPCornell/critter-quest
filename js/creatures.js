@@ -1008,6 +1008,165 @@ window.CREATURES = [
     ],
     story: "Prismegis, the Crystal Sovereign, once lit every tunnel of the Gleamcave with the gem that beats in its chest. A great cave-in stole its light and its slumber both. Forge the Gleamkey, wake the Sovereign with the answers it asks, and the whole mountain will shine again.",
   },
+
+  // =========================== THIRD WAVE ================================
+  // ---------------------- SUNKEN SANCTUM (wild) -------------------------
+  {
+    id: "coralkit", name: "Coralkit", species: "Reef Pup", types: ["Aqua"],
+    zone: "sanctum", rarity: "common", hp: 46, atk: 42, def: 44, spd: 52,
+    height: "0.4 m", weight: "4 kg",
+    powers: [
+      { n: "Polyp Bloom", d: "Sprouts tiny coral buds along its back that harden into armor." },
+      { n: "Current Curl", d: "Rolls into a shell-tight ball and lets the tide carry it to safety." },
+    ],
+    story: "Coralkits scamper along the pillared avenues of the Sunken Sanctum, nibbling algae from the old stone and leaving trails of bright new coral wherever they play. They are the reef's cheerful groundskeepers.",
+  },
+  {
+    id: "gleamjelly", name: "Gleamjelly", species: "Lantern Jelly", types: ["Aqua", "Lumen"],
+    zone: "sanctum", rarity: "common", hp: 40, atk: 44, def: 32, spd: 60,
+    height: "0.6 m", weight: "2 kg",
+    powers: [
+      { n: "Softglow", d: "Pulses a warm lantern-light that calms whatever it touches." },
+      { n: "Drift Sting", d: "Trails glowing tendrils that tingle like a mild, sleepy spark." },
+    ],
+    story: "Whole galaxies of Gleamjellies rise and fall with the Sanctum's slow currents, and their gentle glow is the only light in the deepest halls. Sailors above sometimes see them shining up through the water and mistake the Sanctum for a sunken city of lamps — which, in a way, it is.",
+  },
+  {
+    id: "anglow", name: "Anglow", species: "Lure Fish", types: ["Shade", "Lumen"],
+    zone: "sanctum", rarity: "uncommon", hp: 52, atk: 58, def: 40, spd: 48,
+    height: "0.7 m", weight: "9 kg",
+    powers: [
+      { n: "Beacon Lure", d: "Dangles a hypnotic light that draws the curious right to its grin." },
+      { n: "Blackout", d: "Snuffs its lure and vanishes into the dark between the pillars." },
+    ],
+    story: "The Anglow hangs in the Sanctum's blackest corridors, its little lantern the only warning it's there. Despite the fearsome teeth it is a shy sort, and mostly uses its light to read the ancient murals carved into the temple walls.",
+  },
+  {
+    id: "tidesprite", name: "Tidesprite", species: "Current Spirit", types: ["Aqua", "Song"],
+    zone: "sanctum", rarity: "uncommon", hp: 48, atk: 50, def: 42, spd: 66,
+    height: "0.5 m", weight: "1 kg",
+    powers: [
+      { n: "Tidechime", d: "Hums a note that sets the whole current swaying in time." },
+      { n: "Whirl Veil", d: "Spins a little whirlpool around itself to slip away." },
+    ],
+    story: "Tidesprites are the voices of the Sanctum — every gurgle, echo and hush in the drowned halls is one of them singing. They braid the currents into music and are said to know the words of the old Tideglass Prophecy by heart.",
+  },
+  {
+    id: "nautilux", name: "Nautilux", species: "Spiral Diver", types: ["Gem", "Aqua"],
+    zone: "sanctum", rarity: "rare", hp: 62, atk: 60, def: 70, spd: 44,
+    height: "1.1 m", weight: "30 kg",
+    powers: [
+      { n: "Pearl Shell", d: "Withdraws into an iridescent spiral shell nothing can pry open." },
+      { n: "Jet Stream", d: "Blasts a jet of water to rocket backward out of danger." },
+    ],
+    story: "A Nautilux carries a spiral of the Sanctum's history in its shell, one gleaming chamber grown for each century it has lived. The oldest ones remember when the temple stood dry in the sun, and dream of it still as they drift the quiet deep.",
+  },
+  {
+    id: "maridian", name: "Maridian", species: "Tide Priestess", types: ["Aqua", "Song"],
+    zone: "sanctum", rarity: "mythical", hp: 82, atk: 80, def: 74, spd: 78,
+    height: "2.4 m", weight: "90 kg",
+    powers: [
+      { n: "Hymn of the Deep", d: "Sings the drowned temple's hymn, and the whole Sanctum glows in answer." },
+      { n: "Undertide", d: "Calls a vast slow current that sweeps trouble gently but firmly away." },
+    ],
+    story: "Maridian is the last priestess of the Sunken Sanctum, half-mermaid and half-current, who stayed behind when the temple slipped beneath the waves. She tends the sleeping halls and sings to the Gleamjellies, waiting for a hero clever enough to help her finish the Tideglass Prophecy.",
+  },
+
+  // ---------------------- SECOND-WAVE WILD (other zones) ----------------
+  {
+    id: "thornbeak", name: "Thornbeak", species: "Bramble Finch", types: ["Leaf", "Gale"],
+    zone: "forest", rarity: "uncommon", hp: 44, atk: 52, def: 36, spd: 70,
+    height: "0.4 m", weight: "0.8 kg",
+    powers: [
+      { n: "Seed Volley", d: "Fires a rattling burst of hard little seeds like a slingshot." },
+      { n: "Bramble Nest", d: "Weaves a thorn-tangle in a blink and darts inside it." },
+    ],
+    story: "Thornbeaks stitch the Whispering Woods together, planting a hedge here and a bramble there until half the forest's walls are their handiwork. They sing loudest at dawn and take great offense at anyone trampling their gardens.",
+  },
+  {
+    id: "craghopper", name: "Craghopper", species: "Cliff Goat", types: ["Stone"],
+    zone: "ridge", rarity: "common", hp: 54, atk: 48, def: 52, spd: 46,
+    height: "0.9 m", weight: "40 kg",
+    powers: [
+      { n: "Sure Hoof", d: "Bounds up sheer rock faces as if they were flat meadow." },
+      { n: "Headbutt", d: "Lowers its stony horns and charges with a crack like a landslide." },
+    ],
+    story: "Craghoppers pick their way along Ember Ridge's most impossible ledges, grazing on the tough little flowers that grow where nothing else dares. Ridge folk watch them to learn which paths are safe — a Craghopper never puts a hoof wrong.",
+  },
+  {
+    id: "glimmermouse", name: "Glimmermouse", species: "Geode Mouse", types: ["Gem"],
+    zone: "cavern", rarity: "common", hp: 40, atk: 44, def: 38, spd: 64,
+    height: "0.2 m", weight: "0.5 kg",
+    powers: [
+      { n: "Spark Whisker", d: "Its crystal whiskers throw tiny sparks of light in the dark." },
+      { n: "Gnaw Gem", d: "Chews loose the smallest gems and tucks them in its cheeks for later." },
+    ],
+    story: "Glimmermice scurry through the Gleamcave gathering fallen gem-chips into secret hoards. Miners consider spotting one great luck — where a Glimmermouse runs, a rich seam is never far, and the little creatures are far better at finding it than any pick.",
+  },
+  {
+    id: "sporelet", name: "Sporelet", species: "Mycelium Sprite", types: ["Leaf", "Shade"],
+    zone: "marsh", rarity: "common", hp: 46, atk: 46, def: 44, spd: 48,
+    height: "0.4 m", weight: "2 kg",
+    powers: [
+      { n: "Spore Puff", d: "Releases a cloud of drowsy, glittering spores." },
+      { n: "Mush Link", d: "Draws quiet strength from the whole fungal network underfoot." },
+    ],
+    story: "A Sporelet is the walking fruit of the vast mushroom web that threads all through Glowfen Marsh. Wherever it wanders it plants new caps, and at night the marsh glows a little brighter for every Sporelet that passed through by day.",
+  },
+  {
+    id: "windrake", name: "Windrake", species: "Zephyr Drake", types: ["Gale"],
+    zone: "meadow", rarity: "rare", hp: 58, atk: 66, def: 46, spd: 82,
+    height: "1.2 m", weight: "14 kg",
+    powers: [
+      { n: "Gale Dive", d: "Folds its wings and drops like a thunderbolt, pulling up at the last instant." },
+      { n: "Updraft", d: "Kicks up a spiral of warm air and rides it clean out of reach." },
+    ],
+    story: "Windrakes are the little dragons of Willowmere's skies, no bigger than a housecat but proud as any storm. They race the breezes over the meadow for the sheer joy of it, and a trainer who earns a Windrake's respect has a friend that can outfly the weather itself.",
+  },
+
+  // -------------------- QUEST CREATURES — Tideglass Prophecy ------------
+  {
+    id: "gillfin", name: "Gillfin", species: "Temple Guardian", types: ["Aqua", "Stone"],
+    zone: "sanctum", rarity: "rare", quest: "q-tideglass", hp: 64, atk: 66, def: 68, spd: 50,
+    height: "1.4 m", weight: "55 kg",
+    powers: [
+      { n: "Warding Tide", d: "Raises a wall of pressured water to guard the temple's inner doors." },
+      { n: "Stone Scale", d: "Its carved-stone scales turn aside blows meant for the Sanctum's secrets." },
+    ],
+    story: "Gillfin were carved as temple guardians and, when the Sanctum sank, the sea breathed life into the statues. One still patrols each sealed door, and will only stand aside for a trainer who has learned the old tide-word and can prove a clever, honest mind.",
+  },
+  {
+    id: "abyssalux", name: "Abyssalux", species: "Deeplight Leviathan", types: ["Aqua", "Lumen"],
+    zone: "sanctum", rarity: "mythical", quest: "q-tideglass", guard: 2, hp: 96, atk: 88, def: 82, spd: 74,
+    height: "6.0 m", weight: "2,600 kg",
+    powers: [
+      { n: "Prophecy Radiance", d: "Its whole body blazes with the light of the Tideglass Prophecy fulfilled." },
+      { n: "Deeppull", d: "Summons the weight of the entire ocean to still a reckless foe." },
+    ],
+    story: "Abyssalux is the light at the bottom of the world — the leviathan the Tideglass Prophecy says will wake when the Sanctum's song is finished at last. It slumbers beneath the Tideglass Altar, glowing faintly, dreaming the temple's oldest dream: to be sung whole again.",
+  },
+
+  // -------------------- QUEST CREATURES — Clockwork Heart ---------------
+  {
+    id: "cogsprite", name: "Cogsprite", species: "Gearling", types: ["Spark", "Stone"],
+    zone: "meadow", rarity: "rare", quest: "q-clockwork", hp: 54, atk: 60, def: 58, spd: 62,
+    height: "0.5 m", weight: "12 kg",
+    powers: [
+      { n: "Overwind", d: "Spins its gears to a whirring blur for one burst of impossible speed." },
+      { n: "Tick-Tock", d: "Keeps perfect time, always acting a half-beat before its foe expects." },
+    ],
+    story: "A Cogsprite is a spare part that woke up. Sprung loose from the old automaton long ago, it has been ticking around Willowmere ever since, tidying gears and winding stopped clocks. It longs, without quite knowing why, to be whole again — to find the great machine it fell from.",
+  },
+  {
+    id: "aurumaton", name: "Aurumaton", species: "Clockwork Heart", types: ["Spark", "Lumen"],
+    zone: "any", rarity: "mythical", quest: "q-clockwork", guard: 2, hp: 92, atk: 84, def: 88, spd: 70,
+    height: "3.2 m", weight: "1,100 kg",
+    powers: [
+      { n: "Golden Mainspring", d: "Unwinds a century of stored energy in one radiant, unstoppable turn." },
+      { n: "Perfect Order", d: "Sets every gear in the world of a battle ticking to its own flawless rhythm." },
+    ],
+    story: "The Aurumaton was built in an age of gears and wonder to keep the seasons turning true, then it wound down and was forgotten, its parts scattered to every corner of the world. Gather them, solve the puzzles that lock its heart, and the golden automaton will tick, and wake, and count you as the one who made it whole.",
+  },
 ];
 
 window.CREATURE_BY_ID = {};

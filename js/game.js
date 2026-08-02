@@ -289,6 +289,24 @@
       var riftPool = CREATURES.filter(function (c) { return (c.zone === "rift" || c.rarity === "mythical") && !c.evolved && !c.quest; });
       return riftPool[Math.floor(Math.random() * riftPool.length)];
     }
+    if (zone === "sanctum") {
+      // the Sunken Sanctum: mostly its own creatures, with mythical & the odd legendary
+      var sr = Math.random();
+      if (sr < 0.10) {
+        var slegs = CREATURES.filter(function (c) { return c.rarity === "legendary"; });
+        return slegs[Math.floor(Math.random() * slegs.length)];
+      }
+      var sPool = CREATURES.filter(function (c) { return wildCandidate(c, "sanctum"); });
+      // fold in mythicals occasionally
+      if (sr > 0.85) { var myth = CREATURES.filter(function (c) { return c.rarity === "mythical" && c.zone === "sanctum" && !c.quest; }); if (myth.length) return myth[Math.floor(Math.random() * myth.length)]; }
+      if (sPool.length) {
+        var sw = { common: 6, uncommon: 3, rare: 1.4, mythical: 0.4 };
+        var stot = sPool.reduce(function (s, c) { return s + (sw[c.rarity] || 1); }, 0);
+        var srr = Math.random() * stot;
+        for (var si = 0; si < sPool.length; si++) { srr -= (sw[sPool[si].rarity] || 1); if (srr <= 0) return sPool[si]; }
+        return sPool[0];
+      }
+    }
     if (Math.random() < 0.012) { // legendary sighting!
       var legend = CREATURES.filter(function (c) { return c.rarity === "legendary"; });
       return legend[Math.floor(Math.random() * legend.length)];
@@ -307,6 +325,7 @@
 
   function orbForBiome(zone) {
     if (zone === "rift") return Math.random() < 0.35 ? "prism" : "rift";
+    if (zone === "sanctum") return Math.random() < 0.30 ? "prism" : "sanctum";
     // lone orbs found in a biome are that biome's orb, with a rare prism find
     if (Math.random() < 0.06) return "prism";
     return orbForZone(zone === "any" ? "meadow" : zone);
@@ -1454,6 +1473,15 @@
     '<ellipse cx="24" cy="26" rx="14" ry="17" fill="url(#pt-swirl)" stroke="#7a4fa0" stroke-width="2"/>' +
     '<g fill="none" stroke="#e6c9ff" stroke-width="1.6" opacity=".85"><path d="M24 14 C32 18 32 34 24 38 C16 34 16 18 24 14"><animateTransform attributeName="transform" type="rotate" values="0 24 26;360 24 26" dur="6s" repeatCount="indefinite"/></path></g>' +
     '<g fill="#fff"><circle cx="24" cy="26" r="2.4" class="glowpulse"/><circle cx="18" cy="20" r="1.2"/><circle cx="30" cy="30" r="1.2"/><circle cx="29" cy="19" r="1"/></g>';
+  var TIDE_PORTAL_ART =
+    '<defs><radialGradient id="tp-swirl" cx="50%" cy="50%" r="50%">' +
+    '<stop offset="0%" stop-color="#eafffb"/><stop offset="45%" stop-color="#3fc9bd"/><stop offset="80%" stop-color="#1f7f86"/><stop offset="100%" stop-color="#0d4650"/>' +
+    '</radialGradient></defs>' +
+    '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".2"/>' +
+    '<ellipse cx="24" cy="26" rx="18" ry="16" fill="#0d4650" stroke="' + OL + '" stroke-width="2.6"/>' +
+    '<ellipse cx="24" cy="26" rx="14" ry="12" fill="url(#tp-swirl)" stroke="#2fa89e" stroke-width="2"/>' +
+    '<g fill="none" stroke="#d6fff8" stroke-width="1.8" opacity=".9"><path d="M24 16 C33 19 33 33 24 36 C15 33 15 19 24 16"><animateTransform attributeName="transform" type="rotate" values="0 24 26;360 24 26" dur="4.5s" repeatCount="indefinite"/></path></g>' +
+    '<g fill="#eafffb"><circle cx="24" cy="26" r="2.2" class="glowpulse"/><circle cx="19" cy="22" r="1.1"/><circle cx="30" cy="29" r="1.1"/><circle cx="28" cy="20" r="0.9"/></g>';
   function hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
   function compassDir(tx, ty) {
     var ns = ty < map.H * 0.34 ? "north" : ty > map.H * 0.66 ? "south" : "";
@@ -1544,9 +1572,10 @@
           poiBanner("💬 " + poi.name, 24) +
           '<rect x="0" y="6" width="48" height="46" fill="none" pointer-events="all"/></g>';
       } else if (poi.kind === "portal") {
+        var portArt = poi.variant === "tide" ? TIDE_PORTAL_ART : PORTAL_ART;
         html += '<g class="poi-marker" data-poi="' + poi.id + '" ' + tf + '>' +
           '<ellipse cx="24" cy="46" rx="15" ry="4" fill="#000" opacity=".16"/>' +
-          '<g class="poi-bob"><svg x="0" y="0" width="48" height="48" viewBox="0 0 48 48">' + PORTAL_ART + "</svg></g>" +
+          '<g class="poi-bob"><svg x="0" y="0" width="48" height="48" viewBox="0 0 48 48">' + portArt + "</svg></g>" +
           poiBanner(poi.name, 24) +
           '<rect x="0" y="0" width="48" height="48" fill="none" pointer-events="all"/></g>';
       } else if (poi.kind === "house") {
@@ -1597,9 +1626,29 @@
     renderNpc();
     $("npc").classList.add("open");
   }
+  // is any active quest waiting for the player to talk to this NPC?
+  function questTalkFor(poiId) {
+    var acts = activeQuestList();
+    for (var i = 0; i < acts.length; i++) {
+      var step = curStep(acts[i].id);
+      if (step && step.kind === "talk" && step.npc === poiId) return { quest: acts[i], step: step };
+    }
+    return null;
+  }
   function renderNpc() {
     var poi = npcState.poi, body = $("npc-body");
     var av = '<div class="npc-portrait">' + AVATAR.svg("down", poi.av) + "</div>";
+    // quest "talk to this person" step takes priority over the usual clue
+    var talk = questTalkFor(poi.id);
+    if (talk) {
+      body.innerHTML = av +
+        '<div class="npc-name">' + esc(poi.name) + "</div>" +
+        '<div class="quest-title" style="color:' + talk.quest.color + '">' + talk.quest.icon + " " + esc(talk.quest.name) + "</div>" +
+        '<div class="npc-line">"' + esc(talk.step.line || "Ah, you're the one on the quest! Here's what you need.") + '"</div>' +
+        '<button class="big-btn go" id="npc-talk-go">Continue</button>';
+      $("npc-talk-go").onclick = function () { closeModal("npc"); advanceQuest(talk.quest.id); };
+      return;
+    }
     if (!npcState.solved) {
       var prob = makeMathProblem(Math.min(3, S.settings.mathLevel));
       npcState.prob = prob;
@@ -2142,10 +2191,28 @@
       $("quest-go").onclick = submit;
       input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
       setTimeout(function () { input.focus(); }, 60);
+    } else if (step.kind === "riddle") {
+      act.innerHTML = '<div class="npc-line">"' + esc(step.giverLine || "Answer my riddle…") + '"</div>' +
+        '<div class="quest-riddle">' + esc(step.prompt) + "</div>" +
+        '<div class="answer-row center"><input class="answer-input" id="quest-input" type="text" placeholder="your answer" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="big-btn go" id="quest-go">Answer</button></div>' +
+        (step.hint ? '<div class="quest-riddle-hint">💡 ' + esc(step.hint) + "</div>" : "") +
+        '<div class="npc-feedback" id="quest-feedback"></div>';
+      var rinput = $("quest-input");
+      var answers = (step.answers || []).map(function (a) { return a.toLowerCase().replace(/[^a-z0-9]/g, ""); });
+      function rsubmit() {
+        var guess = rinput.value.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (guess === "") return;
+        if (answers.indexOf(guess) !== -1) { sfx("correct"); advanceQuest(def.id); renderQuestGiver(); }
+        else { sfx("wrong"); $("quest-feedback").textContent = "❌ That's not it — think again!"; rinput.value = ""; rinput.focus(); }
+      }
+      $("quest-go").onclick = rsubmit;
+      rinput.addEventListener("keydown", function (e) { if (e.key === "Enter") rsubmit(); });
+      setTimeout(function () { rinput.focus(); }, 60);
     } else {
       var hint = step.kind === "catch" ? "Go catch the " + (CREATURE_BY_ID[step.creature] || {}).name + "! It's appearing in the wild now."
         : step.kind === "item" ? "Look for the glowing " + step.itemName + "s out in the world."
         : step.kind === "goto" ? "Head to " + step.locName + " — it's marked on your map."
+        : step.kind === "talk" ? "Go find " + step.npcName + " and talk to them — they're marked on your map."
         : "Head to the marked spot and catch what appears!";
       act.innerHTML = '<div class="npc-line">' + esc(hint) + "</div>";
     }
@@ -2178,16 +2245,21 @@
     activeQuestList().forEach(function (q) {
       var step = curStep(q.id);
       if (!step) return;
-      if ((step.kind === "goto" || step.kind === "boss") && step.tx != null && step.loc !== "portal-village") {
-        var cx = step.tx * TILE, cy = step.ty * TILE;
-        var boss = step.kind === "boss";
-        html += '<g class="quest-marker" data-questloc="' + q.id + '" transform="translate(' + cx + "," + cy + ')">' +
-          '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".18"/>' +
-          '<circle cx="24" cy="24" r="20" fill="none" stroke="' + q.color + '" stroke-width="3" class="glowpulse"/>' +
-          '<circle cx="24" cy="24" r="15" fill="#fffdf5" opacity=".85" stroke="' + q.color + '" stroke-width="2.4"/>' +
-          '<text x="24" y="30" font-size="18" text-anchor="middle">' + (boss ? "❗" : q.icon) + "</text>" +
-          '<rect x="2" y="2" width="44" height="44" fill="none" pointer-events="all"/></g>';
+      var mx = null, my = null, glyph = q.icon;
+      if ((step.kind === "goto" || step.kind === "boss") && step.tx != null && !/^portal-/.test(step.loc || "")) {
+        // portal gotos are reached through the portal's own marker, so skip those
+        mx = step.tx; my = step.ty; glyph = step.kind === "boss" ? "❗" : q.icon;
+      } else if (step.kind === "talk") {
+        var np = (map.pois || []).filter(function (p) { return p.id === step.npc; })[0];
+        if (np) { mx = np.tx; my = np.ty; glyph = "💬"; }
       }
+      if (mx == null) return;
+      html += '<g class="quest-marker" data-questloc="' + q.id + '" transform="translate(' + (mx * TILE) + "," + (my * TILE) + ')">' +
+        '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".18"/>' +
+        '<circle cx="24" cy="24" r="20" fill="none" stroke="' + q.color + '" stroke-width="3" class="glowpulse"/>' +
+        '<circle cx="24" cy="24" r="15" fill="#fffdf5" opacity=".85" stroke="' + q.color + '" stroke-width="2.4"/>' +
+        '<text x="24" y="30" font-size="18" text-anchor="middle">' + glyph + "</text>" +
+        '<rect x="2" y="2" width="44" height="44" fill="none" pointer-events="all"/></g>';
     });
     if (questLayer) {
       questLayer.innerHTML = html;
@@ -2203,6 +2275,11 @@
   }
   function approachQuestLoc(qid, step) {
     if (mode !== "world") return;
+    if (step.kind === "talk") {
+      var np = (map.pois || []).filter(function (p) { return p.id === step.npc; })[0];
+      if (np) approachPoi(np);
+      return;
+    }
     var here = Math.abs(step.tx - P.tx) + Math.abs(step.ty - P.ty) <= 1;
     if (here) { reachQuestLoc(qid, step); return; }
     var best = null;
@@ -2387,9 +2464,11 @@
       };
       window.__cqDebug = {
         questGiver: function (id) { openQuestGiver(map.pois.find(function (p) { return p.id === id; })); },
+        openPoi: function (id) { var p = map.pois.find(function (x) { return x.id === id; }); if (p) openPoi(p); },
         questLog: openQuestLog,
         quests: function () { return S.quests; },
         advance: function (id) { advanceQuest(id); },
+        teleport: function (x, y) { P.tx = x; P.ty = y; P.px = x * TILE; P.py = y * TILE; P.path = []; lastZone = map.at(x, y).zone; },
         state: S,
       };
     }

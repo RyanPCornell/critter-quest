@@ -1,14 +1,12 @@
 // ============================================================================
-//  CRITTER QUEST — WORLD  (88×52 grid, 9 zones; the Astral Rift east of a void
-//  wall at x=72-73 is reachable only via the village portal)
+//  CRITTER QUEST — WORLD  (104×52 grid, 10 zones; two portal-only regions in
+//  the far east: the Astral Rift (x74-87, behind a void wall at x72-73) and the
+//  Sunken Sanctum (x90-103, behind a wall at x88-89). Both are portal-only.
 //  Hand-drawn SVG tile art, map generation, and rendering.
-//  The map is a 46x36 tile grid with five zones:
-//    Ember Ridge (north), Whispering Woods (west), Sundune Desert (east),
-//    Willowmere Meadow (center), Lake Lumen (in the meadow).
 // ============================================================================
 
 (function () {
-  var W = 88, H = 52, TILE = 48;
+  var W = 104, H = 52, TILE = 48;
 
   // Deterministic RNG so the world is identical every visit
   function mulberry32(a) {
@@ -24,7 +22,7 @@
     meadow: "Willowmere Meadow", forest: "Whispering Woods", lake: "Lake Lumen",
     ridge: "Ember Ridge", desert: "Sundune Desert",
     tundra: "Frostpeak Tundra", marsh: "Glowfen Marsh", cavern: "Gleamcave Hollows",
-    rift: "the Astral Rift",
+    rift: "the Astral Rift", sanctum: "the Sunken Sanctum",
   };
 
   // ------------------------------------------------------------------------
@@ -260,6 +258,38 @@
     <path d="M14 34 L22 30 M28 32 L34 29" stroke="#241a3e" stroke-width="1.6" fill="none" stroke-linecap="round"/>
     <g fill="#e6d6ff" opacity=".7"><circle cx="24" cy="16" r="1"/><circle cx="36" cy="24" r="0.9"/></g>
   </symbol>
+  <symbol id="d-coral" viewBox="0 0 48 48" overflow="visible">
+    <ellipse cx="24" cy="43" rx="13" ry="3.4" fill="#0d3b40" opacity=".5"/>
+    <path d="M24 44 C22 34 18 30 18 22 C18 15 24 14 24 22" fill="none" stroke="#ff8f6b" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M24 44 C26 32 32 30 32 20 C32 13 26 14 26 22" fill="none" stroke="#ff6f9a" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M20 30 C14 28 12 22 14 18" fill="none" stroke="#ffb45c" stroke-width="4" stroke-linecap="round"/>
+    <g fill="#fff2c8"><circle cx="18" cy="20" r="1.6"/><circle cx="26" cy="21" r="1.4"/><circle cx="32" cy="20" r="1.4"/></g>
+  </symbol>
+  <symbol id="d-ruinpillar" viewBox="0 0 48 48" overflow="visible">
+    <ellipse cx="24" cy="44" rx="13" ry="3.4" fill="#0d3b40" opacity=".5"/>
+    <rect x="15" y="14" width="18" height="30" rx="2" fill="#7fb0ad" stroke="#3f6f6d" stroke-width="2"/>
+    <rect x="12" y="8" width="24" height="8" rx="2" fill="#98c6c2" stroke="#3f6f6d" stroke-width="2"/>
+    <path d="M19 16 L19 42 M24 16 L24 42 M29 16 L29 42" stroke="#5f918e" stroke-width="1.6"/>
+    <path d="M15 26 L33 29" stroke="#3f6f6d" stroke-width="1.4" opacity=".7"/>
+    <g fill="#bfe6df" opacity=".6"><circle cx="18" cy="34" r="1.2"/><circle cx="30" cy="22" r="1"/></g>
+  </symbol>
+  <symbol id="d-kelp" viewBox="0 0 48 48" overflow="visible">
+    <g stroke="#2f9e7a" stroke-width="4" fill="none" stroke-linecap="round" class="sway">
+      <path d="M16 46 C12 36 18 30 14 18"/><path d="M24 46 C27 34 22 28 26 16"/><path d="M32 46 C36 36 30 30 34 20"/>
+    </g>
+    <g fill="#5fd0a0"><circle cx="14" cy="18" r="2.4"/><circle cx="26" cy="16" r="2.4"/><circle cx="34" cy="20" r="2.4"/></g>
+  </symbol>
+  <symbol id="d-bubbles" viewBox="0 0 48 48" overflow="visible">
+    <g fill="none" stroke="#bff2ea" stroke-width="1.8" opacity=".9" class="glowpulse">
+      <circle cx="20" cy="34" r="4"/><circle cx="28" cy="26" r="3"/><circle cx="22" cy="18" r="2.4"/><circle cx="30" cy="14" r="1.8"/>
+    </g>
+    <g fill="#eafffb" opacity=".7"><circle cx="18" cy="32" r="1.3"/><circle cx="27" cy="25" r="1"/></g>
+  </symbol>
+  <symbol id="d-seastar" viewBox="0 0 48 48" overflow="visible">
+    <path d="M24 14 L28 24 L39 24 L30 31 L33 42 L24 35 L15 42 L18 31 L9 24 L20 24 Z"
+          fill="#ffb45c" stroke="#d67f34" stroke-width="1.8" stroke-linejoin="round"/>
+    <g fill="#ffe0b0"><circle cx="24" cy="27" r="1.4"/><circle cx="24" cy="22" r="1"/><circle cx="21" cy="30" r="0.9"/><circle cx="27" cy="30" r="0.9"/></g>
+  </symbol>
   <symbol id="d-sign" viewBox="0 0 48 48" overflow="visible">
     <rect x="21" y="24" width="6" height="20" rx="2" fill="#8a663f" stroke="#5f4326" stroke-width="1.8"/>
     <rect x="6" y="8" width="36" height="18" rx="3" fill="#c8a35f" stroke="#5f4326" stroke-width="2"/>
@@ -374,7 +404,8 @@
     for (y = 0; y < H; y++) {
       for (x = 0; x < W; x++) {
         var zone, g;
-        if (x >= 74) { zone = "rift"; g = "void"; }   // portal-only Astral Rift (far east)
+        if (x >= 90) { zone = "sanctum"; g = "depths"; } // portal-only Sunken Sanctum (far east)
+        else if (x >= 74) { zone = "rift"; g = "void"; }   // portal-only Astral Rift
         else if (y < 10) {
           if (x < 30) { zone = "tundra"; g = "snow"; }
           else { zone = "ridge"; g = "rock"; }
@@ -448,7 +479,7 @@
         bt.deco = bt.zone === "ridge" ? "rock" : bt.zone === "desert" ? "rock"
                 : bt.zone === "forest" ? "pine" : bt.zone === "tundra" ? "icespire"
                 : bt.zone === "marsh" ? "deadtree" : bt.zone === "cavern" ? "stalag"
-                : bt.zone === "rift" ? "riftrock" : "tree";
+                : bt.zone === "rift" ? "riftrock" : bt.zone === "sanctum" ? "ruinpillar" : "tree";
       }
     }
 
@@ -457,6 +488,12 @@
     for (y = 0; y < H; y++) for (x = 72; x <= 73; x++) {
       var vt = T(x, y); vt.block = true; vt.zone = "rift"; vt.g = "void"; vt.wild = false;
       vt.deco = (x + y) % 3 === 0 ? "riftrock" : null;
+    }
+    // Deep wall (x=88,89) between the rift and the Sunken Sanctum, so the
+    // Sanctum too is reachable only through a portal (the Tidewhirl).
+    for (y = 0; y < H; y++) for (x = 88; x <= 89; x++) {
+      var dwt = T(x, y); dwt.block = true; dwt.zone = "sanctum"; dwt.g = "depths"; dwt.wild = false;
+      dwt.deco = (x + y) % 3 === 0 ? "ruinpillar" : null;
     }
 
     // Decorations + wild patches per zone
@@ -498,6 +535,12 @@
           if (r < 0.10) { t3.deco = "riftcrystal"; t3.block = true; }
           else if (r < 0.34) { t3.deco = "star"; t3.wild = true; }
           else if (r < 0.44) { t3.deco = "riftrock"; t3.block = true; }
+        } else if (t3.zone === "sanctum") {
+          if (r < 0.09) { t3.deco = "ruinpillar"; t3.block = true; }
+          else if (r < 0.15) { t3.deco = "coral"; t3.block = true; }
+          else if (r < 0.34) { t3.deco = "kelp"; t3.wild = true; }
+          else if (r < 0.44) { t3.deco = "bubbles"; t3.wild = true; }
+          else if (r < 0.50) { t3.deco = "seastar"; }
         } else if (t3.zone === "lake") {
           if (r < 0.45) { t3.deco = "reeds"; t3.wild = true; }
         } else { // meadow
@@ -541,21 +584,28 @@
 
     // Portals — a 1-tile gateway you step onto. The village portal sends you to
     // the Astral Rift; a return portal there brings you home.
-    function portal(x, y, id, name, dest, enterMsg) {
+    function portal(x, y, id, name, dest, enterMsg, variant) {
       var t = T(x, y); t.block = false; t.deco = null; t.wild = false; t.g = t.g === "void" ? "void" : t.g;
       // keep the approach tiles walkable
       [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]].forEach(function (a) {
         if (a[0] > 0 && a[1] > 0 && a[0] < W - 1 && a[1] < H - 1) { var at = T(a[0], a[1]); if (at.g !== "water") { at.block = false; at.deco = null; } }
       });
-      pois.push({ kind: "portal", id: id, name: name, tx: x, ty: y, w: 1, h: 1, dest: dest, enterMsg: enterMsg,
+      pois.push({ kind: "portal", id: id, name: name, tx: x, ty: y, w: 1, h: 1, dest: dest, enterMsg: enterMsg, variant: variant || "astral",
         approach: [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] });
     }
     portal(35, 33, "portal-village", "✦ Astral Portal", { tx: 79, ty: 44 },
       "You step through the shimmering gateway into the Astral Rift!");
     portal(79, 46, "portal-return", "Portal Home", { tx: 35, ty: 34 },
       "You drift back home to Willowmere.");
+    // Tidewhirl — a whirlpool on the shore of Lake Lumen that pulls you down into
+    // the Sunken Sanctum; a rising current there floats you back up.
+    portal(23, 31, "portal-sanctum", "🌀 Tidewhirl", { tx: 95, ty: 26 },
+      "The whirlpool pulls you down into the Sunken Sanctum!", "tide");
+    portal(95, 30, "portal-tidereturn", "Rise to the Surface", { tx: 23, ty: 32 },
+      "You rise on a warm current back up to Lake Lumen.", "tide");
     // clear the teleport landing pads so you never arrive on a blocked tile
-    [[79,44],[79,45],[78,44],[80,44],[78,45],[80,45],[35,34],[35,33],[34,34],[36,34],[35,35]]
+    [[79,44],[79,45],[78,44],[80,44],[78,45],[80,45],[35,34],[35,33],[34,34],[36,34],[35,35],
+     [95,26],[95,25],[95,27],[94,26],[96,26],[95,28],[95,29],[95,30],[23,32],[22,32],[24,32],[23,31]]
       .forEach(function (a) { var t = T(a[0], a[1]); if (t && t.g !== "water") { t.block = false; t.deco = null; t.wild = false; } });
 
     // Quest-giver houses — enter one to meet the person who offers a quest.
@@ -595,6 +645,7 @@
       [33, 20], [9, 30], [48, 24], [58, 26], [40, 4], [10, 6],
       [24, 48], [40, 49], [66, 46], [61, 40], [14, 40], [50, 12], [26, 26],
       [80, 12], [83, 30], [78, 20],
+      [95, 14], [99, 40], [93, 46],
     ];
     var ultraSpots = ultraCandidates.filter(function (s) {
       var t = T(s[0], s[1]); return t && !t.block && t.g !== "water";
@@ -612,6 +663,7 @@
     path: ["#e0c893", "#dac28c"], water: ["#64b7e2", "#5db0dc"],
     snow: ["#f2f9fd", "#e8f2f8"], bog: ["#6b7f58", "#647851"],
     cave: ["#3a3450", "#332e48"], void: ["#241a3e", "#1e1636"],
+    depths: ["#1c6169", "#185860"],
   };
 
   function renderWorld(map, svg) {

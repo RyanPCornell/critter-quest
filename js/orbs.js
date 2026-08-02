@@ -21,10 +21,11 @@
     marsh:  { name: "Bog Orb",    color: "#6f9a4a", glow: "#cfe6a8" },
     cavern: { name: "Gem Orb",    color: "#b06fd0", glow: "#e6c4f2" },
     rift:   { name: "Astral Orb", color: "#5b6ee0", glow: "#c8d0ff", starry: true },
+    sanctum:{ name: "Abyssal Orb", color: "#1f8f8a", glow: "#9ff0e4", bubbly: true },
     prism:  { name: "Prism Orb",  color: "#f06fb0", glow: "#ffd6ef", rainbow: true },
   };
 
-  window.ORB_ORDER = ["meadow", "forest", "lake", "ridge", "desert", "tundra", "marsh", "cavern", "rift", "prism"];
+  window.ORB_ORDER = ["meadow", "forest", "lake", "ridge", "desert", "tundra", "marsh", "cavern", "rift", "sanctum", "prism"];
 
   // Which orb a critter needs: its habitat's orb; roaming legendaries -> prism.
   window.orbForZone = function (zone) {
@@ -55,6 +56,7 @@
       '<ellipse cx="24" cy="41" rx="11" ry="3.4" fill="#000" opacity=".15"/>' +
       '<circle cx="24" cy="23" r="17" fill="url(#' + grad + ')" stroke="' + OL + '" stroke-width="2.4"/>' +
       (o.starry ? '<g fill="#fff"><circle cx="18" cy="20" r="1.3"/><circle cx="29" cy="26" r="1"/><circle cx="24" cy="16" r="1.1"/><circle cx="31" cy="19" r="0.9"/><circle cx="16" cy="28" r="0.9"/></g>' : "") +
+      (o.bubbly ? '<g fill="#eafffb" opacity=".9"><circle cx="19" cy="27" r="2"/><circle cx="28" cy="30" r="1.4"/><circle cx="30" cy="22" r="1.1"/><circle cx="22" cy="31" r="1"/></g>' : "") +
       // equator band + button, like a poké-orb but soft
       '<path d="M8 24 a16 16 0 0 1 32 0" fill="none" stroke="' + OL + '" stroke-width="2.2" opacity=".55"/>' +
       '<circle cx="24" cy="24" r="4.6" fill="#fff" stroke="' + OL + '" stroke-width="2.2"/>' +
@@ -71,6 +73,6 @@
 
   // A fresh, generous starting stash so new trainers can catch right away.
   window.startingOrbs = function () {
-    return { meadow: 6, forest: 5, lake: 5, ridge: 5, desert: 5, tundra: 4, marsh: 4, cavern: 4, rift: 2, prism: 2 };
+    return { meadow: 6, forest: 5, lake: 5, ridge: 5, desert: 5, tundra: 4, marsh: 4, cavern: 4, rift: 2, sanctum: 2, prism: 2 };
   };
 })();

@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **90+ original critters** by solving **math
+hand-drawn SVG world and catch **100+ original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -50,23 +50,34 @@ Works great on desktop and iPad.
   name banner so they're easy to find. Solve their math problem and they share a
   clue to an active Ultra Legendary's region — clues update automatically as
   Ultras are caught and new ones appear.
-- **Portal region:** step onto the ✦ Astral Portal near the village to teleport
-  to the **Astral Rift** — a starry, portal-only 9th region packed with rare and
+- **Portal regions:** step onto the ✦ Astral Portal near the village to teleport
+  to the **Astral Rift** — a starry, portal-only region packed with rare and
   legendary critters, its own **Rift critters** (Voidkit, Astrilla, Nebulyn), and
   a region-specific **Astral Orb** (plus Prism Orbs). A Portal Home brings you back.
-- **Quests** (📜): visit the person living in one of **seven houses** to start a
-  multi-step story quest — solve a math puzzle in their dialog, collect a glowing
-  magical item or catch a special quest-only critter, then travel to a secret
-  location that only appears on your map once the quest is active and catch its
-  guardian. Each quest introduces its own creature and items and grants a big
-  XP + orb reward. The 📜 Quests button opens your quest log with every active
-  and available quest. The five starter quests (Old Fira's Forge, Elowen's Cabin,
-  Nerys's Boathouse, Rashid's Tent, Vega's Observatory) run 4–5 steps; two
-  **epic quests** are longer and harder — **The Frostcrown Trials** (Yuki's
-  Lodge, in the tundra) and **Heart of the Gleamcave** (Garnet's Dig, in the
-  caverns) each run **eight steps** with tougher math and a **mythical boss that
-  fights back through an aura guard** (Auravern the Frost Warden, Prismegis the
-  Crystal Sovereign).
+- **The Sunken Sanctum:** a second portal-only region — a drowned temple of teal
+  depths, coral, kelp and ruined pillars. Dive in through the **🌀 Tidewhirl**
+  whirlpool on the shore of Lake Lumen, catch its own creatures (Coralkit,
+  Gleamjelly, Anglow, Tidesprite, Nautilux, and the mythical Maridian), scoop up
+  its region-specific **Abyssal Orb**, and rise back to the surface when you're
+  done. Ten regions in all.
+- **Quests** (📜): visit the person living in one of **nine houses** to start a
+  multi-step story quest. Steps can ask you to solve a **math puzzle**, answer a
+  **word riddle**, **talk to a specific townsperson**, collect a glowing magical
+  item, catch a special quest-only critter, travel to a secret location that only
+  appears once the quest is active, or face a boss. Each quest introduces its own
+  creature and items and grants a big XP + orb reward. The 📜 Quests button opens
+  your quest log with every active and available quest. There are **nine quests**:
+  - Five **starter quests** (4–5 steps): the Emberheart Cinders, Greenheart
+    Hollow, Song of the Deep, Singing Dunes, and Chasing the Starfall.
+  - Two **epic quests** (8 steps, tougher math, a **mythical boss with an aura
+    guard**): **The Frostcrown Trials** (Yuki's Lodge, tundra → Auravern) and
+    **Heart of the Gleamcave** (Garnet's Dig, caverns → Prismegis).
+  - Two **intricate quests** (9 steps, spanning several regions with talk +
+    riddle + math steps): **The Tideglass Prophecy** (Oracle Maris by Lake Lumen
+    → learn a tide-word from Angler Moss, dive the Sunken Sanctum, wake Abyssalux
+    the leviathan of light) and **The Clockwork Heart** (Tinker Cog's Workshop →
+    gather automaton parts from the ridge, caverns and Sunken Sanctum, and wake
+    the golden Aurumaton).
 - **Battle animations:** attacks lunge, the target shakes and flashes, and a
   floating damage number pops up on each hit.
 - **Village Square:** talk to the Bulletin Keeper and answer two problems in a
