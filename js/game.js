@@ -387,12 +387,28 @@
         '<circle cx="24" cy="22" r="19" fill="#fff" opacity=".82" stroke="' + ringColor + '" stroke-width="3"/>' +
         '<g class="spawn-bob"><svg x="4" y="2" width="40" height="40" viewBox="0 0 120 120">' + (CRITTER_ART[creature.id] || "") + "</svg></g>" +
         (creature.rarity === "legendary" ? '<circle cx="24" cy="22" r="22" fill="none" stroke="#ffd94d" stroke-width="2" class="glowpulse"/>' : "") +
+        (creature.rarity === "speedmythical"
+          ? '<circle cx="24" cy="22" r="23" fill="none" stroke="#ff8c1a" stroke-width="2.4" class="glowpulse"/>' +
+            '<g stroke="#ff8c1a" stroke-width="2.2" stroke-linecap="round" opacity=".8"><path d="M-4 14 h7 M-6 22 h9 M-3 30 h6"/></g>' +
+            '<text x="40" y="10" font-size="15">⚡</text>' : "") +
         (spec.orb ? '<svg x="30" y="26" width="20" height="20" viewBox="0 0 48 48">' + orbArt(spec.orb) + "</svg>" : "");
     }
     g.addEventListener("click", function (ev) { ev.stopPropagation(); clickSpawn(sp); });
     spawnLayer.appendChild(g);
     spawns.push(sp);
     if (spec.kind === "creature" && creature.rarity === "legendary") { toast("✨ A legendary presence stirs nearby..."); sfx("spawn"); }
+    if (spec.kind === "creature" && creature.rarity === "speedmythical") {
+      toast("⚡ A Speed Mythical — " + creature.name + " — is darting by to the " + relDir(tx, ty) + "! Reach it fast before it zips away!", 5200);
+      sfx("level");
+    }
+  }
+
+  // rough compass direction of a tile relative to the player, for "nearby" alerts
+  function relDir(tx, ty) {
+    var dx = tx - P.tx, dy = ty - P.ty;
+    var ns = dy < -2 ? "north" : dy > 2 ? "south" : "";
+    var ew = dx < -2 ? "west" : dx > 2 ? "east" : "";
+    return (ns + (ns && ew ? "-" : "") + ew) || "right beside you";
   }
 
   function removeSpawn(sp) {
@@ -2556,6 +2572,7 @@
         advance: function (id) { advanceQuest(id); },
         teleport: function (x, y) { P.tx = x; P.ty = y; P.px = x * TILE; P.py = y * TILE; P.path = []; lastZone = map.at(x, y).zone; },
         speedExpire: function () { if (speedState) speedState.deadline = Date.now(); },
+        spawnNear: function (id) { addSpawn({ kind: "creature", creature: CREATURE_BY_ID[id], orb: null }, P.tx + 4, P.ty + 1); },
         state: S,
       };
     }
