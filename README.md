@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **100+ original critters** by solving **math
+hand-drawn SVG world and catch **120+ original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -20,6 +20,13 @@ Works great on desktop and iPad.
   Terravox, Aurorix, Tempestrel, Umbryss, Rimewyrd) roam everywhere, rarely.
   A new **mythical** tier (★★★★, just below legendary — Nebulyn, Terraken,
   Sylphine, Glimmerhart) is rarer than rare but not as scarce as a legendary.
+- **⚡ Speed Mythicals:** a special category of **12** blazing-fast critters
+  (Emberush the cinder cheetah, Zephyreon the gale falcon, Voltyx, Cometail,
+  Duskdash, Rimeglide, Torrentail, Verdart, Sandstreak, Galehound, Sparkfleet,
+  Nightjet) that **roam every region**, rarely. You can't catch one with an orb —
+  when a Speed Mythical zips past, a **30-second timer** starts and you must
+  solve **5 multiplication problems** (the 1–12 times tables) before it runs out
+  to befriend it. Miss the clock and it blurs away — but they always circle back.
 - **Orbs:** you catch a critter by throwing an orb of its home region's type
   (**9 types**, incl. Prism Orbs for legendaries — Prism also substitutes for
   any orb in a pinch). Orbs are found lying in the wild (**click a loose orb and

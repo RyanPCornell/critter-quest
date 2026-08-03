@@ -16,6 +16,7 @@ window.RARITY_INFO = {
   uncommon:  { label: "Uncommon",  stars: 2, baseCatch: 0.52, xp: 45,  color: "#5f9ec7" },
   rare:      { label: "Rare",      stars: 3, baseCatch: 0.34, xp: 100, color: "#a678c9" },
   mythical:  { label: "Mythical",  stars: 4, baseCatch: 0.26, xp: 175, color: "#3fb8c9", glyph: "❖" },
+  speedmythical: { label: "Speed Mythical", stars: 4, baseCatch: 0.30, xp: 320, color: "#ff8c1a", glyph: "⚡", speed: true },
   legendary: { label: "Legendary", stars: 4, baseCatch: 0.20, xp: 250, color: "#e0a63c" },
   ultra:     { label: "Ultra Legendary", stars: 5, baseCatch: 0.16, xp: 600, color: "#e0489c" },
 };
@@ -1166,6 +1167,131 @@ window.CREATURES = [
       { n: "Perfect Order", d: "Sets every gear in the world of a battle ticking to its own flawless rhythm." },
     ],
     story: "The Aurumaton was built in an age of gears and wonder to keep the seasons turning true, then it wound down and was forgotten, its parts scattered to every corner of the world. Gather them, solve the puzzles that lock its heart, and the golden automaton will tick, and wake, and count you as the one who made it whole.",
+  },
+
+  // ========================= SPEED MYTHICALS ============================
+  //  A special category (rarity "speedmythical", zone "any" — they roam every
+  //  region). You can't catch one with an orb: when it appears a 30-second
+  //  timer starts and you must solve 5 times-table problems to befriend it.
+  {
+    id: "zephyreon", name: "Zephyreon", species: "Gale Falcon", types: ["Gale"],
+    zone: "any", rarity: "speedmythical", hp: 70, atk: 82, def: 58, spd: 100,
+    height: "1.1 m", weight: "12 kg",
+    powers: [
+      { n: "Mach Stoop", d: "Folds its wings and dives so fast the air claps shut behind it." },
+      { n: "Tailwind", d: "Leaves a rushing slipstream that hurries along anything it likes." },
+    ],
+    story: "Zephyreon outraces its own shadow across the sky, and the only proof it passed is a sudden warm gust and a feather spiralling down. Trainers say you don't chase a Zephyreon — you simply be very, very quick with your times tables when one deigns to slow down.",
+  },
+  {
+    id: "voltyx", name: "Voltyx", species: "Static Lynx", types: ["Spark"],
+    zone: "any", rarity: "speedmythical", hp: 68, atk: 84, def: 56, spd: 98,
+    height: "0.8 m", weight: "16 kg",
+    powers: [
+      { n: "Flash Step", d: "Blinks from place to place along arcs of crackling static." },
+      { n: "Live Wire", d: "Its fur stands on end and snaps with sparks when it's about to bolt." },
+    ],
+    story: "A Voltyx moves between two heartbeats, a streak of blue lightning with a cat's grin at the end of it. Catch it in the corner of your eye and it's already gone — the trick is to think fast and count faster, before the charge wears off.",
+  },
+  {
+    id: "cometail", name: "Cometail", species: "Starstreak Fox", types: ["Lumen"],
+    zone: "any", rarity: "speedmythical", hp: 72, atk: 80, def: 60, spd: 99,
+    height: "0.9 m", weight: "11 kg",
+    powers: [
+      { n: "Meteor Run", d: "Sprints in a blazing arc of light like a shooting star gone to ground." },
+      { n: "Afterglow", d: "Trails a ribbon of sparks that lingers a moment after it's already gone." },
+    ],
+    story: "Once a year the Cometail runs a full circuit of the whole world in a single night, and children stay up to wish on the streak of light it leaves. It slows for no one — except, just maybe, a trainer sharp enough to keep pace in arithmetic.",
+  },
+  {
+    id: "duskdash", name: "Duskdash", species: "Shadow Panther", types: ["Shade"],
+    zone: "any", rarity: "speedmythical", hp: 74, atk: 86, def: 62, spd: 97,
+    height: "1.0 m", weight: "34 kg",
+    powers: [
+      { n: "Nightblur", d: "Melts into its own shadow and reappears a dozen strides away." },
+      { n: "Silent Sprint", d: "Runs without a sound, so the first you know of it is the wind of its passing." },
+    ],
+    story: "Duskdash is the hush between dusk and dark, a panther woven from shadow that runs the twilight roads no eye can follow. It races travellers for fun and always wins — but it respects a mind that can keep its numbers straight under pressure.",
+  },
+  {
+    id: "emberush", name: "Emberush", species: "Cinder Cheetah", types: ["Ember"],
+    zone: "any", rarity: "speedmythical", hp: 70, atk: 88, def: 54, spd: 100,
+    height: "1.0 m", weight: "40 kg",
+    powers: [
+      { n: "Blazing Dash", d: "Accelerates until its paw-prints smoulder and the grass smokes behind it." },
+      { n: "Heat Shimmer", d: "Wobbles the air with speed-heat so foes can't tell where it truly is." },
+    ],
+    story: "The fastest thing on four legs, an Emberush crosses Ember Ridge in the time it takes to blink, leaving a trail of glowing paw-prints that fade like sparks. It runs for the sheer joy of the burn, and dares clever trainers to try and keep up.",
+  },
+  {
+    id: "rimeglide", name: "Rimeglide", species: "Frost Hare", types: ["Frost"],
+    zone: "any", rarity: "speedmythical", hp: 66, atk: 78, def: 58, spd: 98,
+    height: "0.6 m", weight: "7 kg",
+    powers: [
+      { n: "Ice Skate", d: "Freezes a ribbon of ice beneath its feet and rockets along it." },
+      { n: "Snowveil", d: "Kicks up a curtain of glittering powder and vanishes into it." },
+    ],
+    story: "A Rimeglide can outrun an avalanche and often does, for the fun of it. It skates across the Frostpeak drifts on ice it makes as it goes, laughing all the way, and only ever pauses for a trainer quick enough to match its frosty little quizzes.",
+  },
+  {
+    id: "torrentail", name: "Torrentail", species: "Rapids Dolphin", types: ["Aqua"],
+    zone: "any", rarity: "speedmythical", hp: 74, atk: 80, def: 62, spd: 96,
+    height: "1.8 m", weight: "90 kg",
+    powers: [
+      { n: "Whitewater Rush", d: "Surfs its own bow-wave at the speed of a mountain river in flood." },
+      { n: "Slipstream", d: "Draws a fast current behind it that pulls friends along for the ride." },
+    ],
+    story: "Torrentail rides the fastest water in the world — flash floods, spring rapids, the crest of a storm-swell — always at the very front, always laughing spray. It'll race any boat and win, and grants its friendship only to a trainer whose mind is as quick as the current.",
+  },
+  {
+    id: "verdart", name: "Verdart", species: "Springbok Sprite", types: ["Leaf"],
+    zone: "any", rarity: "speedmythical", hp: 68, atk: 76, def: 60, spd: 97,
+    height: "0.9 m", weight: "22 kg",
+    powers: [
+      { n: "Meadow Bound", d: "Clears a whole field in a single soaring, impossible leap." },
+      { n: "Green Streak", d: "Runs so fast that fresh clover springs up in the line of its wake." },
+    ],
+    story: "Verdart bounds across Willowmere in leaps you'd swear defied the ground, a blur of green that leaves a stripe of new flowers behind. It is playful and proud of its speed, and loves nothing more than daring a trainer to a footrace of the mind.",
+  },
+  {
+    id: "sandstreak", name: "Sandstreak", species: "Dune Runner", types: ["Sand"],
+    zone: "any", rarity: "speedmythical", hp: 66, atk: 80, def: 56, spd: 99,
+    height: "0.7 m", weight: "5 kg",
+    powers: [
+      { n: "Dust Devil", d: "Spins up a whirl of sand and rides its own little tornado." },
+      { n: "Mirage Sprint", d: "Runs so fast it seems to be in three places along the dune at once." },
+    ],
+    story: "The Sandstreak never stops running — it even sleeps mid-stride, they say, one foot always moving. It crosses the Sundune Desert dawn to dusk chasing the horizon, and befriends only the trainer swift enough to solve its riddles before the dust settles.",
+  },
+  {
+    id: "galehound", name: "Galehound", species: "Storm Greyhound", types: ["Gale"],
+    zone: "any", rarity: "speedmythical", hp: 70, atk: 82, def: 58, spd: 98,
+    height: "0.9 m", weight: "26 kg",
+    powers: [
+      { n: "Thunder Run", d: "Its paws drum the ground like distant thunder as it hits full sprint." },
+      { n: "Windchase", d: "Runs down the wind itself and nips playfully at its heels." },
+    ],
+    story: "A Galehound races the storms across the meadow and usually beats them home, arriving just ahead of the first raindrop with its tongue lolling in a grin. It picks its friends from among those who can keep a cool head — and quick sums — in the rush.",
+  },
+  {
+    id: "sparkfleet", name: "Sparkfleet", species: "Thunder Colt", types: ["Spark"],
+    zone: "any", rarity: "speedmythical", hp: 72, atk: 84, def: 60, spd: 99,
+    height: "1.3 m", weight: "70 kg",
+    powers: [
+      { n: "Gallop of Bolts", d: "Each hoofbeat throws a spark, until it runs on a road of its own lightning." },
+      { n: "Overcharge", d: "Builds a crackling charge and discharges it into one blazing burst of speed." },
+    ],
+    story: "Sparkfleet gallops the ridgelines in thunderstorms, mane streaming lightning, matching the bolts stride for stride. The old stories say it was born of a thunderclap, and it will only let a trainer near who can think as fast as it runs.",
+  },
+  {
+    id: "nightjet", name: "Nightjet", species: "Dartwing Swift", types: ["Shade"],
+    zone: "any", rarity: "speedmythical", hp: 64, atk: 78, def: 54, spd: 100,
+    height: "0.4 m", weight: "0.6 kg",
+    powers: [
+      { n: "Dart Dive", d: "Knifes through the dark in zig-zag streaks too fast to track." },
+      { n: "Echo Blur", d: "Splits into a fan of afterimages, only one of which is really there." },
+    ],
+    story: "The Nightjet is the fastest flyer in the world after dusk, a swift stitched from twilight that hunts the evening insects in blinks and blurs. It flies rings around anything that chases it, and gives its trust to the one trainer nimble enough — in wit — to keep up.",
   },
 ];
 

@@ -143,6 +143,17 @@
   .willbar { height: 14px; background: #e8e0cc; border: 2.5px solid var(--ink); border-radius: 999px; overflow: hidden; margin-top: 12px; }
   #enc-will-fill { height: 100%; width: 100%; background: var(--green); transition: width .5s, background .5s; }
   .will-label { font-size: 12.5px; font-weight: 700; margin-top: 4px; color: #6e604a; }
+  /* Speed Mythical timed-catch mode: hide the orb/will/miss furniture */
+  .speed-mode .willbar, .speed-mode .will-label, .speed-mode #enc-guard,
+  .speed-mode #enc-escape, .speed-mode #enc-orb { display: none !important; }
+  .speed-mode #enc-name { color: #ff8c1a; }
+  .speed-mode #enc-art { animation: speedbob .5s ease-in-out infinite alternate; }
+  @keyframes speedbob { from { transform: translateX(-3px); } to { transform: translateX(3px); } }
+  .speed-intro { font-size: 14px; font-weight: 700; color: #4a3f34; margin: 6px 0 10px; line-height: 1.45; }
+  .speed-progress { font-size: 15.5px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+  .speed-timer { height: 16px; background: #e8e0cc; border: 2.5px solid var(--ink); border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+  #speed-timer-fill { height: 100%; width: 100%; background: var(--green); transition: width .12s linear; }
+  .speed-count { font-size: 12.5px; font-weight: 800; letter-spacing: .04em; color: #ff8c1a; text-transform: uppercase; }
   #enc-escape { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
   #enc-escape span { width: 22px; height: 22px; border: 2.5px solid var(--ink); border-radius: 7px; background: #fff;
     font-size: 13px; font-weight: 800; color: transparent; display: flex; align-items: center; justify-content: center; }
@@ -861,6 +872,7 @@
 <script src="js/art-critters-7.js"></script>
 <script src="js/art-critters-8.js"></script>
 <script src="js/art-critters-9.js"></script>
+<script src="js/art-critters-10.js"></script>
 <script src="js/world.js"></script>
 <script src="js/avatar.js"></script>
 <script src="js/orbs.js"></script>

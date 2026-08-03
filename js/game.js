@@ -279,6 +279,11 @@
   // quest-only creatures are handled by the quest system, never the wild pool
   function wildCandidate(c, zone) { return c.zone === zone && !c.evolved && !c.quest; }
   function pickCreature(zone) {
+    // Speed Mythicals roam every region — a rare, special timed-catch sighting.
+    if (Math.random() < 0.015) {
+      var speedsters = CREATURES.filter(function (c) { return c.rarity === "speedmythical"; });
+      if (speedsters.length) return speedsters[Math.floor(Math.random() * speedsters.length)];
+    }
     if (zone === "rift") {
       // the Astral Rift teems with rare, mythical and legendary power
       var rr = Math.random();
@@ -524,6 +529,14 @@
     $("enc-result").style.display = "none";
     $("enc-main").style.display = "";
     $("encounter").classList.add("open");
+    // Speed Mythical: a special orb-free timed catch (beat the clock on 5 times-tables)
+    var isSpeed = c.rarity === "speedmythical";
+    $("encounter").classList.toggle("speed-mode", isSpeed);
+    if (isSpeed) {
+      $("enc-name").textContent = "⚡ A blazing-fast " + c.name + " zips past!";
+      startSpeedCatch();
+      return;
+    }
     msg(ENC.guard > 0
       ? (c.rarity === "ultra" ? "✦ An Ultra Legendary aura blazes around it! " : "⚡ A legendary aura shields it! ") +
         "Your orbs can't fly until " + ENC.guard + " correct answer" + (ENC.guard > 1 ? "s crack" : " cracks") + " its guard."
@@ -533,6 +546,77 @@
       mathLevel: S.settings.mathLevel, spellLevel: S.settings.spellLevel,
       actionWord: "throw your orb", doWord: "Throw!",
     }, $("enc-challenge"), resolveAnswer, function () { return ENC.busy; });
+  }
+
+  // ---- Speed Mythical catch: 30-second timer, solve 5 times-tables ----
+  var speedTimer = null, speedState = null;
+  function startSpeedCatch() {
+    var TOTAL = 30000, NEED = 5;
+    speedState = { solved: 0, need: NEED, total: TOTAL, deadline: Date.now() + TOTAL, a: 0, b: 0 };
+    $("enc-msg").innerHTML =
+      '<div class="speed-intro">⚡ Too fast for an orb! Solve <b>5 times-tables</b> before the timer runs out to befriend it!</div>' +
+      '<div class="speed-progress">Solved <b id="speed-solved">0</b> / ' + NEED + ' &nbsp;·&nbsp; <b id="speed-clock">30.0</b>s left</div>' +
+      '<div class="speed-timer"><div id="speed-timer-fill"></div></div>';
+    speedProblem();
+    clearInterval(speedTimer);
+    speedTimer = setInterval(speedTimerUpdate, 100);
+    speedTimerUpdate();
+  }
+  function speedTimerUpdate() {
+    if (!speedState) { clearInterval(speedTimer); return; }
+    var left = speedState.deadline - Date.now();
+    if (left < 0) left = 0;
+    var pct = (left / speedState.total) * 100;
+    var fill = $("speed-timer-fill");
+    if (fill) { fill.style.width = pct + "%"; fill.style.background = pct > 50 ? "#5cb85c" : pct > 20 ? "#e6c229" : "#e8703a"; }
+    var clock = $("speed-clock"); if (clock) clock.textContent = (left / 1000).toFixed(1);
+    if (left <= 0) speedFail();
+  }
+  function speedProblem() {
+    if (!speedState) return;
+    speedState.a = 1 + Math.floor(Math.random() * 12);
+    speedState.b = 1 + Math.floor(Math.random() * 12);
+    $("enc-challenge").innerHTML =
+      '<div class="speed-count">Problem ' + (speedState.solved + 1) + ' of ' + speedState.need + '</div>' +
+      '<div class="math-q">' + speedState.a + " × " + speedState.b + ' = ?</div>' +
+      '<div class="answer-row center"><input class="answer-input" id="speed-input" type="number" inputmode="numeric" placeholder="?" autocomplete="off"><button class="big-btn go" id="speed-go">Go!</button></div>' +
+      '<div class="npc-feedback" id="speed-feedback"></div>';
+    var input = $("speed-input");
+    function submit() {
+      if (!speedState || input.value.trim() === "") return;
+      if (parseInt(input.value, 10) === speedState.a * speedState.b) {
+        sfx("correct");
+        speedState.solved++;
+        var s = $("speed-solved"); if (s) s.textContent = speedState.solved;
+        if (speedState.solved >= speedState.need) { speedWin(); return; }
+        speedProblem();
+      } else {
+        sfx("wrong");
+        var fb = $("speed-feedback"); if (fb) fb.textContent = "❌ " + speedState.a + " × " + speedState.b + " = " + (speedState.a * speedState.b) + " — quick, next one!";
+        speedProblem();
+      }
+    }
+    $("speed-go").onclick = submit;
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    setTimeout(function () { var i = $("speed-input"); if (i) i.focus(); }, 40);
+  }
+  function speedWin() {
+    clearInterval(speedTimer); speedTimer = null; speedState = null;
+    sfx("level");
+    catchSuccess();
+  }
+  function speedFail() {
+    clearInterval(speedTimer); speedTimer = null; speedState = null;
+    sfx("flee");
+    var c = ENC.creature;
+    $("enc-main").style.display = "none";
+    var r = $("enc-result"); r.style.display = "";
+    r.innerHTML =
+      '<div class="catch-banner" style="background:#7d6b9e">💨 So close! ' + esc(c.name) + " blurred away!</div>" +
+      '<div class="catch-body" style="justify-content:center"><div class="catch-art" style="opacity:.55">' + critterSVG(c, "enc-critter") + "</div></div>" +
+      '<div class="npc-line" style="text-align:center;padding:0 14px">The timer ran out — but a Speed Mythical always circles back. Sharpen your times-tables and try again when you spot one!</div>' +
+      '<div class="catch-actions"><button class="big-btn go" id="enc-continue">Keep exploring</button></div>';
+    $("enc-continue").onclick = closeEncounter;
   }
 
   function setGuard(n) {
@@ -900,7 +984,9 @@
   }
 
   function closeEncounter() {
+    clearInterval(speedTimer); speedTimer = null; speedState = null;
     $("encounter").classList.remove("open");
+    $("encounter").classList.remove("speed-mode");
     ENC = null;
     mode = "world";
   }
@@ -2469,6 +2555,7 @@
         quests: function () { return S.quests; },
         advance: function (id) { advanceQuest(id); },
         teleport: function (x, y) { P.tx = x; P.ty = y; P.px = x * TILE; P.py = y * TILE; P.path = []; lastZone = map.at(x, y).zone; },
+        speedExpire: function () { if (speedState) speedState.deadline = Date.now(); },
         state: S,
       };
     }
