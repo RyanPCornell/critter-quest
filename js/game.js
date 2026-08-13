@@ -140,7 +140,7 @@
     SaveStore.save(S.name, {
       name: S.name, xp: S.xp, dex: S.dex, settings: S.settings,
       customWords: S.customWords, friends: S.friends, orbs: S.orbs,
-      ultras: S.ultras, arenas: S.arenas, quests: S.quests, pos: S.pos, updated: Date.now(),
+      ultras: S.ultras, arenas: S.arenas, quests: S.quests, orbOfEntry: !!S.orbOfEntry, pos: S.pos, updated: Date.now(),
     });
   }
 
@@ -294,6 +294,11 @@
       var riftPool = CREATURES.filter(function (c) { return (c.zone === "rift" || c.rarity === "mythical") && !c.evolved && !c.quest; });
       return riftPool[Math.floor(Math.random() * riftPool.length)];
     }
+    if (zone === "paradoxis") {
+      // Paradoxis is home only to the impossible Paradox Creatures
+      var para = CREATURES.filter(function (c) { return c.zone === "paradoxis" && !c.evolved && !c.quest; });
+      if (para.length) return para[Math.floor(Math.random() * para.length)];
+    }
     if (zone === "sanctum") {
       // the Sunken Sanctum: mostly its own creatures, with mythical & the odd legendary
       var sr = Math.random();
@@ -331,6 +336,7 @@
   function orbForBiome(zone) {
     if (zone === "rift") return Math.random() < 0.35 ? "prism" : "rift";
     if (zone === "sanctum") return Math.random() < 0.30 ? "prism" : "sanctum";
+    if (zone === "paradoxis") return Math.random() < 0.30 ? "prism" : "paradoxis";
     // lone orbs found in a biome are that biome's orb, with a rare prism find
     if (Math.random() < 0.06) return "prism";
     return orbForZone(zone === "any" ? "meadow" : zone);
@@ -1525,7 +1531,7 @@
       var DIRS = { ArrowUp: [0,-1], KeyW: [0,-1], ArrowDown: [0,1], KeyS: [0,1], ArrowLeft: [-1,0], KeyA: [-1,0], ArrowRight: [1,0], KeyD: [1,0] };
       if (mode === "world" && DIRS[e.code]) { queuedDir = DIRS[e.code]; queuedAt = performance.now(); }
       if (e.code === "Escape") {
-        ["dex","settings","help","friends","bag","npc","shop","arena","square","quest","questlog"].forEach(function (m) {
+        ["dex","settings","help","friends","bag","npc","shop","arena","square","quest","questlog","guardian"].forEach(function (m) {
           if (mode === m) closeModal(m);
         });
       }
@@ -1560,6 +1566,7 @@
   }
 
   function closeModal(id) {
+    if (id === "guardian") { clearInterval(guardianTimer); guardianTimer = null; GUARDIAN = null; }
     $(id).classList.remove("open");
     mode = "world";
   }
@@ -1584,6 +1591,26 @@
     '<ellipse cx="24" cy="26" rx="14" ry="12" fill="url(#tp-swirl)" stroke="#2fa89e" stroke-width="2"/>' +
     '<g fill="none" stroke="#d6fff8" stroke-width="1.8" opacity=".9"><path d="M24 16 C33 19 33 33 24 36 C15 33 15 19 24 16"><animateTransform attributeName="transform" type="rotate" values="0 24 26;360 24 26" dur="4.5s" repeatCount="indefinite"/></path></g>' +
     '<g fill="#eafffb"><circle cx="24" cy="26" r="2.2" class="glowpulse"/><circle cx="19" cy="22" r="1.1"/><circle cx="30" cy="29" r="1.1"/><circle cx="28" cy="20" r="0.9"/></g>';
+  var PARADOX_PORTAL_ART =
+    '<defs><radialGradient id="px-swirl" cx="50%" cy="50%" r="50%">' +
+    '<stop offset="0%" stop-color="#f7e0ff"/><stop offset="45%" stop-color="#c026d3"/><stop offset="80%" stop-color="#7d1f8f"/><stop offset="100%" stop-color="#3a0f45"/>' +
+    '</radialGradient></defs>' +
+    '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".2"/>' +
+    '<rect x="8" y="8" width="32" height="36" rx="3" fill="#2a1240" stroke="' + OL + '" stroke-width="2.6" transform="skewX(-4)"/>' +
+    '<ellipse cx="24" cy="26" rx="13" ry="16" fill="url(#px-swirl)" stroke="#a03fb0" stroke-width="2"/>' +
+    '<g fill="none" stroke="#f2c4ff" stroke-width="1.6" opacity=".85"><path d="M24 14 C31 18 31 34 24 38 C17 34 17 18 24 14"><animateTransform attributeName="transform" type="rotate" values="0 24 26;-360 24 26" dur="7s" repeatCount="indefinite"/></path></g>' +
+    '<g fill="#fff"><rect x="22" y="18" width="3" height="3"/><rect x="27" y="30" width="2.4" height="2.4"/><circle cx="24" cy="26" r="2" class="glowpulse"/></g>';
+  // sealed look: a locked, chained gate (shown until the Orb of Entry is won)
+  var PARADOX_SEALED_ART =
+    '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".2"/>' +
+    '<rect x="9" y="8" width="30" height="36" rx="3" fill="#3a2b52" stroke="' + OL + '" stroke-width="2.6"/>' +
+    '<path d="M14 12 v28 M24 12 v28 M34 12 v28" stroke="#5b4a7a" stroke-width="2.4"/>' +
+    '<path d="M9 22 h30 M9 32 h30" stroke="#5b4a7a" stroke-width="2.4"/>' +
+    '<g stroke="#8a7a5e" stroke-width="3" fill="none" opacity=".9"><path d="M12 16 L36 40 M36 16 L12 40"/></g>' +
+    '<rect x="18" y="22" width="12" height="11" rx="2" fill="#c9a24a" stroke="' + OL + '" stroke-width="2"/>' +
+    '<circle cx="24" cy="27" r="2" fill="' + OL + '"/><path d="M24 29 v3" stroke="' + OL + '" stroke-width="2"/>' +
+    '<path d="M20 22 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#c9a24a" stroke-width="2.4"/>' +
+    '<text x="24" y="7" font-size="9" text-anchor="middle" fill="#c58fe0">⧉</text>';
   function hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
   function compassDir(tx, ty) {
     var ns = ty < map.H * 0.34 ? "north" : ty > map.H * 0.66 ? "south" : "";
@@ -1627,6 +1654,12 @@
   }
   function usePortal(poi) {
     if (!poi.dest) return;
+    // The Paradox Gate stays sealed until the Orb of Entry is won from the Guardian.
+    if (poi.id === "portal-paradox" && !S.orbOfEntry) {
+      sfx("wrong");
+      toast("⧉ The Paradox Gate is sealed. Only the Orb of Entry can open it — seek out and defeat the Guardian of Paradoxis!", 5200);
+      return;
+    }
     sfx("level");
     // fade the world, teleport, snap the camera
     svg.classList.add("portal-flash");
@@ -1674,7 +1707,9 @@
           poiBanner("💬 " + poi.name, 24) +
           '<rect x="0" y="6" width="48" height="46" fill="none" pointer-events="all"/></g>';
       } else if (poi.kind === "portal") {
-        var portArt = poi.variant === "tide" ? TIDE_PORTAL_ART : PORTAL_ART;
+        var portArt = poi.variant === "tide" ? TIDE_PORTAL_ART
+          : poi.variant === "paradox" ? (poi.id === "portal-paradox" && !S.orbOfEntry ? PARADOX_SEALED_ART : PARADOX_PORTAL_ART)
+          : PORTAL_ART;
         html += '<g class="poi-marker" data-poi="' + poi.id + '" ' + tf + '>' +
           '<ellipse cx="24" cy="46" rx="15" ry="4" fill="#000" opacity=".16"/>' +
           '<g class="poi-bob"><svg x="0" y="0" width="48" height="48" viewBox="0 0 48 48">' + portArt + "</svg></g>" +
@@ -2126,6 +2161,178 @@
     BATTLE = null;
   }
 
+  // ============================================ THE GUARDIAN OF PARADOXIS
+  //  A special timed boss fight (separate from arena battles). You send out one
+  //  champion. Each 10-second round you must solve TWO multiplication problems:
+  //  do it in time and you strike the Guardian; fail and the Guardian strikes
+  //  your champion. Land GUARD_BLOWS hits to win the Orb of Entry. If your
+  //  champion's HP hits 0 first, you lose (nothing is lost — you can retry).
+  var GUARDIAN = null, guardianTimer = null;
+  var GUARD_BLOWS = 8, GUARD_ROUND_MS = 10000;
+
+  function openGuardianFight(questId) {
+    mode = "guardian";
+    GUARDIAN = { questId: questId || (GUARDIAN && GUARDIAN.questId) || null, phase: "pick", over: false };
+    var owned = Object.keys(S.dex);
+    var pLevel = Math.max(3, levelOf(S.xp));
+    var grid = owned.length
+      ? '<div class="pick-grid">' + owned.map(function (id) {
+          var c = CREATURE_BY_ID[id]; var hp = combatStats(id, pLevel).maxHp;
+          return '<button class="pick-cell" data-champ="' + id + '"><svg viewBox="0 0 120 120">' + (CRITTER_ART[id] || "") + "</svg><span>" + c.name + '</span><em class="pick-hp">❤ ' + hp + " HP</em></button>";
+        }).join("") + "</div>"
+      : '<div class="soc-empty">Catch a critter first, then face the Guardian!</div>';
+    $("guardian-body").innerHTML =
+      '<div class="gd-boss-art"><svg viewBox="0 0 120 120">' + CRITTER_ART.guardian + "</svg></div>" +
+      '<h2 class="gd-title">The Guardian of Paradoxis</h2>' +
+      '<div class="npc-line">"None may pass unproven. Send out a champion. Each ten seconds, solve <b>two</b> problems to strike me — fail, and I strike back. Land <b>' + GUARD_BLOWS + " blows</b> and the Orb of Entry is yours.\"</div>" +
+      '<h3 class="trade-title">Send out your champion <span class="arena-hint">(at Lv ' + pLevel + ")</span></h3>" + grid +
+      '<button class="big-btn" data-close="guardian" style="margin-top:10px">Not yet</button>';
+    $("guardian-body").querySelectorAll("[data-champ]").forEach(function (b) {
+      b.onclick = function () { startGuardianFight(b.getAttribute("data-champ")); };
+    });
+    wireCloses($("guardian-body"));
+    $("guardian").classList.add("open");
+  }
+  function startGuardianFight(championId) {
+    var p = combatStats(championId, Math.max(3, levelOf(S.xp)));
+    GUARDIAN = Object.assign(GUARDIAN || {}, {
+      phase: "fight", champId: championId, champLevel: p.level,
+      champHp: p.maxHp, champMax: p.maxHp, guardMax: GUARD_BLOWS, guardLeft: GUARD_BLOWS,
+      solved: 0, deadline: 0, dmg: Math.max(6, Math.ceil(p.maxHp / 6)), a: 0, b: 0, over: false,
+    });
+    renderGuardianArena();
+    guardianRound();
+  }
+  function guardianArenaHTML() {
+    var g = GUARDIAN;
+    var pct = Math.max(0, Math.round(g.champHp / g.champMax * 100));
+    var col = pct > 50 ? "#5cb85c" : pct > 22 ? "#e6c229" : "#e8703a";
+    var pips = "";
+    for (var i = 0; i < g.guardMax; i++) pips += '<span class="gd-pip' + (i < g.guardLeft ? " up" : "") + '">⧉</span>';
+    var champ = CREATURE_BY_ID[g.champId];
+    return '<div class="gd-arena">' +
+      '<div class="gd-side gd-guard"><div class="gd-art"><svg viewBox="0 0 120 120">' + CRITTER_ART.guardian + "</svg></div>" +
+        '<div class="gd-cname">The Guardian</div><div class="gd-pips">' + pips + "</div>" +
+        '<div class="gd-sub">' + g.guardLeft + " / " + g.guardMax + " blows left</div></div>" +
+      '<div class="gd-vs">VS</div>' +
+      '<div class="gd-side gd-champ"><div class="gd-art"><svg viewBox="0 0 120 120">' + (CRITTER_ART[g.champId] || "") + "</svg></div>" +
+        '<div class="gd-cname">' + esc(champ.name) + " Lv " + g.champLevel + "</div>" +
+        '<div class="bt-hpbar"><div class="bt-hpfill" style="width:' + pct + "%;background:" + col + '"></div></div>' +
+        '<div class="gd-sub">' + g.champHp + " / " + g.champMax + " HP</div></div>" +
+      "</div>";
+  }
+  function renderGuardianArena() {
+    $("guardian-body").innerHTML = guardianArenaHTML() +
+      '<div class="gd-round"><div class="gd-round-label">⏱️ Solve <b>2</b> problems in 10s to strike!</div>' +
+      '<div class="gd-solved" id="gd-solved"></div>' +
+      '<div class="gd-timer"><div id="gd-timer-fill"></div></div></div>' +
+      '<div id="gd-problem"></div><div class="npc-feedback" id="gd-msg"></div>';
+    updGuardianSolved();
+  }
+  function updGuardianSolved() {
+    var el = $("gd-solved"); if (!el || !GUARDIAN) return;
+    el.innerHTML = '<span class="gd-dot' + (GUARDIAN.solved >= 1 ? " on" : "") + '"></span>' +
+                   '<span class="gd-dot' + (GUARDIAN.solved >= 2 ? " on" : "") + '"></span>';
+  }
+  function guardianRound() {
+    if (!GUARDIAN || GUARDIAN.over) return;
+    GUARDIAN.solved = 0; GUARDIAN.deadline = Date.now() + GUARD_ROUND_MS;
+    updGuardianSolved(); guardianProblem();
+    clearInterval(guardianTimer); guardianTimer = setInterval(guardianTick, 100); guardianTick();
+  }
+  function guardianTick() {
+    if (!GUARDIAN || GUARDIAN.over) { clearInterval(guardianTimer); return; }
+    var left = GUARDIAN.deadline - Date.now(); if (left < 0) left = 0;
+    var pct = left / GUARD_ROUND_MS * 100;
+    var f = $("gd-timer-fill");
+    if (f) { f.style.width = pct + "%"; f.style.background = pct > 50 ? "#5cb85c" : pct > 20 ? "#e6c229" : "#e8703a"; }
+    if (left <= 0) guardianTimeUp();
+  }
+  function guardianProblem() {
+    if (!GUARDIAN || GUARDIAN.over) return;
+    GUARDIAN.a = 1 + Math.floor(Math.random() * 12);
+    GUARDIAN.b = 1 + Math.floor(Math.random() * 12);
+    $("gd-problem").innerHTML =
+      '<div class="speed-count">Problem ' + (GUARDIAN.solved + 1) + ' of 2</div>' +
+      '<div class="math-q">' + GUARDIAN.a + " × " + GUARDIAN.b + ' = ?</div>' +
+      '<div class="answer-row center"><input class="answer-input" id="gd-input" type="number" inputmode="numeric" placeholder="?" autocomplete="off"><button class="big-btn go" id="gd-go">Go!</button></div>';
+    var inp = $("gd-input");
+    function submit() {
+      if (!GUARDIAN || GUARDIAN.over || inp.value.trim() === "") return;
+      if (parseInt(inp.value, 10) === GUARDIAN.a * GUARDIAN.b) {
+        sfx("correct"); GUARDIAN.solved++; updGuardianSolved();
+        if (GUARDIAN.solved >= 2) { guardianStrike(); return; }
+        guardianProblem();
+      } else {
+        sfx("wrong");
+        var m = $("gd-msg"); if (m) m.textContent = "❌ " + GUARDIAN.a + " × " + GUARDIAN.b + " = " + (GUARDIAN.a * GUARDIAN.b) + " — hurry!";
+        guardianProblem();
+      }
+    }
+    $("gd-go").onclick = submit;
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    setTimeout(function () { var i = $("gd-input"); if (i) i.focus(); }, 40);
+  }
+  function guardianFlash(sideClass) {
+    var el = document.querySelector("#guardian-body ." + sideClass);
+    if (el) { el.classList.add("gd-hit"); setTimeout(function () { el.classList.remove("gd-hit"); }, 620); }
+  }
+  function guardianStrike() {
+    clearInterval(guardianTimer);
+    GUARDIAN.guardLeft = Math.max(0, GUARDIAN.guardLeft - 1);
+    sfx("throw");
+    renderGuardianArena();
+    guardianFlash("gd-guard");
+    var m = $("gd-msg"); if (m) m.innerHTML = "💥 A direct hit! The Guardian reels — <b>" + GUARDIAN.guardLeft + "</b> blows to go!";
+    if (GUARDIAN.guardLeft <= 0) { setTimeout(guardianWin, 700); return; }
+    setTimeout(guardianRound, 950);
+  }
+  function guardianTimeUp() {
+    clearInterval(guardianTimer);
+    GUARDIAN.champHp = Math.max(0, GUARDIAN.champHp - GUARDIAN.dmg);
+    sfx("wrong");
+    renderGuardianArena();
+    guardianFlash("gd-champ");
+    var m = $("gd-msg"); if (m) m.innerHTML = "⏰ Too slow! The Guardian strikes for <b>" + GUARDIAN.dmg + "</b>!";
+    if (GUARDIAN.champHp <= 0) { setTimeout(guardianLose, 800); return; }
+    setTimeout(guardianRound, 1150);
+  }
+  function guardianWin() {
+    clearInterval(guardianTimer); if (GUARDIAN) GUARDIAN.over = true;
+    sfx("level");
+    var qid = GUARDIAN ? GUARDIAN.questId : null;
+    S.orbOfEntry = true;
+    $("guardian-body").innerHTML =
+      '<div class="catch-banner ultra">✦ VICTORY! The Guardian of Paradoxis yields!</div>' +
+      '<div class="gd-win-body">' +
+        '<div class="gd-orb-of-entry">' + orbSVG("paradoxis", "gd-entry-orb") + "</div>" +
+        '<div class="catch-name">You received the ⧉ <b>Orb of Entry</b>!</div>' +
+        '<div class="npc-line">The Paradox Gate will now open for you whenever you wish. Step through any time to explore <b>Paradoxis</b> and catch its impossible creatures!</div>' +
+      "</div>" +
+      '<div class="catch-actions"><button class="big-btn go" id="gd-claim">Claim it!</button></div>';
+    $("gd-claim").onclick = function () {
+      closeModal("guardian");
+      if (qid) advanceQuest(qid);
+      renderPois(); updateHUD();
+      toast("⧉ The Paradox Gate is open! Find it south of the village.", 4600);
+    };
+    persist();
+  }
+  function guardianLose() {
+    clearInterval(guardianTimer); if (GUARDIAN) GUARDIAN.over = true;
+    sfx("flee");
+    var champName = GUARDIAN ? CREATURE_BY_ID[GUARDIAN.champId].name : "Your champion";
+    var qid = GUARDIAN ? GUARDIAN.questId : null;
+    $("guardian-body").innerHTML =
+      '<div class="catch-banner" style="background:#7d6b9e">💫 ' + esc(champName) + " was defeated!</div>" +
+      '<div class="gd-boss-art"><svg viewBox="0 0 120 120">' + CRITTER_ART.guardian + "</svg></div>" +
+      '<div class="npc-line" style="text-align:center">The Guardian stands firm. No harm done — your critter will recover. Train up, then challenge it again; it waits at the gate.</div>' +
+      '<div class="catch-actions"><button class="big-btn go" id="gd-retry">Try again</button>' +
+      '<button class="big-btn" data-close="guardian">Retreat</button></div>';
+    $("gd-retry").onclick = function () { openGuardianFight(qid); };
+    wireCloses($("guardian-body"));
+  }
+
   // -------------------------------------------------------- Ultra Legendaries
   function ultraPool() { return CREATURES.filter(function (c) { return c.rarity === "ultra"; }); }
   function initUltras() {
@@ -2348,9 +2555,9 @@
       var step = curStep(q.id);
       if (!step) return;
       var mx = null, my = null, glyph = q.icon;
-      if ((step.kind === "goto" || step.kind === "boss") && step.tx != null && !/^portal-/.test(step.loc || "")) {
+      if ((step.kind === "goto" || step.kind === "boss" || step.kind === "guardian") && step.tx != null && !/^portal-/.test(step.loc || "")) {
         // portal gotos are reached through the portal's own marker, so skip those
-        mx = step.tx; my = step.ty; glyph = step.kind === "boss" ? "❗" : q.icon;
+        mx = step.tx; my = step.ty; glyph = step.kind === "boss" ? "❗" : step.kind === "guardian" ? "⧉" : q.icon;
       } else if (step.kind === "talk") {
         var np = (map.pois || []).filter(function (p) { return p.id === step.npc; })[0];
         if (np) { mx = np.tx; my = np.ty; glyph = "💬"; }
@@ -2399,6 +2606,9 @@
     else if (step.kind === "boss") {
       // the quest creature appears — encounter it
       startEncounter(CREATURE_BY_ID[step.creature], null, null, qid);
+    }
+    else if (step.kind === "guardian") {
+      openGuardianFight(qid);
     }
   }
 
@@ -2491,6 +2701,7 @@
       S.ultras = save.ultras || null;
       S.arenas = save.arenas || {};
       S.quests = save.quests || {};
+      S.orbOfEntry = save.orbOfEntry || false;
       if (save.pos && walkable(save.pos.tx, save.pos.ty)) { P.tx = save.pos.tx; P.ty = save.pos.ty; }
     }
     if (!S.orbs || !Object.keys(S.orbs).length) S.orbs = startingOrbs();
@@ -2573,6 +2784,8 @@
         teleport: function (x, y) { P.tx = x; P.ty = y; P.px = x * TILE; P.py = y * TILE; P.path = []; lastZone = map.at(x, y).zone; },
         speedExpire: function () { if (speedState) speedState.deadline = Date.now(); },
         spawnNear: function (id) { addSpawn({ kind: "creature", creature: CREATURE_BY_ID[id], orb: null }, P.tx + 4, P.ty + 1); },
+        guardianFight: function () { openGuardianFight(null); },
+        guardianExpire: function () { if (GUARDIAN) GUARDIAN.deadline = Date.now(); },
         state: S,
       };
     }

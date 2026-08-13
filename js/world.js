@@ -1,12 +1,13 @@
 // ============================================================================
-//  CRITTER QUEST — WORLD  (104×52 grid, 10 zones; two portal-only regions in
-//  the far east: the Astral Rift (x74-87, behind a void wall at x72-73) and the
-//  Sunken Sanctum (x90-103, behind a wall at x88-89). Both are portal-only.
+//  CRITTER QUEST — WORLD  (120×52 grid, 11 zones; three portal-only regions in
+//  the far east: the Astral Rift (x74-87, wall x72-73), the Sunken Sanctum
+//  (x90-103, wall x88-89), and Paradoxis (x106-119, wall x104-105 — its gate is
+//  sealed until the Orb of Entry is won). All three are portal-only.
 //  Hand-drawn SVG tile art, map generation, and rendering.
 // ============================================================================
 
 (function () {
-  var W = 104, H = 52, TILE = 48;
+  var W = 120, H = 52, TILE = 48;
 
   // Deterministic RNG so the world is identical every visit
   function mulberry32(a) {
@@ -22,7 +23,7 @@
     meadow: "Willowmere Meadow", forest: "Whispering Woods", lake: "Lake Lumen",
     ridge: "Ember Ridge", desert: "Sundune Desert",
     tundra: "Frostpeak Tundra", marsh: "Glowfen Marsh", cavern: "Gleamcave Hollows",
-    rift: "the Astral Rift", sanctum: "the Sunken Sanctum",
+    rift: "the Astral Rift", sanctum: "the Sunken Sanctum", paradoxis: "Paradoxis",
   };
 
   // ------------------------------------------------------------------------
@@ -290,6 +291,35 @@
           fill="#ffb45c" stroke="#d67f34" stroke-width="1.8" stroke-linejoin="round"/>
     <g fill="#ffe0b0"><circle cx="24" cy="27" r="1.4"/><circle cx="24" cy="22" r="1"/><circle cx="21" cy="30" r="0.9"/><circle cx="27" cy="30" r="0.9"/></g>
   </symbol>
+  <symbol id="d-penrose" viewBox="0 0 48 48" overflow="visible">
+    <ellipse cx="24" cy="43" rx="12" ry="3" fill="#1a0d2e" opacity=".5"/>
+    <!-- impossible (Penrose) triangle -->
+    <path d="M24 6 L38 40 L10 40 Z" fill="none" stroke="#c58fe0" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M24 6 L31 23 M38 40 L21 33 M10 40 L28 33" stroke="#7d4fb0" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M24 6 L38 40" stroke="#e79bff" stroke-width="2" opacity=".6"/>
+    <circle cx="24" cy="24" r="2" fill="#fff" opacity=".8"/>
+  </symbol>
+  <symbol id="d-paradoxrift" viewBox="0 0 48 48" overflow="visible">
+    <ellipse cx="24" cy="42" rx="12" ry="3" fill="#1a0d2e" opacity=".5"/>
+    <path d="M24 4 L33 24 L28 44 L18 44 L15 24 Z" fill="#7d4fb0" stroke="#4a2570" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M24 6 L29 24 L26 42 L24 42 Z" fill="#e79bff" opacity=".8"/>
+    <g fill="#fff"><rect x="20" y="18" width="3" height="3"/><rect x="26" y="28" width="2.4" height="2.4"/></g>
+    <circle cx="22" cy="24" r="1.6" fill="#fff" class="glowpulse"/>
+  </symbol>
+  <symbol id="d-glitchbit" viewBox="0 0 48 48" overflow="visible">
+    <g fill="#c58fe0" opacity=".9" class="sway"><rect x="14" y="24" width="7" height="7"/><rect x="24" y="18" width="6" height="6"/><rect x="28" y="28" width="5" height="5"/><rect x="18" y="32" width="4" height="4"/></g>
+    <g fill="#e79bff"><rect x="22" y="24" width="3" height="3"/><rect x="16" y="20" width="2.4" height="2.4"/></g>
+  </symbol>
+  <symbol id="d-floatcube" viewBox="0 0 48 48" overflow="visible">
+    <g class="sway">
+      <path d="M24 12 L34 18 L34 30 L24 36 L14 30 L14 18 Z" fill="#5f3f92" stroke="#e79bff" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M24 12 L24 24 L34 30 M24 24 L14 30" fill="none" stroke="#e79bff" stroke-width="1.6" opacity=".7"/>
+      <path d="M24 24 L34 18 M24 24 L14 18" fill="none" stroke="#c58fe0" stroke-width="1.4" opacity=".5"/>
+    </g>
+  </symbol>
+  <symbol id="d-qmark" viewBox="0 0 48 48" overflow="visible">
+    <text x="24" y="34" font-size="30" text-anchor="middle" fill="#c58fe0" font-weight="800" opacity=".65" font-family="Avenir Next,sans-serif">?</text>
+  </symbol>
   <symbol id="d-sign" viewBox="0 0 48 48" overflow="visible">
     <rect x="21" y="24" width="6" height="20" rx="2" fill="#8a663f" stroke="#5f4326" stroke-width="1.8"/>
     <rect x="6" y="8" width="36" height="18" rx="3" fill="#c8a35f" stroke="#5f4326" stroke-width="2"/>
@@ -404,7 +434,8 @@
     for (y = 0; y < H; y++) {
       for (x = 0; x < W; x++) {
         var zone, g;
-        if (x >= 90) { zone = "sanctum"; g = "depths"; } // portal-only Sunken Sanctum (far east)
+        if (x >= 106) { zone = "paradoxis"; g = "paradox"; } // portal-only Paradoxis (far east, sealed)
+        else if (x >= 90) { zone = "sanctum"; g = "depths"; } // portal-only Sunken Sanctum
         else if (x >= 74) { zone = "rift"; g = "void"; }   // portal-only Astral Rift
         else if (y < 10) {
           if (x < 30) { zone = "tundra"; g = "snow"; }
@@ -479,7 +510,8 @@
         bt.deco = bt.zone === "ridge" ? "rock" : bt.zone === "desert" ? "rock"
                 : bt.zone === "forest" ? "pine" : bt.zone === "tundra" ? "icespire"
                 : bt.zone === "marsh" ? "deadtree" : bt.zone === "cavern" ? "stalag"
-                : bt.zone === "rift" ? "riftrock" : bt.zone === "sanctum" ? "ruinpillar" : "tree";
+                : bt.zone === "rift" ? "riftrock" : bt.zone === "sanctum" ? "ruinpillar"
+                : bt.zone === "paradoxis" ? "penrose" : "tree";
       }
     }
 
@@ -494,6 +526,12 @@
     for (y = 0; y < H; y++) for (x = 88; x <= 89; x++) {
       var dwt = T(x, y); dwt.block = true; dwt.zone = "sanctum"; dwt.g = "depths"; dwt.wild = false;
       dwt.deco = (x + y) % 3 === 0 ? "ruinpillar" : null;
+    }
+    // Paradox wall (x=104,105) between the Sanctum and Paradoxis — the Paradox
+    // Gate (a portal) is the only way in, and it's sealed until the Orb of Entry.
+    for (y = 0; y < H; y++) for (x = 104; x <= 105; x++) {
+      var pwt = T(x, y); pwt.block = true; pwt.zone = "paradoxis"; pwt.g = "paradox"; pwt.wild = false;
+      pwt.deco = (x + y) % 3 === 0 ? "paradoxrift" : null;
     }
 
     // Decorations + wild patches per zone
@@ -541,6 +579,12 @@
           else if (r < 0.34) { t3.deco = "kelp"; t3.wild = true; }
           else if (r < 0.44) { t3.deco = "bubbles"; t3.wild = true; }
           else if (r < 0.50) { t3.deco = "seastar"; }
+        } else if (t3.zone === "paradoxis") {
+          if (r < 0.10) { t3.deco = "penrose"; t3.block = true; }
+          else if (r < 0.16) { t3.deco = "paradoxrift"; t3.block = true; }
+          else if (r < 0.34) { t3.deco = "glitchbit"; t3.wild = true; }
+          else if (r < 0.44) { t3.deco = "floatcube"; t3.wild = true; }
+          else if (r < 0.50) { t3.deco = "qmark"; }
         } else if (t3.zone === "lake") {
           if (r < 0.45) { t3.deco = "reeds"; t3.wild = true; }
         } else { // meadow
@@ -603,9 +647,16 @@
       "The whirlpool pulls you down into the Sunken Sanctum!", "tide");
     portal(95, 30, "portal-tidereturn", "Rise to the Surface", { tx: 23, ty: 32 },
       "You rise on a warm current back up to Lake Lumen.", "tide");
+    // The Paradox Gate — a sealed portal to Paradoxis, south of the village. It
+    // stays locked (game.js checks S.orbOfEntry) until you defeat the Guardian.
+    portal(52, 46, "portal-paradox", "⧉ Paradox Gate", { tx: 111, ty: 26 },
+      "Reality folds inside-out as you step through the Paradox Gate into Paradoxis!", "paradox");
+    portal(111, 30, "portal-paradoxreturn", "Leave Paradoxis", { tx: 52, ty: 47 },
+      "You slip back out of Paradoxis and reality snaps into place.", "paradox");
     // clear the teleport landing pads so you never arrive on a blocked tile
     [[79,44],[79,45],[78,44],[80,44],[78,45],[80,45],[35,34],[35,33],[34,34],[36,34],[35,35],
-     [95,26],[95,25],[95,27],[94,26],[96,26],[95,28],[95,29],[95,30],[23,32],[22,32],[24,32],[23,31]]
+     [95,26],[95,25],[95,27],[94,26],[96,26],[95,28],[95,29],[95,30],[23,32],[22,32],[24,32],[23,31],
+     [111,26],[111,25],[111,27],[110,26],[112,26],[111,28],[111,29],[111,30],[52,47],[51,47],[53,47],[52,46],[50,46],[50,47]]
       .forEach(function (a) { var t = T(a[0], a[1]); if (t && t.g !== "water") { t.block = false; t.deco = null; t.wild = false; } });
 
     // Quest-giver houses — enter one to meet the person who offers a quest.
@@ -646,6 +697,7 @@
       [24, 48], [40, 49], [66, 46], [61, 40], [14, 40], [50, 12], [26, 26],
       [80, 12], [83, 30], [78, 20],
       [95, 14], [99, 40], [93, 46],
+      [111, 14], [115, 38],
     ];
     var ultraSpots = ultraCandidates.filter(function (s) {
       var t = T(s[0], s[1]); return t && !t.block && t.g !== "water";
@@ -663,7 +715,7 @@
     path: ["#e0c893", "#dac28c"], water: ["#64b7e2", "#5db0dc"],
     snow: ["#f2f9fd", "#e8f2f8"], bog: ["#6b7f58", "#647851"],
     cave: ["#3a3450", "#332e48"], void: ["#241a3e", "#1e1636"],
-    depths: ["#1c6169", "#185860"],
+    depths: ["#1c6169", "#185860"], paradox: ["#3a1d5c", "#4a2570"],
   };
 
   function renderWorld(map, svg) {

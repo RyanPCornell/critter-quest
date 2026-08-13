@@ -7,6 +7,9 @@
 //    item   — collect N glowing quest items that appear in a zone
 //    goto   — travel to a special location that appears only during this step
 //    boss   — reach the revealed location; a quest-only creature appears — catch it
+//    riddle — answer a word riddle in the quest-giver's dialog
+//    talk   — go find and talk to a specific townsperson (marked on the map)
+//    guardian — reach the lair and fight the Guardian of Paradoxis (timed boss)
 //  quest-only creatures (creatures.js `quest` field) and quest items only show
 //  up while their quest step is active. Most steps also lean on math.
 // ============================================================================
@@ -205,6 +208,50 @@ window.QUESTS = [
     ],
     reward: { xp: 780, orbs: { ridge: 3, cavern: 3, sanctum: 3, prism: 3 } },
     outro: "With a deep golden tick the Aurumaton comes alive, and somewhere far off the seasons steady themselves on their turning. Tinker Cog dances a little jig of pure joy. You have rebuilt a true wonder of the old world.",
+  },
+
+  // ======================= THE EPIC QUEST (Paradoxis) ====================
+  {
+    id: "q-paradox", name: "The Key to Paradoxis", color: "#c026d3", icon: "⧉", epic: true,
+    house: { id: "house-vex", name: "Vex's Study", tx: 44, ty: 30, deco: "house2" },
+    giverName: "Professor Vex", giverAv: { skin: 1, hair: 7, shirt: 6, pants: 1, hat: "none", glasses: "square" },
+    intro: "Reality is fraying, my friend. Impossible things — paradoxes — are leaking into our world from Paradoxis, a sealed realm of the truly absurd, guarded since the beginning of time by the Guardian of Paradoxis. To mend the fraying, someone must enter Paradoxis and set it right. But the Gate opens only for a mind that can hold a contradiction without breaking. Prove yours can, gather the leaking Paradox Shards, learn what you must, and I will send you to face the Guardian for the Orb of Entry. This will be the greatest trial you have faced. Are you ready?",
+    steps: [
+      { kind: "math", level: 3, giverLine: "First, prove your logic is sound. A mind that can't add can't hold a paradox. Solve this!",
+        text: "Solve Professor Vex's opening proof." },
+      { kind: "riddle", prompt: "The more you take away from me, the bigger I get. What am I?",
+        answers: ["a hole", "hole", "holes"], hint: "You dig it, and it only grows.",
+        giverLine: "Now a paradox of words. Answer carefully — this is the shape of the thing we face.",
+        text: "Answer Professor Vex's first paradox riddle." },
+      { kind: "talk", npc: "npc-baker", npcName: "Baker Tilly",
+        line: "Ah, the Professor sent you? I've been baking a loaf that's never quite done — pull it out and it's raw, leave it and it's raw. A little paradox of my own! Here, take my notes on where the Shards are leaking. Off you go!",
+        text: "Baker Tilly has been studying the leaks — go hear what she's found." },
+      { kind: "item", item: "paradox-shard", itemName: "Paradox Shard", emoji: "🟪", count: 3, zone: "ridge",
+        text: "Paradox Shards are leaking onto Ember Ridge — gather 3 before they fray it further." },
+      { kind: "catch", creature: "windrake", zone: "meadow",
+        text: "The frayed air has stirred up a Windrake over Willowmere — catch it to prove your reflexes." },
+      { kind: "riddle", prompt: "I am always coming but never arrive; I am always ahead of you and never here. What am I?",
+        answers: ["the future", "future", "tomorrow"], hint: "You walk toward it all your life.",
+        giverLine: "The Guardian will test your certainty. Answer this — and be sure.",
+        text: "Return to Professor Vex and answer the riddle of what never arrives." },
+      { kind: "item", item: "paradox-shard", itemName: "Paradox Shard", emoji: "🟪", count: 3, zone: "sanctum",
+        text: "The fraying has reached the Sunken Sanctum — gather 3 more Shards from the drowned halls." },
+      { kind: "talk", npc: "npc-trader", npcName: "Trader Vish",
+        line: "The Guardian, eh? I once traded for a coin that lands on neither side — spun it a hundred times, never heads, never tails. That's the Guardian's nature: it is and it isn't, all at once. Strike it true and quickly and it must yield. Now go — the Professor's waiting.",
+        text: "Trader Vish once held an impossible coin — ask him about the Guardian's nature." },
+      { kind: "math", level: 3, giverLine: "The Gate's first lock is a number that shouldn't resolve — but it does. Solve it exactly.",
+        text: "Solve the Gate's first numeric lock with Professor Vex." },
+      { kind: "item", item: "paradox-shard", itemName: "Paradox Shard", emoji: "🟪", count: 3, zone: "rift",
+        text: "The last Shards have drifted into the Astral Rift — gather 3 to complete the Key." },
+      { kind: "riddle", prompt: "You can give it to someone and still keep it for yourself. What is it?",
+        answers: ["your word", "a promise", "promise", "word"], hint: "You give it, yet you never lose it.",
+        giverLine: "The final lock. Give me the answer, and the Key to Paradoxis is complete.",
+        text: "Answer Professor Vex's final riddle to finish the Key to Paradoxis." },
+      { kind: "guardian", loc: "loc-guardian", locName: "the Guardian's Lair", tx: 50, ty: 46, zone: "marsh",
+        text: "The Key is complete! Travel to the Guardian's Lair beside the sealed Gate (south of the village) and defeat the Guardian of Paradoxis for the Orb of Entry." },
+    ],
+    reward: { xp: 900, orbs: { paradoxis: 6, prism: 4 } },
+    outro: "You did it — you faced the Guardian and won the Orb of Entry. The fraying is mending, and the Paradox Gate answers only to you now. Step through whenever you like: Paradoxis, and all its impossible creatures, are yours to explore. You are, truly, a hero of two worlds.",
   },
 ];
 

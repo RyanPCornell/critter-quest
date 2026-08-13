@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **120+ original critters** by solving **math
+hand-drawn SVG world and catch **128 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -66,14 +66,23 @@ Works great on desktop and iPad.
   whirlpool on the shore of Lake Lumen, catch its own creatures (Coralkit,
   Gleamjelly, Anglow, Tidesprite, Nautilux, and the mythical Maridian), scoop up
   its region-specific **Abyssal Orb**, and rise back to the surface when you're
-  done. Ten regions in all.
-- **Quests** (📜): visit the person living in one of **nine houses** to start a
+  done.
+- **⧉ Paradoxis (locked end-game region):** a surreal realm of impossible
+  purple geometry — Penrose triangles, floating cubes, glitching bits — home to
+  the **Paradox Creatures**, a special category of self-contradictory beings:
+  **Paradox Pants** (a crazed empty pair of trousers), Mobiun (a one-sided
+  moth), Zenolo (a hare that never arrives), Ouroboan, Kleinkoi, Chronope,
+  Quandril and Nullkin. They exist **only** in Paradoxis, and its **Paradox
+  Gate** (south of the village) stays **sealed** until you win the **Orb of
+  Entry** — see the Epic Quest below. Eleven regions in all.
+- **Quests** (📜): visit the person living in one of **ten houses** to start a
   multi-step story quest. Steps can ask you to solve a **math puzzle**, answer a
   **word riddle**, **talk to a specific townsperson**, collect a glowing magical
   item, catch a special quest-only critter, travel to a secret location that only
-  appears once the quest is active, or face a boss. Each quest introduces its own
-  creature and items and grants a big XP + orb reward. The 📜 Quests button opens
-  your quest log with every active and available quest. There are **nine quests**:
+  appears once the quest is active, face a boss, or fight the **Guardian of
+  Paradoxis**. Each quest introduces its own creature and items and grants a big
+  XP + orb reward. The 📜 Quests button opens your quest log with every active
+  and available quest. There are **ten quests**:
   - Five **starter quests** (4–5 steps): the Emberheart Cinders, Greenheart
     Hollow, Song of the Deep, Singing Dunes, and Chasing the Starfall.
   - Two **epic quests** (8 steps, tougher math, a **mythical boss with an aura
@@ -85,6 +94,15 @@ Works great on desktop and iPad.
     the leviathan of light) and **The Clockwork Heart** (Tinker Cog's Workshop →
     gather automaton parts from the ridge, caverns and Sunken Sanctum, and wake
     the golden Aurumaton).
+  - One **Epic Quest** — **The Key to Paradoxis** (Professor Vex's Study, **12
+    steps** across four regions, weaving math, three paradox riddles, two
+    townsfolk, and Paradox-Shard hunts on the ridge, in the Sunken Sanctum and
+    in the Astral Rift). It culminates in the **Guardian of Paradoxis** battle: a
+    special timed duel where you send out one champion and must solve **two
+    multiplication problems every 10 seconds** to land a blow — miss the clock
+    and the Guardian strikes your champion instead. Land enough blows before your
+    champion faints and you win the **Orb of Entry**, which unseals the Paradox
+    Gate for good so you can explore Paradoxis whenever you like.
 - **Battle animations:** attacks lunge, the target shakes and flashes, and a
   floating damage number pops up on each hit.
 - **Village Square:** talk to the Bulletin Keeper and answer two problems in a

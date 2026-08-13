@@ -17,6 +17,7 @@ window.RARITY_INFO = {
   rare:      { label: "Rare",      stars: 3, baseCatch: 0.34, xp: 100, color: "#a678c9" },
   mythical:  { label: "Mythical",  stars: 4, baseCatch: 0.26, xp: 175, color: "#3fb8c9", glyph: "❖" },
   speedmythical: { label: "Speed Mythical", stars: 4, baseCatch: 0.30, xp: 320, color: "#ff8c1a", glyph: "⚡", speed: true },
+  paradox:   { label: "Paradox", stars: 5, baseCatch: 0.22, xp: 400, color: "#c026d3", glyph: "⧉" },
   legendary: { label: "Legendary", stars: 4, baseCatch: 0.20, xp: 250, color: "#e0a63c" },
   ultra:     { label: "Ultra Legendary", stars: 5, baseCatch: 0.16, xp: 600, color: "#e0489c" },
 };
@@ -1292,6 +1293,91 @@ window.CREATURES = [
       { n: "Echo Blur", d: "Splits into a fan of afterimages, only one of which is really there." },
     ],
     story: "The Nightjet is the fastest flyer in the world after dusk, a swift stitched from twilight that hunts the evening insects in blinks and blurs. It flies rings around anything that chases it, and gives its trust to the one trainer nimble enough — in wit — to keep up.",
+  },
+
+  // ========================= PARADOX CREATURES ==========================
+  //  A special category (rarity "paradox", zone "paradoxis") — impossible
+  //  creatures that only exist in the realm of Paradoxis, reachable only once
+  //  you've earned the Orb of Entry by defeating the Guardian of Paradoxis.
+  {
+    id: "paradoxpants", name: "Paradox Pants", species: "Impossible Trousers", types: ["Gale", "Shade"],
+    zone: "paradoxis", rarity: "paradox", hp: 78, atk: 80, def: 66, spd: 88,
+    height: "1.1 m (and also 0.0 m)", weight: "It refuses to say",
+    powers: [
+      { n: "Both Legs First", d: "Puts both legs in first, an impossibility that briefly ties reality in a knot." },
+      { n: "Runaway Ramble", d: "Bolts in every direction at once, so nobody — including itself — knows where it is." },
+    ],
+    story: "Paradox Pants is exactly what it sounds like: a crazed, empty pair of trousers that sprints, kicks and cartwheels through Paradoxis with nobody inside and no idea where it's going. It cannot be standing still (it's always mid-stride) and cannot be running (there are no legs in it), and this contradiction is the only thing holding it together. Catch it, and it will loyally trip you up forever.",
+  },
+  {
+    id: "mobiun", name: "Mobiun", species: "One-Sided Moth", types: ["Lumen", "Shade"],
+    zone: "paradoxis", rarity: "paradox", hp: 70, atk: 76, def: 60, spd: 84,
+    height: "0.5 m", weight: "1 side's worth",
+    powers: [
+      { n: "Endless Edge", d: "Flies along its own single surface forever, arriving where it began without ever turning." },
+      { n: "Twist of Fate", d: "Folds space into a half-twist so foes' attacks come back around and miss." },
+    ],
+    story: "A Mobiun's wings have only one side — follow the top and you end up on the bottom without ever crossing an edge. It flutters the impossible corridors of Paradoxis in loops that have no inside and no outside, and it never, ever gets lost, because for a Mobiun there is only ever one place to be.",
+  },
+  {
+    id: "zenolo", name: "Zenolo", species: "Halfway Hare", types: ["Gale"],
+    zone: "paradoxis", rarity: "paradox", hp: 66, atk: 72, def: 58, spd: 92,
+    height: "0.6 m", weight: "approaching 4 kg",
+    powers: [
+      { n: "Infinite Approach", d: "Halves the distance to its goal, then halves it again — technically never arriving, yet always closer." },
+      { n: "Achilles Dash", d: "Runs so that no matter how fast you chase, you only ever close half the gap." },
+    ],
+    story: "To reach you, a Zenolo must first come halfway, and before that a quarter, and before that an eighth — so by all logic it should never arrive at all. And yet here it is, nibbling your shoelace. Zenolo is living proof that Paradoxis simply doesn't care what logic says should be possible.",
+  },
+  {
+    id: "ouroboan", name: "Ouroboan", species: "Endless Serpent", types: ["Ember", "Shade"],
+    zone: "paradoxis", rarity: "paradox", hp: 84, atk: 82, def: 72, spd: 70,
+    height: "∞ (curled up)", weight: "its own tail",
+    powers: [
+      { n: "Tail Feast", d: "Eats its own tail to grow longer, becoming both fuller and emptier at once." },
+      { n: "Cycle Without End", d: "Loops back on itself so an attack that lands has also not yet begun." },
+    ],
+    story: "The Ouroboan is forever swallowing its own tail, which means it is always eating and always being eaten, always beginning and always ending. It is its own ancestor and its own descendant, a ring of fire and shadow with no first scale and no last. It has been doing this since before it started.",
+  },
+  {
+    id: "kleinkoi", name: "Kleinkoi", species: "Bottleless Fish", types: ["Aqua", "Gem"],
+    zone: "paradoxis", rarity: "paradox", hp: 74, atk: 74, def: 76, spd: 72,
+    height: "0.8 m", weight: "inside = outside",
+    powers: [
+      { n: "Inside Out", d: "Swims into its own mouth and out through its back, turning its insides to its outsides." },
+      { n: "No Boundary", d: "Has no inside to trap and no outside to strike, so blows slide right through." },
+    ],
+    story: "A Kleinkoi lives in a bottle that has no inside — pour water in and it's already out; reach in and you're already holding the fish. It swims through its own surface the way you'd walk through a doorway, entirely untroubled that its stomach is also its sky. In Paradoxis, this is considered perfectly normal.",
+  },
+  {
+    id: "chronope", name: "Chronope", species: "Grandfather Cog", types: ["Spark", "Stone"],
+    zone: "paradoxis", rarity: "paradox", hp: 80, atk: 78, def: 80, spd: 64,
+    height: "1.8 m", weight: "before it was built",
+    powers: [
+      { n: "Unwind", d: "Ticks backward to a moment before it was wound, undoing the blow it just took." },
+      { n: "Grandfather Clause", d: "Prevents its own creation, then exists anyway, out of sheer stubbornness." },
+    ],
+    story: "The Chronope is a great pendulum-creature that once travelled back and stopped itself from ever being made — and yet here it stands, ticking, which by every rule should be impossible. It keeps a time that runs both ways at once, and if you ask it what o'clock it is, the honest answer is 'yes.'",
+  },
+  {
+    id: "quandril", name: "Quandril", species: "Two-Minds", types: ["Song", "Shade"],
+    zone: "paradoxis", rarity: "paradox", hp: 72, atk: 76, def: 64, spd: 78,
+    height: "1.0 m", weight: "can't decide",
+    powers: [
+      { n: "Buridan's Bind", d: "Freezes a foe with a choice so perfectly balanced they can't pick either side." },
+      { n: "Split Verdict", d: "Argues with itself so fast it acts on both answers, and neither, all at once." },
+    ],
+    story: "A Quandril has two heads that never agree and one heart caught hopelessly between them. Faced with two identical berries it will starve rather than choose, and faced with a single path it will find a way to take both. It is the friendliest, most maddening creature in Paradoxis, and it cannot decide whether it likes you — so it does, and doesn't.",
+  },
+  {
+    id: "nullkin", name: "Nullkin", species: "Maybe-Sprite", types: ["Shade", "Lumen"],
+    zone: "paradoxis", rarity: "paradox", hp: 68, atk: 80, def: 58, spd: 86,
+    height: "0.4 m (unobserved)", weight: "undetermined",
+    powers: [
+      { n: "Superposition", d: "Is both here and not-here until you look, at which point it's cheerfully somewhere else." },
+      { n: "Collapse", d: "Forces a foe to decide whether it was ever really there — usually, it wasn't." },
+    ],
+    story: "Until you look at it, a Nullkin is everywhere and nowhere, doing everything and nothing. The instant you're sure you've spotted one, it turns out you were only maybe-right, and it's already maybe-gone. Trainers who catch a Nullkin are never entirely certain they have — which is, of course, exactly how the Nullkin likes it.",
   },
 ];
 

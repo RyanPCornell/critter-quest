@@ -519,6 +519,34 @@
   .bt-hpfill { height: 100%; transition: width .4s; }
   .bt-hp { font-size: 12px; font-weight: 800; color: #6e604a; }
   .bt-vs { font-size: 22px; font-weight: 800; color: #b09a7a; }
+  /* Guardian of Paradoxis fight */
+  #guardian-body { text-align: center; }
+  .gd-boss-art { text-align: center; }
+  .gd-boss-art svg { width: 150px; height: 150px; }
+  .gd-title { font-size: 20px; font-weight: 800; color: #c026d3; margin: 4px 0 8px; }
+  .gd-arena { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .gd-side { text-align: center; background: var(--card); border: 3px solid var(--ink); border-radius: 16px; padding: 8px 12px; width: 200px; position: relative; }
+  .gd-guard { border-color: #c026d3; }
+  .gd-art svg { width: 108px; height: 108px; }
+  .gd-cname { font-weight: 800; font-size: 15px; }
+  .gd-sub { font-size: 12px; font-weight: 800; color: #6e604a; margin-top: 2px; }
+  .gd-pips { font-size: 14px; letter-spacing: 1px; line-height: 1.2; }
+  .gd-pip { color: #e2d3ec; }
+  .gd-pip.up { color: #c026d3; }
+  .gd-vs { font-size: 20px; font-weight: 800; color: #b09a7a; }
+  .gd-hit { animation: gdShake .5s ease; }
+  @keyframes gdShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)} }
+  .gd-round { margin: 6px 0 8px; }
+  .gd-round-label { font-size: 14px; font-weight: 800; color: #3a2b28; }
+  .gd-solved { display: flex; gap: 8px; justify-content: center; margin: 6px 0; }
+  .gd-dot { width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid var(--ink); background: #fff; }
+  .gd-dot.on { background: #5cb85c; }
+  .gd-timer { height: 15px; background: #e8e0cc; border: 2.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
+  #gd-timer-fill { height: 100%; width: 100%; background: var(--green); transition: width .12s linear; }
+  #gd-problem { margin-top: 6px; }
+  .gd-win-body { padding: 8px 6px; }
+  .gd-entry-orb { width: 88px; height: 88px; }
+  .gd-orb-of-entry { display: flex; justify-content: center; margin: 6px 0; }
   #battle-msg { background: #fff; border: 2.5px solid var(--ink); border-radius: 14px; padding: 10px 14px; font-size: 15px; min-height: 44px; text-align: center; }
   #battle-challenge { margin-top: 12px; }
   #battle-flee { background: #ffb3c7; font-size: 14px; padding: 8px 16px; margin-top: 10px; }
@@ -739,6 +767,14 @@
   </div>
 </div>
 
+<!-- ==================== THE GUARDIAN OF PARADOXIS =================== -->
+<div class="overlay" id="guardian">
+  <div class="modal" style="max-width:580px">
+    <button class="modal-close" data-close="guardian">✕</button>
+    <div id="guardian-body"></div>
+  </div>
+</div>
+
 <!-- ============================== FRIENDS ============================ -->
 <div class="overlay" id="friends">
   <div class="modal">
@@ -873,6 +909,7 @@
 <script src="js/art-critters-8.js"></script>
 <script src="js/art-critters-9.js"></script>
 <script src="js/art-critters-10.js"></script>
+<script src="js/art-critters-11.js"></script>
 <script src="js/world.js"></script>
 <script src="js/avatar.js"></script>
 <script src="js/orbs.js"></script>
