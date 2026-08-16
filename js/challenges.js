@@ -84,6 +84,18 @@
       "foreign","guarantee","height","hierarchy","humorous","independent","jewelry","leisure","maintenance","maneuver",
       "mischievous","noticeable","occurrence","parallel","playwright","possession","privilege","pronunciation","recommend","resilience",
       "schedule","sincerely","thorough","twelfth","atmosphere","biodiversity","chlorophyll","constellation","metamorphosis","precipitation",
+      // --- classic tricky spellings ---
+      "absence","achieve","amateur","apparent","appreciate","argument","athlete","awkward","beginning","believe",
+      "business","ceiling","colleague","column","commitment","competition","concentrate","controversy","convenience","courageous",
+      "criticize","deceive","desperate","develop","difference","disappear","disappoint","discipline","eighth","equipment",
+      "especially","excellent","existence","familiar","fascinate","forty","fulfill","gorgeous","grammar","grateful",
+      "guidance","handkerchief","harass","hypocrite","ignorance","immediate","incredible","influence","intelligent","interrupt",
+      "irresistible","lieutenant","lightning","magnificent","marriage","millennium","minuscule","mortgage","nuisance","opponent",
+      // --- science & nature words (fit the game's world) ---
+      "adaptation","amphibian","bacteria","carnivore","chrysalis","condensation","conservation","crustacean","decomposer","electricity",
+      "endangered","equilibrium","erosion","evaporation","evolution","geothermal","gravitational","herbivore","hurricane","hydrogen",
+      "invertebrate","magnetism","marsupial","meteorite","microscope","molecular","nocturnal","nutrients","organism","oxygen",
+      "parasite","pollination","predator","renewable","respiration","sediment","symbiosis","telescope","thermometer","vertebrate",
     ],
   };
 
