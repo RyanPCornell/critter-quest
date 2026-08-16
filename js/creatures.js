@@ -16,7 +16,8 @@ window.RARITY_INFO = {
   uncommon:  { label: "Uncommon",  stars: 2, baseCatch: 0.52, xp: 45,  color: "#5f9ec7" },
   rare:      { label: "Rare",      stars: 3, baseCatch: 0.34, xp: 100, color: "#a678c9" },
   mythical:  { label: "Mythical",  stars: 4, baseCatch: 0.26, xp: 175, color: "#3fb8c9", glyph: "❖" },
-  speedmythical: { label: "Speed Mythical", stars: 4, baseCatch: 0.30, xp: 320, color: "#ff8c1a", glyph: "⚡", speed: true },
+  speedmythical: { label: "Speed Mythical", stars: 4, baseCatch: 0.30, xp: 320, color: "#ff8c1a", glyph: "⚡", speed: true, speedNeed: 5 },
+  ultraspeed: { label: "Ultra Speed Mythical", stars: 5, baseCatch: 0.34, xp: 560, color: "#e11d48", glyph: "⚡⚡", speed: true, speedNeed: 8 },
   paradox:   { label: "Paradox", stars: 5, baseCatch: 0.22, xp: 400, color: "#c026d3", glyph: "⧉" },
   legendary: { label: "Legendary", stars: 4, baseCatch: 0.20, xp: 250, color: "#e0a63c" },
   ultra:     { label: "Ultra Legendary", stars: 5, baseCatch: 0.16, xp: 600, color: "#e0489c" },
@@ -1293,6 +1294,317 @@ window.CREATURES = [
       { n: "Echo Blur", d: "Splits into a fan of afterimages, only one of which is really there." },
     ],
     story: "The Nightjet is the fastest flyer in the world after dusk, a swift stitched from twilight that hunts the evening insects in blinks and blurs. It flies rings around anything that chases it, and gives its trust to the one trainer nimble enough — in wit — to keep up.",
+  },
+
+  // ========================= SKYHAVEN REACH =============================
+  {
+    id: "nimbik", name: "Nimbik", species: "Cloud Lamb", types: ["Gale"],
+    zone: "sky", rarity: "common", hp: 46, atk: 40, def: 44, spd: 54,
+    height: "0.5 m", weight: "2 kg (mostly fluff)",
+    powers: [
+      { n: "Fleece Float", d: "Puffs its cloud-wool until it drifts gently off the ground." },
+      { n: "Drizzle", d: "Wrings out its fleece for a tiny, very polite rain shower." },
+    ],
+    story: "Nimbiks graze the meadows of Skyhaven in woolly flocks, nibbling the tops off clouds. When a whole flock naps together they merge into one big cloud, and the shepherds of the Reach have to count very carefully to get everyone home again.",
+  },
+  {
+    id: "cloudlet", name: "Cloudlet", species: "Cloudpuff Chick", types: ["Gale", "Lumen"],
+    zone: "sky", rarity: "common", hp: 42, atk: 44, def: 36, spd: 62,
+    height: "0.3 m", weight: "0.4 kg",
+    powers: [
+      { n: "Puffhop", d: "Bounces from cloud to cloud, giggling, never quite falling through." },
+      { n: "Sunwarm", d: "Soaks up sunlight until it glows like a tiny lantern at dusk." },
+    ],
+    story: "Cloudlets hatch from the little golden clouds that catch the last of the sunset. They spend their whole first year learning to fall properly — a Cloudlet who has mastered falling is halfway to mastering flight, as every Skyhaven elder will tell you.",
+  },
+  {
+    id: "aerowisp", name: "Aerowisp", species: "Breeze Sprite", types: ["Gale"],
+    zone: "sky", rarity: "uncommon", hp: 44, atk: 52, def: 38, spd: 76,
+    height: "0.4 m", weight: "0.2 kg",
+    powers: [
+      { n: "Slipwind", d: "Becomes the gap in the air where the wind isn't, and slides through it." },
+      { n: "Whistle Up", d: "Whistles a rising note and a fresh breeze answers from nowhere." },
+    ],
+    story: "An Aerowisp is what a gust of wind looks like when it decides to have opinions. They race each other in loops around the floating islands and love nothing more than untying a traveller's scarf and giving it back three islands later.",
+  },
+  {
+    id: "skimmet", name: "Skimmet", species: "Updraft Kite", types: ["Gale", "Song"],
+    zone: "sky", rarity: "uncommon", hp: 48, atk: 54, def: 42, spd: 72,
+    height: "0.8 m", weight: "1.6 kg",
+    powers: [
+      { n: "Thermal Ride", d: "Finds the one warm column of air for miles and spirals up it without a wingbeat." },
+      { n: "Kitesong", d: "Hums through its tail feathers like a kite string in a stiff wind." },
+    ],
+    story: "Skimmets never flap. They find a thermal at dawn and ride it all day, singing a thin, happy note that the people of Skyhaven use to tell the weather. Two Skimmets singing in harmony means clear skies; three means hold onto your hat.",
+  },
+  {
+    id: "cirrix", name: "Cirrix", species: "Cirrus Serpent", types: ["Gale", "Frost"],
+    zone: "sky", rarity: "rare", hp: 60, atk: 66, def: 52, spd: 78,
+    height: "3.4 m", weight: "9 kg",
+    powers: [
+      { n: "Wispcoil", d: "Stretches into a long feathery streak and writes lazy loops across the sky." },
+      { n: "Icecrystal Veil", d: "Sheds a shimmer of high, cold ice crystals that haloes the sun." },
+    ],
+    story: "The long feathery streaks you see highest in the sky are Cirrix, stretched out and dozing. They live so high that they have never once been rained on, and they consider this a great personal achievement worth mentioning often.",
+  },
+  {
+    id: "stratolon", name: "Stratolon", species: "Sky Whale", types: ["Gale", "Aqua"],
+    zone: "sky", rarity: "rare", hp: 88, atk: 68, def: 78, spd: 40,
+    height: "9.0 m", weight: "as much as a small cloud",
+    powers: [
+      { n: "Cloud Song", d: "Sings a deep note that rolls across the whole Reach like distant thunder." },
+      { n: "Vapour Spout", d: "Blows a spout of warm mist that becomes a small, friendly cloud." },
+    ],
+    story: "Stratolons swim the high air the way whales swim the sea, drifting between the floating islands on slow, enormous fins. Skyhaven children ride on their backs, and a Stratolon will always slow down if it notices a passenger has fallen asleep.",
+  },
+  {
+    id: "solaviel", name: "Solaviel", species: "Dawn Seraph", types: ["Lumen", "Gale"],
+    zone: "sky", rarity: "mythical", hp: 84, atk: 84, def: 72, spd: 88,
+    height: "2.2 m", weight: "62 kg",
+    powers: [
+      { n: "First Light", d: "Unfurls its wings and the sun comes up a little earlier than it meant to." },
+      { n: "Skyfire Veil", d: "Wraps itself in warm dawn-colored light that foes cannot look at directly." },
+    ],
+    story: "Solaviel greets the sun each morning from the highest island in Skyhaven, and the sky turns gold because it is glad to see it. It is said that no one who has watched a Solaviel spread its wings at dawn has ever been able to describe it properly afterward.",
+  },
+
+  // ======================= EMBERDEEP CALDERA ============================
+  {
+    id: "sootpip", name: "Sootpip", species: "Cinder Chick", types: ["Ember"],
+    zone: "caldera", rarity: "common", hp: 44, atk: 46, def: 38, spd: 56,
+    height: "0.3 m", weight: "1 kg",
+    powers: [
+      { n: "Ash Ruffle", d: "Shakes a puff of warm soot over everything, including itself." },
+      { n: "Coal Peck", d: "Pecks up loose embers and swallows them like seeds." },
+    ],
+    story: "Sootpips scurry across the Emberdeep's cooling crusts in cheeping little flocks, hunting for the tastiest coals. They are always covered head to foot in ash, and no amount of preening has ever fixed this, which they seem entirely at peace with.",
+  },
+  {
+    id: "slagpup", name: "Slagpup", species: "Molten Pup", types: ["Ember", "Stone"],
+    zone: "caldera", rarity: "common", hp: 50, atk: 48, def: 50, spd: 46,
+    height: "0.5 m", weight: "22 kg",
+    powers: [
+      { n: "Crust Coat", d: "Cools its outer shell to hard stone armor, then cracks it off when it warms up." },
+      { n: "Glow Bark", d: "Barks a bright orange bark that lights the whole tunnel." },
+    ],
+    story: "A Slagpup is a good dog made of cooling lava. It will fetch, it will roll over, and it will absolutely follow you home — which is a problem, because it leaves scorch marks on the carpet. Everyone loves them anyway.",
+  },
+  {
+    id: "charcoil", name: "Charcoil", species: "Ember Adder", types: ["Ember"],
+    zone: "caldera", rarity: "uncommon", hp: 52, atk: 62, def: 42, spd: 64,
+    height: "1.9 m", weight: "12 kg",
+    powers: [
+      { n: "Heat Coil", d: "Wraps itself into a glowing spiral that radiates like a stove." },
+      { n: "Flicker Strike", d: "Darts out of the dark with a flash like a struck match." },
+    ],
+    story: "Charcoils sleep coiled in the warm cracks of the Emberdeep, glowing faintly orange along every scale. Miners of old used to follow a Charcoil's glow to find their way out — the snakes always coil nearest the safest air.",
+  },
+  {
+    id: "basaltusk", name: "Basaltusk", species: "Basalt Boar", types: ["Stone", "Ember"],
+    zone: "caldera", rarity: "uncommon", hp: 62, atk: 60, def: 62, spd: 44,
+    height: "1.1 m", weight: "180 kg",
+    powers: [
+      { n: "Column Charge", d: "Lowers its hexagonal tusks and charges like a falling basalt pillar." },
+      { n: "Cool Hide", d: "Its stone hide hardens into six-sided plates that shrug off heat and blows alike." },
+    ],
+    story: "Basaltusks root through the Emberdeep's black stone forests, cracking open cooled lava columns to get at the mineral salts inside. Their tusks are perfect hexagons, and a shed Basaltusk tusk is the Caldera's most prized building stone.",
+  },
+  {
+    id: "pyrolith", name: "Pyrolith", species: "Furnace Golem", types: ["Ember", "Stone"],
+    zone: "caldera", rarity: "rare", hp: 78, atk: 74, def: 80, spd: 38,
+    height: "2.6 m", weight: "900 kg",
+    powers: [
+      { n: "Bellows Breath", d: "Draws a huge breath and blows its own inner furnace white-hot." },
+      { n: "Slagfist", d: "Swings a fist of half-molten rock that cools solid on impact." },
+    ],
+    story: "A Pyrolith is a walking furnace with a heart of trapped magma. They tend the Emberdeep's deepest heat, wandering slowly and stoking the vents, and it is thanks to their patient work that the mountain above has not gone cold in a thousand years.",
+  },
+  {
+    id: "ashenmaw", name: "Ashenmaw", species: "Ashcloud Hound", types: ["Ember", "Shade"],
+    zone: "caldera", rarity: "rare", hp: 68, atk: 76, def: 58, spd: 70,
+    height: "1.3 m", weight: "70 kg",
+    powers: [
+      { n: "Ashveil Hunt", d: "Vanishes into a rolling cloud of ash and hunts by heat alone." },
+      { n: "Emberbite", d: "Its jaws glow from within, leaving a warm ember where it bites." },
+    ],
+    story: "The Ashenmaw runs inside the rolling ash clouds of the Emberdeep, seen only as two orange eyes in the grey. It is far shyer than it looks — an Ashenmaw's ash cloud is less a hunting trick than a very large blanket to hide under.",
+  },
+  {
+    id: "volcanyx", name: "Volcanyx", species: "Caldera Sovereign", types: ["Ember", "Stone"],
+    zone: "caldera", rarity: "mythical", hp: 92, atk: 88, def: 86, spd: 56,
+    height: "4.2 m", weight: "2,200 kg",
+    powers: [
+      { n: "Eruption Crown", d: "Its crest erupts in a crown of fire that lights the whole Caldera." },
+      { n: "Deep Tremor", d: "Stamps once and the mountain's roots answer with a rolling shudder." },
+    ],
+    story: "Volcanyx sleeps at the very bottom of the Emberdeep with the mountain's fire beating in its chest. When it stirs, the volcano above smokes; when it dreams, the vents sing. It has never erupted in anger — only, once or twice, in a very good mood.",
+  },
+
+  // =================== QUEST CREATURES (new quests) =====================
+  {
+    id: "zephyrion", name: "Zephyrion", species: "Storm Sovereign", types: ["Gale", "Spark"],
+    zone: "sky", rarity: "mythical", quest: "q-skysong", guard: 2, hp: 92, atk: 88, def: 78, spd: 92,
+    height: "3.8 m", weight: "260 kg",
+    powers: [
+      { n: "Skysong Gale", d: "Sings the wind's own melody, and every gust in the Reach joins in." },
+      { n: "Thunder Wing", d: "One wingbeat rolls out across the sky as a peal of thunder." },
+    ],
+    story: "Zephyrion is the wind that Skyhaven was built to shelter from and give thanks to in equal measure. It sleeps in the highest cloudbank, and its dreaming keeps the islands afloat. Only a trainer who can sing the whole Skysong may safely wake it.",
+  },
+  {
+    id: "vulcanor", name: "Vulcanor", species: "Forge Titan", types: ["Ember", "Spark"],
+    zone: "caldera", rarity: "mythical", quest: "q-forgeheart", guard: 2, hp: 96, atk: 92, def: 88, spd: 52,
+    height: "5.0 m", weight: "3,100 kg",
+    powers: [
+      { n: "Hammerfall", d: "Brings down a fist like a smith's hammer and the Caldera rings like an anvil." },
+      { n: "Forgeheart Blaze", d: "Opens the furnace in its chest and the whole cavern turns to daylight." },
+    ],
+    story: "Vulcanor was the first smith, and the Emberdeep was its forge. It hammered the mountains into shape, then set down its hammer and slept, waiting for someone who understood that making a thing well takes patience, measurement, and a very steady hand.",
+  },
+  {
+    id: "ashvane", name: "Ashvane", species: "Forge Sprite", types: ["Ember"],
+    zone: "caldera", rarity: "rare", quest: "q-forgeheart", hp: 58, atk: 64, def: 54, spd: 68,
+    height: "0.5 m", weight: "6 kg",
+    powers: [
+      { n: "Bellows Beat", d: "Beats its wings to fan a dying forge back to roaring life." },
+      { n: "Sparkspray", d: "Showers a fountain of harmless, cheerful sparks when it's pleased." },
+    ],
+    story: "Ashvanes are the little helpers of the old forge, and they have kept the Emberdeep's coals alive all these centuries out of sheer stubborn loyalty. Every one of them believes the great smith will wake up any day now, and every one of them is right.",
+  },
+  {
+    id: "nimbaros", name: "Nimbaros", species: "Eternal Storm", types: ["Gale", "Frost"],
+    zone: "sky", rarity: "mythical", quest: "q-stormchase", guard: 2, hp: 90, atk: 90, def: 76, spd: 90,
+    height: "4.4 m", weight: "unweighable",
+    powers: [
+      { n: "Endless Squall", d: "Carries its own storm with it, which has been raining for three hundred years." },
+      { n: "Eye of Calm", d: "Opens a perfect circle of stillness at its heart where nothing can be harmed." },
+    ],
+    story: "There is a storm over Skyhaven that has never once stopped, and at the center of it, quite calm and rather lonely, is Nimbaros. It cannot stop the storm any more than you can stop your own heartbeat — but a clever friend, it is said, might teach it how to rest.",
+  },
+  {
+    id: "lumenwick", name: "Lumenwick", species: "Lost Lantern", types: ["Lumen", "Shade"],
+    zone: "marsh", rarity: "rare", quest: "q-lostlantern", hp: 56, atk: 62, def: 52, spd: 60,
+    height: "0.6 m", weight: "3 kg",
+    powers: [
+      { n: "Homeward Glow", d: "Burns brighter the closer it gets to somewhere it belongs." },
+      { n: "Wick Flicker", d: "Dims to almost nothing, then flares to lead a traveller out of the fen." },
+    ],
+    story: "A Lumenwick is a lantern that was set down one night in Glowfen Marsh and never picked back up, and has been quietly looking for its owner ever since. It lights the way for anyone who's lost, in the hope that one day someone will lead it home too.",
+  },
+  {
+    id: "chimerakit", name: "Chimerakit", species: "Patchwork Cub", types: ["Leaf", "Ember"],
+    zone: "meadow", rarity: "rare", quest: "q-menagerie", hp: 60, atk: 64, def: 56, spd: 66,
+    height: "0.6 m", weight: "11 kg",
+    powers: [
+      { n: "Borrowed Trick", d: "Copies a move it saw another critter do once, slightly wrong and twice as enthusiastically." },
+      { n: "Patchwork Coat", d: "Its mismatched fur takes on whatever the last creature it befriended looked like." },
+    ],
+    story: "The Chimerakit is a bit of everything and entirely itself: leafy ears, an ember tail, and a heart three sizes too big. It escaped the Wandering Menagerie years ago and has been making friends with one creature from every single region ever since.",
+  },
+
+  // ====================== ULTRA SPEED MYTHICALS =========================
+  //  The tier above Speed Mythical (rarity "ultraspeed", zone "any"). Caught
+  //  the same way — a 30-second timer — but they demand EIGHT times-tables in
+  //  that same half-minute instead of five. Rarer than a Speed Mythical.
+  {
+    id: "sonikk", name: "Sonikk", species: "Sonic Swift", types: ["Song", "Gale"],
+    zone: "any", rarity: "ultraspeed", hp: 76, atk: 90, def: 60, spd: 108,
+    height: "0.4 m", weight: "0.5 kg",
+    powers: [
+      { n: "Boom Barrier", d: "Breaks the sound barrier, arriving a full second before its own noise does." },
+      { n: "Echo Split", d: "Outruns its echo so completely that the echo arrives first and alone." },
+    ],
+    story: "By the time you hear a Sonikk, it has already been and gone twice. It races the sound of its own wingbeats across the whole valley and wins every time, then loops back to listen to itself arrive. Only the very quickest thinker ever befriends one.",
+  },
+  {
+    id: "blitzhorn", name: "Blitzhorn", species: "Thunder Stag", types: ["Spark"],
+    zone: "any", rarity: "ultraspeed", hp: 84, atk: 94, def: 68, spd: 106,
+    height: "1.7 m", weight: "120 kg",
+    powers: [
+      { n: "Forked Charge", d: "Splits into three branching bolts and charges down all of them at once." },
+      { n: "Thunderhoof", d: "Each hoofbeat lands as a thunderclap a mile away from the last." },
+    ],
+    story: "Blitzhorn is the lightning itself wearing antlers. It runs the ridgelines during storms, and where its hooves touch down the sand fuses into glass. Old trainers say the flash you see in a storm is Blitzhorn passing, and the thunder is the world catching up.",
+  },
+  {
+    id: "lumidash", name: "Lumidash", species: "Photon Lynx", types: ["Lumen"],
+    zone: "any", rarity: "ultraspeed", hp: 78, atk: 92, def: 62, spd: 110,
+    height: "0.9 m", weight: "20 kg",
+    powers: [
+      { n: "Lightstride", d: "Travels along a sunbeam, crossing a whole meadow in the blink of a photon." },
+      { n: "Prism Blur", d: "Splits into a rainbow of afterimages, each one a fraction of a heartbeat behind." },
+    ],
+    story: "A Lumidash moves at the speed of the dawn — literally. It rides the first ray of morning over the horizon, and if you look toward the sunrise and see a streak of gold with whiskers, you have just been visited. It waits for no one, and outruns even shadows.",
+  },
+  {
+    id: "umbraflit", name: "Umbraflit", species: "Void Runner", types: ["Shade"],
+    zone: "any", rarity: "ultraspeed", hp: 74, atk: 92, def: 58, spd: 109,
+    height: "1.0 m", weight: "18 kg",
+    powers: [
+      { n: "Shadowslip", d: "Steps out of the world entirely and back in somewhere far away." },
+      { n: "Nightfold", d: "Folds the darkness between two points and simply crosses the crease." },
+    ],
+    story: "The Umbraflit does not run so much as decline to be in the places between. It slips through the seams of the dark and reappears wherever it likes, which is usually right behind you. Catching one means being quicker than the night itself.",
+  },
+  {
+    id: "pyrostreak", name: "Pyrostreak", species: "Magma Sprinter", types: ["Ember"],
+    zone: "any", rarity: "ultraspeed", hp: 80, atk: 96, def: 60, spd: 107,
+    height: "1.2 m", weight: "58 kg",
+    powers: [
+      { n: "Flashfire Run", d: "Ignites the air in a line behind it and outruns the flames it lit." },
+      { n: "Molten Burst", d: "Explodes forward off a spray of magma, faster than the eye can track." },
+    ],
+    story: "A Pyrostreak leaves a lane of glowing footprints that stays warm until nightfall — the only proof anyone has that it exists. It races lava down the mountainside for sport and always, always gets to the bottom first.",
+  },
+  {
+    id: "cryoflash", name: "Cryoflash", species: "Glacier Bolt", types: ["Frost"],
+    zone: "any", rarity: "ultraspeed", hp: 78, atk: 90, def: 66, spd: 106,
+    height: "0.8 m", weight: "24 kg",
+    powers: [
+      { n: "Flashfreeze Slide", d: "Freezes a ribbon of ice a step ahead of itself and rockets down it." },
+      { n: "Blizzard Blink", d: "Vanishes in a burst of snow and reappears across the whole tundra." },
+    ],
+    story: "A Cryoflash crosses the entire Frostpeak Tundra between one snowflake landing and the next. It carves ice roads as it goes and they melt behind it, so no one has ever successfully followed one home. Its friendship is the coldest, fastest prize in the world.",
+  },
+  {
+    id: "tidalix", name: "Tidalix", species: "Tidal Racer", types: ["Aqua"],
+    zone: "any", rarity: "ultraspeed", hp: 82, atk: 90, def: 66, spd: 105,
+    height: "2.2 m", weight: "110 kg",
+    powers: [
+      { n: "Riptide Rush", d: "Rides the very front of a breaking wave, always a moment ahead of the crest." },
+      { n: "Hydroplane", d: "Skims the surface so fast the water hasn't time to notice and stays flat." },
+    ],
+    story: "Tidalix outruns the tide. It circles the whole lake in the time it takes a ripple to reach the shore, and sailors who spot the silver line of its wake know they are watching the fastest thing in the water — and probably anywhere.",
+  },
+  {
+    id: "verdabolt", name: "Verdabolt", species: "Jungle Blur", types: ["Leaf"],
+    zone: "any", rarity: "ultraspeed", hp: 76, atk: 88, def: 64, spd: 106,
+    height: "0.8 m", weight: "16 kg",
+    powers: [
+      { n: "Vine Sling", d: "Whips from vine to vine so fast the forest looks like one long green streak." },
+      { n: "Bloomwake", d: "Flowers burst open in a line behind it, marking a path already long abandoned." },
+    ],
+    story: "A Verdabolt crosses the Whispering Woods in a single held breath, leaving a trail of startled, suddenly-blooming flowers. The forest adores it and can never quite keep up with it, which is exactly how the Verdabolt prefers things.",
+  },
+  {
+    id: "simoonix", name: "Simoonix", species: "Desert Cyclone", types: ["Sand", "Gale"],
+    zone: "any", rarity: "ultraspeed", hp: 78, atk: 92, def: 62, spd: 108,
+    height: "1.1 m", weight: "30 kg",
+    powers: [
+      { n: "Simoom Sprint", d: "Becomes the sandstorm it is running inside, and the storm goes where it goes." },
+      { n: "Duneskip", d: "Crosses a hundred dunes without touching more than three of them." },
+    ],
+    story: "Nomads call the Simoonix 'the wind with a face.' It tears across Sundune at the head of its own private sandstorm, and the only way to know one passed is a perfectly clean, swept line of sand from one horizon to the other.",
+  },
+  {
+    id: "quartzoom", name: "Quartzoom", species: "Gem Streak", types: ["Gem", "Spark"],
+    zone: "any", rarity: "ultraspeed", hp: 80, atk: 92, def: 70, spd: 105,
+    height: "0.7 m", weight: "26 kg",
+    powers: [
+      { n: "Refract Run", d: "Bends light around itself as it runs, so it seems to be everywhere at once." },
+      { n: "Facet Flash", d: "Reflects the whole cavern in one dazzling instant and is gone before the glare fades." },
+    ],
+    story: "A Quartzoom rockets through the Gleamcave tunnels like a struck spark, its crystal hide throwing light off every wall at once. Miners see the whole cave flash bright as noon for half a second — that's a Quartzoom, already two tunnels away.",
   },
 
   // ========================= PARADOX CREATURES ==========================

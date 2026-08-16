@@ -1,13 +1,16 @@
 // ============================================================================
-//  CRITTER QUEST — WORLD  (120×52 grid, 11 zones; three portal-only regions in
-//  the far east: the Astral Rift (x74-87, wall x72-73), the Sunken Sanctum
-//  (x90-103, wall x88-89), and Paradoxis (x106-119, wall x104-105 — its gate is
-//  sealed until the Orb of Entry is won). All three are portal-only.
+//  CRITTER QUEST — WORLD  (152×52 grid, 13 zones; five portal-only regions in
+//  the far east, each behind a blocked wall column:
+//    Astral Rift      x74-87   (wall x72-73)
+//    Sunken Sanctum   x90-103  (wall x88-89)
+//    Paradoxis        x106-119 (wall x104-105) — sealed until the Orb of Entry
+//    Skyhaven Reach   x122-135 (wall x120-121)
+//    Emberdeep Caldera x138-151 (wall x136-137)
 //  Hand-drawn SVG tile art, map generation, and rendering.
 // ============================================================================
 
 (function () {
-  var W = 120, H = 52, TILE = 48;
+  var W = 152, H = 52, TILE = 48;
 
   // Deterministic RNG so the world is identical every visit
   function mulberry32(a) {
@@ -24,6 +27,7 @@
     ridge: "Ember Ridge", desert: "Sundune Desert",
     tundra: "Frostpeak Tundra", marsh: "Glowfen Marsh", cavern: "Gleamcave Hollows",
     rift: "the Astral Rift", sanctum: "the Sunken Sanctum", paradoxis: "Paradoxis",
+    sky: "Skyhaven Reach", caldera: "the Emberdeep Caldera",
   };
 
   // ------------------------------------------------------------------------
@@ -320,6 +324,72 @@
   <symbol id="d-qmark" viewBox="0 0 48 48" overflow="visible">
     <text x="24" y="34" font-size="30" text-anchor="middle" fill="#c58fe0" font-weight="800" opacity=".65" font-family="Avenir Next,sans-serif">?</text>
   </symbol>
+  <!-- ---------------------- Skyhaven Reach ---------------------- -->
+  <symbol id="d-cloudbank" viewBox="0 0 48 48" overflow="visible">
+    <g fill="#ffffff" stroke="#a9c8dd" stroke-width="1.8">
+      <circle cx="16" cy="30" r="10"/><circle cx="30" cy="28" r="12"/><circle cx="38" cy="34" r="8"/>
+      <rect x="12" y="32" width="30" height="10" rx="5"/>
+    </g>
+    <g fill="#eaf4fb"><circle cx="22" cy="24" r="4"/><circle cx="34" cy="26" r="3"/></g>
+  </symbol>
+  <symbol id="d-skyrock" viewBox="0 0 48 48" overflow="visible">
+    <g class="sway">
+      <path d="M10 24 L24 14 L40 24 L32 34 L16 34 Z" fill="#9aa8b8" stroke="#66788a" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M16 34 L22 42 L28 34 Z" fill="#7e8ea0" stroke="#66788a" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M14 24 L24 18 L36 24" fill="none" stroke="#c3d2df" stroke-width="1.8"/>
+      <g fill="#7fc24a"><ellipse cx="20" cy="21" rx="5" ry="2.4"/><ellipse cx="31" cy="23" rx="4" ry="2"/></g>
+    </g>
+  </symbol>
+  <symbol id="d-windswirl" viewBox="0 0 48 48" overflow="visible">
+    <g fill="none" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" opacity=".95" class="sway">
+      <path d="M8 20 h18 a5 5 0 1 0 -5 -5"/><path d="M10 28 h22 a5 5 0 1 1 -5 5"/><path d="M12 36 h12"/>
+    </g>
+  </symbol>
+  <symbol id="d-skyflower" viewBox="0 0 48 48" overflow="visible">
+    <g class="sway">
+      <path d="M24 44 C22 34 26 28 24 22" fill="none" stroke="#8fd6a8" stroke-width="2.4" stroke-linecap="round"/>
+      <g fill="#fff2c8" stroke="#e0b45c" stroke-width="1.6">
+        <ellipse cx="24" cy="14" rx="5" ry="8"/><ellipse cx="24" cy="14" rx="8" ry="5"/>
+      </g>
+      <circle cx="24" cy="14" r="3" fill="#ffd94d" stroke="#e0b45c" stroke-width="1.4"/>
+    </g>
+  </symbol>
+  <symbol id="d-sunbeam" viewBox="0 0 48 48" overflow="visible">
+    <g stroke="#ffe9a3" stroke-width="3.5" stroke-linecap="round" opacity=".7" class="glowpulse">
+      <path d="M24 6 L24 42"/><path d="M14 12 L18 40"/><path d="M34 12 L30 40"/>
+    </g>
+    <circle cx="24" cy="8" r="4" fill="#fff6cf" opacity=".9"/>
+  </symbol>
+  <!-- --------------------- Emberdeep Caldera --------------------- -->
+  <symbol id="d-obsidian" viewBox="0 0 48 48" overflow="visible">
+    <ellipse cx="24" cy="43" rx="12" ry="3" fill="#1a0b08" opacity=".6"/>
+    <path d="M24 4 L34 26 L28 44 L18 44 L13 26 Z" fill="#241820" stroke="#0f0a0c" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M24 6 L29 26 L26 42 L24 42 Z" fill="#4a3550"/>
+    <path d="M18 20 L22 30" stroke="#8a6f9a" stroke-width="1.6" opacity=".8"/>
+    <circle cx="21" cy="16" r="1.4" fill="#ff9a5a" class="glowpulse"/>
+  </symbol>
+  <symbol id="d-lavapool" viewBox="0 0 48 48" overflow="visible">
+    <ellipse cx="24" cy="30" rx="18" ry="11" fill="#8a2a12" stroke="#2e120c" stroke-width="2"/>
+    <ellipse cx="24" cy="29" rx="13" ry="7.5" fill="#ff7a2a" class="glowpulse"/>
+    <ellipse cx="22" cy="28" rx="7" ry="3.6" fill="#ffd166"/>
+    <g fill="#ffb45c"><circle cx="32" cy="32" r="1.6"/><circle cx="16" cy="33" r="1.2"/></g>
+  </symbol>
+  <symbol id="d-emberjet" viewBox="0 0 48 48" overflow="visible">
+    <path d="M14 44 C16 34 20 32 18 24 C26 30 30 26 28 18 C34 26 36 34 34 44 Z"
+          fill="#ff7a2a" stroke="#a83a14" stroke-width="2" stroke-linejoin="round" class="sway"/>
+    <path d="M22 42 C24 34 26 32 25 26 C29 32 28 38 28 42 Z" fill="#ffd166"/>
+    <g fill="#ffb45c" class="glowpulse"><circle cx="16" cy="16" r="1.6"/><circle cx="33" cy="12" r="1.3"/><circle cx="25" cy="8" r="1.1"/></g>
+  </symbol>
+  <symbol id="d-ashtuft" viewBox="0 0 48 48" overflow="visible">
+    <g stroke="#7a6a68" stroke-width="2.6" fill="none" stroke-linecap="round" class="sway">
+      <path d="M14 44 C12 36 15 30 13 24"/><path d="M24 44 C25 34 22 30 25 22"/><path d="M34 44 C36 36 33 30 35 25"/>
+    </g>
+    <g fill="#a99a96"><circle cx="13" cy="24" r="2"/><circle cx="25" cy="22" r="2.2"/><circle cx="35" cy="25" r="1.8"/></g>
+  </symbol>
+  <symbol id="d-cinderpile" viewBox="0 0 48 48" overflow="visible">
+    <path d="M8 40 C10 30 18 26 24 26 C30 26 38 30 40 40 Z" fill="#3a2622" stroke="#1f100e" stroke-width="2" stroke-linejoin="round"/>
+    <g fill="#ff8f3a" class="glowpulse"><circle cx="18" cy="35" r="2"/><circle cx="27" cy="33" r="1.6"/><circle cx="33" cy="37" r="1.4"/></g>
+  </symbol>
   <symbol id="d-sign" viewBox="0 0 48 48" overflow="visible">
     <rect x="21" y="24" width="6" height="20" rx="2" fill="#8a663f" stroke="#5f4326" stroke-width="1.8"/>
     <rect x="6" y="8" width="36" height="18" rx="3" fill="#c8a35f" stroke="#5f4326" stroke-width="2"/>
@@ -434,7 +504,9 @@
     for (y = 0; y < H; y++) {
       for (x = 0; x < W; x++) {
         var zone, g;
-        if (x >= 106) { zone = "paradoxis"; g = "paradox"; } // portal-only Paradoxis (far east, sealed)
+        if (x >= 138) { zone = "caldera"; g = "magma"; }    // portal-only Emberdeep Caldera
+        else if (x >= 122) { zone = "sky"; g = "cloud"; }   // portal-only Skyhaven Reach
+        else if (x >= 106) { zone = "paradoxis"; g = "paradox"; } // portal-only Paradoxis (sealed)
         else if (x >= 90) { zone = "sanctum"; g = "depths"; } // portal-only Sunken Sanctum
         else if (x >= 74) { zone = "rift"; g = "void"; }   // portal-only Astral Rift
         else if (y < 10) {
@@ -511,7 +583,8 @@
                 : bt.zone === "forest" ? "pine" : bt.zone === "tundra" ? "icespire"
                 : bt.zone === "marsh" ? "deadtree" : bt.zone === "cavern" ? "stalag"
                 : bt.zone === "rift" ? "riftrock" : bt.zone === "sanctum" ? "ruinpillar"
-                : bt.zone === "paradoxis" ? "penrose" : "tree";
+                : bt.zone === "paradoxis" ? "penrose" : bt.zone === "sky" ? "cloudbank"
+                : bt.zone === "caldera" ? "obsidian" : "tree";
       }
     }
 
@@ -532,6 +605,17 @@
     for (y = 0; y < H; y++) for (x = 104; x <= 105; x++) {
       var pwt = T(x, y); pwt.block = true; pwt.zone = "paradoxis"; pwt.g = "paradox"; pwt.wild = false;
       pwt.deco = (x + y) % 3 === 0 ? "paradoxrift" : null;
+    }
+    // Sky wall (x=120,121) — open air below Skyhaven Reach; only the Windrise
+    // updraft carries you up there.
+    for (y = 0; y < H; y++) for (x = 120; x <= 121; x++) {
+      var swt = T(x, y); swt.block = true; swt.zone = "sky"; swt.g = "cloud"; swt.wild = false;
+      swt.deco = (x + y) % 3 === 0 ? "cloudbank" : null;
+    }
+    // Caldera wall (x=136,137) — sheer basalt between the sky and the Emberdeep.
+    for (y = 0; y < H; y++) for (x = 136; x <= 137; x++) {
+      var cwt = T(x, y); cwt.block = true; cwt.zone = "caldera"; cwt.g = "magma"; cwt.wild = false;
+      cwt.deco = (x + y) % 3 === 0 ? "obsidian" : null;
     }
 
     // Decorations + wild patches per zone
@@ -585,6 +669,18 @@
           else if (r < 0.34) { t3.deco = "glitchbit"; t3.wild = true; }
           else if (r < 0.44) { t3.deco = "floatcube"; t3.wild = true; }
           else if (r < 0.50) { t3.deco = "qmark"; }
+        } else if (t3.zone === "sky") {
+          if (r < 0.09) { t3.deco = "cloudbank"; t3.block = true; }
+          else if (r < 0.15) { t3.deco = "skyrock"; t3.block = true; }
+          else if (r < 0.34) { t3.deco = "windswirl"; t3.wild = true; }
+          else if (r < 0.44) { t3.deco = "skyflower"; t3.wild = true; }
+          else if (r < 0.50) { t3.deco = "sunbeam"; }
+        } else if (t3.zone === "caldera") {
+          if (r < 0.09) { t3.deco = "obsidian"; t3.block = true; }
+          else if (r < 0.15) { t3.deco = "lavapool"; t3.block = true; }
+          else if (r < 0.34) { t3.deco = "emberjet"; t3.wild = true; }
+          else if (r < 0.44) { t3.deco = "ashtuft"; t3.wild = true; }
+          else if (r < 0.50) { t3.deco = "cinderpile"; }
         } else if (t3.zone === "lake") {
           if (r < 0.45) { t3.deco = "reeds"; t3.wild = true; }
         } else { // meadow
@@ -653,10 +749,24 @@
       "Reality folds inside-out as you step through the Paradox Gate into Paradoxis!", "paradox");
     portal(111, 30, "portal-paradoxreturn", "Leave Paradoxis", { tx: 52, ty: 47 },
       "You slip back out of Paradoxis and reality snaps into place.", "paradox");
+    // The Windrise — a rising column of warm air on Ember Ridge that lifts you
+    // up to the floating islands of Skyhaven Reach.
+    portal(42, 8, "portal-sky", "🌬️ The Windrise", { tx: 127, ty: 26 },
+      "A warm updraft catches you and lifts you into the clouds of Skyhaven Reach!", "sky");
+    portal(127, 30, "portal-skyreturn", "Glide Back Down", { tx: 42, ty: 9 },
+      "You glide gently back down to Ember Ridge.", "sky");
+    // The Magma Vent — a lava tube at the bottom of the Gleamcave that drops
+    // you into the Emberdeep Caldera.
+    portal(68, 42, "portal-caldera", "🌋 The Magma Vent", { tx: 143, ty: 26 },
+      "You slide down the glowing lava tube into the Emberdeep Caldera!", "caldera");
+    portal(143, 30, "portal-calderareturn", "Climb Back Up", { tx: 68, ty: 43 },
+      "You climb the vent back up into the Gleamcave Hollows.", "caldera");
     // clear the teleport landing pads so you never arrive on a blocked tile
     [[79,44],[79,45],[78,44],[80,44],[78,45],[80,45],[35,34],[35,33],[34,34],[36,34],[35,35],
      [95,26],[95,25],[95,27],[94,26],[96,26],[95,28],[95,29],[95,30],[23,32],[22,32],[24,32],[23,31],
-     [111,26],[111,25],[111,27],[110,26],[112,26],[111,28],[111,29],[111,30],[52,47],[51,47],[53,47],[52,46],[50,46],[50,47]]
+     [111,26],[111,25],[111,27],[110,26],[112,26],[111,28],[111,29],[111,30],[52,47],[51,47],[53,47],[52,46],[50,46],[50,47],
+     [127,26],[127,25],[127,27],[126,26],[128,26],[127,28],[127,29],[127,30],[42,8],[42,9],[41,9],[43,9],[41,8],[43,8],
+     [143,26],[143,25],[143,27],[142,26],[144,26],[143,28],[143,29],[143,30],[68,42],[68,43],[67,43],[69,43],[67,42],[69,42]]
       .forEach(function (a) { var t = T(a[0], a[1]); if (t && t.g !== "water") { t.block = false; t.deco = null; t.wild = false; } });
 
     // Quest-giver houses — enter one to meet the person who offers a quest.
@@ -698,6 +808,7 @@
       [80, 12], [83, 30], [78, 20],
       [95, 14], [99, 40], [93, 46],
       [111, 14], [115, 38],
+      [127, 14], [131, 40], [143, 14], [147, 40],
     ];
     var ultraSpots = ultraCandidates.filter(function (s) {
       var t = T(s[0], s[1]); return t && !t.block && t.g !== "water";
@@ -716,6 +827,7 @@
     snow: ["#f2f9fd", "#e8f2f8"], bog: ["#6b7f58", "#647851"],
     cave: ["#3a3450", "#332e48"], void: ["#241a3e", "#1e1636"],
     depths: ["#1c6169", "#185860"], paradox: ["#3a1d5c", "#4a2570"],
+    cloud: ["#bfe0f5", "#b2d8f0"], magma: ["#4a1f18", "#5c2a1e"],
   };
 
   function renderWorld(map, svg) {

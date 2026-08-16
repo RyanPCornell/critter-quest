@@ -280,7 +280,12 @@
   function wildCandidate(c, zone) { return c.zone === zone && !c.evolved && !c.quest; }
   function pickCreature(zone) {
     // Speed Mythicals roam every region — a rare, special timed-catch sighting.
-    if (Math.random() < 0.015) {
+    // Ultra Speed Mythicals are the rarer, faster tier (more problems, same clock).
+    var speedRoll = Math.random();
+    if (speedRoll < 0.006) {
+      var ultras = CREATURES.filter(function (c) { return c.rarity === "ultraspeed"; });
+      if (ultras.length) return ultras[Math.floor(Math.random() * ultras.length)];
+    } else if (speedRoll < 0.021) {
       var speedsters = CREATURES.filter(function (c) { return c.rarity === "speedmythical"; });
       if (speedsters.length) return speedsters[Math.floor(Math.random() * speedsters.length)];
     }
@@ -298,6 +303,21 @@
       // Paradoxis is home only to the impossible Paradox Creatures
       var para = CREATURES.filter(function (c) { return c.zone === "paradoxis" && !c.evolved && !c.quest; });
       if (para.length) return para[Math.floor(Math.random() * para.length)];
+    }
+    if (zone === "sky" || zone === "caldera") {
+      // the two high-tier portal regions: their own natives, with a legendary now and then
+      if (Math.random() < 0.08) {
+        var hl = CREATURES.filter(function (c) { return c.rarity === "legendary"; });
+        return hl[Math.floor(Math.random() * hl.length)];
+      }
+      var hp = CREATURES.filter(function (c) { return wildCandidate(c, zone); });
+      if (hp.length) {
+        var hw = { common: 6, uncommon: 3, rare: 1.5, mythical: 0.5 };
+        var htot = hp.reduce(function (s, c) { return s + (hw[c.rarity] || 1); }, 0);
+        var hr = Math.random() * htot;
+        for (var hi = 0; hi < hp.length; hi++) { hr -= (hw[hp[hi].rarity] || 1); if (hr <= 0) return hp[hi]; }
+        return hp[0];
+      }
     }
     if (zone === "sanctum") {
       // the Sunken Sanctum: mostly its own creatures, with mythical & the odd legendary
@@ -337,6 +357,8 @@
     if (zone === "rift") return Math.random() < 0.35 ? "prism" : "rift";
     if (zone === "sanctum") return Math.random() < 0.30 ? "prism" : "sanctum";
     if (zone === "paradoxis") return Math.random() < 0.30 ? "prism" : "paradoxis";
+    if (zone === "sky") return Math.random() < 0.25 ? "prism" : "sky";
+    if (zone === "caldera") return Math.random() < 0.25 ? "prism" : "caldera";
     // lone orbs found in a biome are that biome's orb, with a rare prism find
     if (Math.random() < 0.06) return "prism";
     return orbForZone(zone === "any" ? "meadow" : zone);
@@ -393,18 +415,21 @@
         '<circle cx="24" cy="22" r="19" fill="#fff" opacity=".82" stroke="' + ringColor + '" stroke-width="3"/>' +
         '<g class="spawn-bob"><svg x="4" y="2" width="40" height="40" viewBox="0 0 120 120">' + (CRITTER_ART[creature.id] || "") + "</svg></g>" +
         (creature.rarity === "legendary" ? '<circle cx="24" cy="22" r="22" fill="none" stroke="#ffd94d" stroke-width="2" class="glowpulse"/>' : "") +
-        (creature.rarity === "speedmythical"
-          ? '<circle cx="24" cy="22" r="23" fill="none" stroke="#ff8c1a" stroke-width="2.4" class="glowpulse"/>' +
-            '<g stroke="#ff8c1a" stroke-width="2.2" stroke-linecap="round" opacity=".8"><path d="M-4 14 h7 M-6 22 h9 M-3 30 h6"/></g>' +
-            '<text x="40" y="10" font-size="15">⚡</text>' : "") +
+        (RARITY_INFO[creature.rarity].speed
+          ? '<circle cx="24" cy="22" r="23" fill="none" stroke="' + ringColor + '" stroke-width="2.4" class="glowpulse"/>' +
+            '<g stroke="' + ringColor + '" stroke-width="2.2" stroke-linecap="round" opacity=".8"><path d="M-4 14 h7 M-6 22 h9 M-3 30 h6"/></g>' +
+            '<text x="38" y="10" font-size="14">' + RARITY_INFO[creature.rarity].glyph + "</text>" : "") +
         (spec.orb ? '<svg x="30" y="26" width="20" height="20" viewBox="0 0 48 48">' + orbArt(spec.orb) + "</svg>" : "");
     }
     g.addEventListener("click", function (ev) { ev.stopPropagation(); clickSpawn(sp); });
     spawnLayer.appendChild(g);
     spawns.push(sp);
     if (spec.kind === "creature" && creature.rarity === "legendary") { toast("✨ A legendary presence stirs nearby..."); sfx("spawn"); }
-    if (spec.kind === "creature" && creature.rarity === "speedmythical") {
-      toast("⚡ A Speed Mythical — " + creature.name + " — is darting by to the " + relDir(tx, ty) + "! Reach it fast before it zips away!", 5200);
+    if (spec.kind === "creature" && RARITY_INFO[creature.rarity].speed) {
+      var ri = RARITY_INFO[creature.rarity];
+      toast(ri.glyph + " " + (creature.rarity === "ultraspeed" ? "An ULTRA Speed Mythical" : "A Speed Mythical") +
+        " — " + creature.name + " — is darting by to the " + relDir(tx, ty) + "! " +
+        (creature.rarity === "ultraspeed" ? "It's the fastest thing alive — " + ri.speedNeed + " problems, same 30 seconds!" : "Reach it fast before it zips away!"), 5600);
       sfx("level");
     }
   }
@@ -551,11 +576,15 @@
     $("enc-result").style.display = "none";
     $("enc-main").style.display = "";
     $("encounter").classList.add("open");
-    // Speed Mythical: a special orb-free timed catch (beat the clock on 5 times-tables)
-    var isSpeed = c.rarity === "speedmythical";
+    // Speed Mythical / Ultra Speed Mythical: an orb-free timed times-tables catch
+    var isSpeed = !!RARITY_INFO[c.rarity].speed;
+    var isUltraSpeed = c.rarity === "ultraspeed";
     $("encounter").classList.toggle("speed-mode", isSpeed);
+    $("encounter").classList.toggle("ultraspeed-mode", isUltraSpeed);
     if (isSpeed) {
-      $("enc-name").textContent = "⚡ A blazing-fast " + c.name + " zips past!";
+      $("enc-name").textContent = isUltraSpeed
+        ? "⚡⚡ An ULTRA-fast " + c.name + " streaks past!"
+        : "⚡ A blazing-fast " + c.name + " zips past!";
       startSpeedCatch();
       return;
     }
@@ -573,10 +602,16 @@
   // ---- Speed Mythical catch: 30-second timer, solve 5 times-tables ----
   var speedTimer = null, speedState = null;
   function startSpeedCatch() {
-    var TOTAL = 30000, NEED = 5;
+    // Same 30-second clock for both speed tiers — the Ultra tier just demands
+    // more problems in it (RARITY_INFO[...].speedNeed).
+    var ri = RARITY_INFO[ENC.creature.rarity];
+    var TOTAL = 30000, NEED = ri.speedNeed || 5;
+    var ultra = ENC.creature.rarity === "ultraspeed";
     speedState = { solved: 0, need: NEED, total: TOTAL, deadline: Date.now() + TOTAL, a: 0, b: 0 };
     $("enc-msg").innerHTML =
-      '<div class="speed-intro">⚡ Too fast for an orb! Solve <b>5 times-tables</b> before the timer runs out to befriend it!</div>' +
+      '<div class="speed-intro">' + ri.glyph + " " + (ultra
+        ? "Far too fast for an orb! This one is <b>Ultra</b> — solve <b>" + NEED + " times-tables</b> in the same 30 seconds!"
+        : "Too fast for an orb! Solve <b>" + NEED + " times-tables</b> before the timer runs out to befriend it!") + "</div>" +
       '<div class="speed-progress">Solved <b id="speed-solved">0</b> / ' + NEED + ' &nbsp;·&nbsp; <b id="speed-clock">30.0</b>s left</div>' +
       '<div class="speed-timer"><div id="speed-timer-fill"></div></div>';
     speedProblem();
@@ -1611,6 +1646,28 @@
     '<circle cx="24" cy="27" r="2" fill="' + OL + '"/><path d="M24 29 v3" stroke="' + OL + '" stroke-width="2"/>' +
     '<path d="M20 22 v-3 a4 4 0 0 1 8 0 v3" fill="none" stroke="#c9a24a" stroke-width="2.4"/>' +
     '<text x="24" y="7" font-size="9" text-anchor="middle" fill="#c58fe0">⧉</text>';
+  var SKY_PORTAL_ART =
+    '<defs><radialGradient id="sk-swirl" cx="50%" cy="55%" r="55%">' +
+    '<stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#bfe0f5"/><stop offset="100%" stop-color="#5aa9e6"/>' +
+    '</radialGradient></defs>' +
+    '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".14"/>' +
+    '<g fill="url(#sk-swirl)" stroke="' + OL + '" stroke-width="2.2">' +
+    '<circle cx="15" cy="34" r="8"/><circle cx="30" cy="33" r="10"/><circle cx="24" cy="38" r="8"/></g>' +
+    '<g fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".95">' +
+    '<path d="M10 22 h14 a4 4 0 1 0 -4 -4"><animate attributeName="opacity" values="1;.35;1" dur="2.2s" repeatCount="indefinite"/></path>' +
+    '<path d="M14 14 h10 a3.4 3.4 0 1 1 -3.4 3.4"><animate attributeName="opacity" values=".35;1;.35" dur="2.2s" repeatCount="indefinite"/></path>' +
+    '<path d="M16 28 h9"/></g>' +
+    '<g fill="#fff6cf"><circle cx="34" cy="14" r="2" class="glowpulse"/><circle cx="38" cy="22" r="1.3"/></g>';
+  var CALDERA_PORTAL_ART =
+    '<defs><radialGradient id="cd-swirl" cx="50%" cy="55%" r="55%">' +
+    '<stop offset="0%" stop-color="#fff3c4"/><stop offset="40%" stop-color="#ffa43a"/><stop offset="80%" stop-color="#e04a1e"/><stop offset="100%" stop-color="#7a1f0c"/>' +
+    '</radialGradient></defs>' +
+    '<ellipse cx="24" cy="44" rx="14" ry="4" fill="#000" opacity=".22"/>' +
+    '<path d="M6 34 C6 18 42 18 42 34 C42 44 6 44 6 34 Z" fill="#2e120c" stroke="' + OL + '" stroke-width="2.6"/>' +
+    '<ellipse cx="24" cy="32" rx="15" ry="9" fill="url(#cd-swirl)" stroke="#a83a14" stroke-width="2" class="glowpulse"/>' +
+    '<ellipse cx="21" cy="30" rx="7" ry="3.4" fill="#ffd166" opacity=".9"/>' +
+    '<g fill="#ff8f3a" class="glowpulse"><circle cx="14" cy="18" r="2"/><circle cx="30" cy="14" r="1.6"/><circle cx="36" cy="21" r="1.3"/></g>' +
+    '<g stroke="#ffb45c" stroke-width="1.8" stroke-linecap="round" opacity=".8"><path d="M18 16 l-2 -5 M28 20 l2 -5"/></g>';
   function hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }
   function compassDir(tx, ty) {
     var ns = ty < map.H * 0.34 ? "north" : ty > map.H * 0.66 ? "south" : "";
@@ -1709,6 +1766,8 @@
       } else if (poi.kind === "portal") {
         var portArt = poi.variant === "tide" ? TIDE_PORTAL_ART
           : poi.variant === "paradox" ? (poi.id === "portal-paradox" && !S.orbOfEntry ? PARADOX_SEALED_ART : PARADOX_PORTAL_ART)
+          : poi.variant === "sky" ? SKY_PORTAL_ART
+          : poi.variant === "caldera" ? CALDERA_PORTAL_ART
           : PORTAL_ART;
         html += '<g class="poi-marker" data-poi="' + poi.id + '" ' + tf + '>' +
           '<ellipse cx="24" cy="46" rx="15" ry="4" fill="#000" opacity=".16"/>' +

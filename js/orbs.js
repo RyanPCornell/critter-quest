@@ -23,10 +23,12 @@
     rift:   { name: "Astral Orb", color: "#5b6ee0", glow: "#c8d0ff", starry: true },
     sanctum:{ name: "Abyssal Orb", color: "#1f8f8a", glow: "#9ff0e4", bubbly: true },
     paradoxis: { name: "Paradox Orb", color: "#c026d3", glow: "#f2c4ff", glitch: true },
+    sky:    { name: "Zephyr Orb", color: "#5aa9e6", glow: "#dff0ff", winged: true },
+    caldera:{ name: "Magma Orb",  color: "#e04a1e", glow: "#ffd08a", molten: true },
     prism:  { name: "Prism Orb",  color: "#f06fb0", glow: "#ffd6ef", rainbow: true },
   };
 
-  window.ORB_ORDER = ["meadow", "forest", "lake", "ridge", "desert", "tundra", "marsh", "cavern", "rift", "sanctum", "paradoxis", "prism"];
+  window.ORB_ORDER = ["meadow", "forest", "lake", "ridge", "desert", "tundra", "marsh", "cavern", "rift", "sanctum", "paradoxis", "sky", "caldera", "prism"];
 
   // Which orb a critter needs: its habitat's orb; roaming legendaries -> prism.
   window.orbForZone = function (zone) {
@@ -59,6 +61,8 @@
       (o.starry ? '<g fill="#fff"><circle cx="18" cy="20" r="1.3"/><circle cx="29" cy="26" r="1"/><circle cx="24" cy="16" r="1.1"/><circle cx="31" cy="19" r="0.9"/><circle cx="16" cy="28" r="0.9"/></g>' : "") +
       (o.bubbly ? '<g fill="#eafffb" opacity=".9"><circle cx="19" cy="27" r="2"/><circle cx="28" cy="30" r="1.4"/><circle cx="30" cy="22" r="1.1"/><circle cx="22" cy="31" r="1"/></g>' : "") +
       (o.glitch ? '<g stroke="#f2c4ff" stroke-width="1.6" opacity=".9"><path d="M14 20 h8 M26 26 h7 M16 30 h6"/></g><g fill="#fff"><rect x="27" y="18" width="3" height="3"/><rect x="17" y="25" width="2.4" height="2.4"/></g>' : "") +
+      (o.winged ? '<g fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".95"><path d="M13 19 h7 a3 3 0 1 0 -3 -3"/><path d="M14 27 h9 a3 3 0 1 1 -3 3"/></g>' : "") +
+      (o.molten ? '<g fill="#ffd08a" opacity=".95"><path d="M14 26 q5 -4 10 0 q5 4 10 0 v4 q-5 4 -10 0 q-5 -4 -10 0 Z"/></g><g fill="#fff6d8"><circle cx="20" cy="18" r="1.4"/><circle cx="29" cy="21" r="1.1"/></g>' : "") +
       // equator band + button, like a poké-orb but soft
       '<path d="M8 24 a16 16 0 0 1 32 0" fill="none" stroke="' + OL + '" stroke-width="2.2" opacity=".55"/>' +
       '<circle cx="24" cy="24" r="4.6" fill="#fff" stroke="' + OL + '" stroke-width="2.2"/>' +
@@ -75,6 +79,6 @@
 
   // A fresh, generous starting stash so new trainers can catch right away.
   window.startingOrbs = function () {
-    return { meadow: 6, forest: 5, lake: 5, ridge: 5, desert: 5, tundra: 4, marsh: 4, cavern: 4, rift: 2, sanctum: 2, paradoxis: 0, prism: 2 };
+    return { meadow: 6, forest: 5, lake: 5, ridge: 5, desert: 5, tundra: 4, marsh: 4, cavern: 4, rift: 2, sanctum: 2, paradoxis: 0, sky: 2, caldera: 2, prism: 2 };
   };
 })();
