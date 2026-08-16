@@ -52,10 +52,39 @@
     { id: 4, name: "Picture Words", desc: "See a picture, fill in the missing letters", picture: true },
   ];
 
+  // 80 words per level. Keep each list inside its level's brief: 0 = 3–5
+  // letters, 1 = 6–8 letters, 2 = tricky spellings + long science words.
   window.SPELL_BANKS = {
-    0: ["cat","frog","tree","sun","fish","bird","cake","milk","star","rain","jump","blue","rock","wind","leaf","nest","pond","sand","moon","seed","claw","fur","tail","wing","paw","dust","fern","dune","glow","mist","song","hill","wave","twig","bark","moss","fox","bee","owl","newt"],
-    1: ["garden","planet","bridge","castle","monkey","pencil","orange","winter","basket","dragon","forest","meadow","desert","turtle","flower","branch","cactus","valley","stream","lantern","feather","volcano","pebble","serpent","whisper","thunder","crystal","journey","compass","explore","creature","blossom","glimmer","shimmer","burrow","seedling","current","horizon","boulder","village"],
-    2: ["necessary","rhythm","giraffe","knowledge","mysterious","temperature","environment","restaurant","vegetable","accommodate","beautiful","definitely","embarrass","february","neighbor","occasion","receive","separate","tomorrow","vacuum","weird","league","knight","island","calendar","curiosity","phenomenon","silhouette","miniature","camouflage","luminescent","territory","migration","hibernate","ecosystem","photosynthesis","meticulous","perseverance","extraordinary","onomatopoeia"],
+    0: [
+      "cat","frog","tree","sun","fish","bird","cake","milk","star","rain",
+      "jump","blue","rock","wind","leaf","nest","pond","sand","moon","seed",
+      "claw","fur","tail","wing","paw","dust","fern","dune","glow","mist",
+      "song","hill","wave","twig","bark","moss","fox","bee","owl","newt",
+      "snow","ice","lake","cave","path","road","gate","door","home","farm",
+      "barn","hay","egg","wolf","deer","bear","duck","crab","worm","moth",
+      "ant","bug","toad","seal","mole","hare","lamb","colt","cub","den",
+      "web","hive","pearl","shell","coal","gem","gold","iron","clay","mud",
+    ],
+    1: [
+      "garden","planet","bridge","castle","monkey","pencil","orange","winter","basket","dragon",
+      "forest","meadow","desert","turtle","flower","branch","cactus","valley","stream","lantern",
+      "feather","volcano","pebble","serpent","whisper","thunder","crystal","journey","compass","explore",
+      "creature","blossom","glimmer","shimmer","burrow","seedling","current","horizon","boulder","village",
+      "morning","evening","sunrise","sunset","rainbow","autumn","summer","spring","season","weather",
+      "climate","harvest","orchard","pasture","prairie","canyon","glacier","iceberg","blizzard","drizzle",
+      "puddle","ripple","lagoon","wetland","thicket","bramble","sapling","pollen","nectar","beetle",
+      "cricket","firefly","swallow","sparrow","dolphin","penguin","rabbit","badger","beaver","squirrel",
+    ],
+    2: [
+      "necessary","rhythm","giraffe","knowledge","mysterious","temperature","environment","restaurant","vegetable","accommodate",
+      "beautiful","definitely","embarrass","february","neighbor","occasion","receive","separate","tomorrow","vacuum",
+      "weird","league","knight","island","calendar","curiosity","phenomenon","silhouette","miniature","camouflage",
+      "luminescent","territory","migration","hibernate","ecosystem","photosynthesis","meticulous","perseverance","extraordinary","onomatopoeia",
+      "conscience","acquaintance","bizarre","broccoli","cemetery","committee","conscious","dilemma","exaggerate","fluorescent",
+      "foreign","guarantee","height","hierarchy","humorous","independent","jewelry","leisure","maintenance","maneuver",
+      "mischievous","noticeable","occurrence","parallel","playwright","possession","privilege","pronunciation","recommend","resilience",
+      "schedule","sincerely","thorough","twelfth","atmosphere","biodiversity","chlorophyll","constellation","metamorphosis","precipitation",
+    ],
   };
 
   // Parse a pasted/uploaded word list: accepts one word per line, or
