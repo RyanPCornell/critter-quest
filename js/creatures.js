@@ -1296,6 +1296,219 @@ window.CREATURES = [
     story: "The Nightjet is the fastest flyer in the world after dusk, a swift stitched from twilight that hunts the evening insects in blinks and blurs. It flies rings around anything that chases it, and gives its trust to the one trainer nimble enough — in wit — to keep up.",
   },
 
+  // ============= FILLING OUT THE OLDER REGIONS (fourth wave) ============
+  // ------------------------------ TUNDRA --------------------------------
+  {
+    id: "frostling", name: "Frostling", species: "Snow Kit", types: ["Frost"],
+    zone: "tundra", rarity: "common", hp: 44, atk: 44, def: 40, spd: 56,
+    height: "0.4 m", weight: "5 kg",
+    powers: [
+      { n: "Powder Dash", d: "Kicks up a spray of loose snow and darts away inside it." },
+      { n: "Warm Curl", d: "Curls into a ball so snug that the snow around it never melts." },
+    ],
+    story: "Frostlings tunnel just beneath the surface of the Frostpeak drifts, popping up in unexpected places with snow on their noses. They are famous for stealing a single mitten — never the pair — and hiding it somewhere you will find it next spring.",
+  },
+  {
+    id: "nivyx", name: "Nivyx", species: "Icicle Sprite", types: ["Frost"],
+    zone: "tundra", rarity: "uncommon", hp: 42, atk: 54, def: 44, spd: 62,
+    height: "0.5 m", weight: "4 kg",
+    powers: [
+      { n: "Icicle Chime", d: "Rings its hanging icicles into a bright, freezing little melody." },
+      { n: "Glaze", d: "Breathes a thin sheet of clear ice over anything that holds still too long." },
+    ],
+    story: "A Nivyx hangs from the eaves of Frostpeak outposts pretending very hard to be an ordinary icicle. It gives itself away by humming. Villagers leave them alone, because a roof with a Nivyx on it never, ever leaks.",
+  },
+  {
+    id: "boreath", name: "Boreath", species: "Northwind Elk", types: ["Frost", "Gale"],
+    zone: "tundra", rarity: "uncommon", hp: 58, atk: 58, def: 52, spd: 64,
+    height: "1.5 m", weight: "180 kg",
+    powers: [
+      { n: "Northwind Call", d: "Bugles once and the cold north wind comes running like a dog." },
+      { n: "Snowbreak", d: "Shoulders through a drift as if the snow had politely stepped aside." },
+    ],
+    story: "Boreath herds walk the Frostpeak ridgelines in single file, and the wind follows behind them like a loyal hound. Trackers say that if you find a Boreath trail you can walk it all the way home, because the herd always knows the safest way down.",
+  },
+  {
+    id: "tundrox", name: "Tundrox", species: "Tundra Ox", types: ["Frost", "Stone"],
+    zone: "tundra", rarity: "rare", hp: 76, atk: 68, def: 78, spd: 36,
+    height: "1.8 m", weight: "620 kg",
+    powers: [
+      { n: "Blizzard Wall", d: "Plants itself in front of a storm and simply refuses to be moved." },
+      { n: "Frostplate Hide", d: "Its shaggy coat freezes into overlapping plates of armor-hard ice." },
+    ],
+    story: "When a blizzard comes down off the peaks, every smaller creature in the tundra runs for the nearest Tundrox and huddles in its wind-shadow. The Tundrox stands there, entirely unbothered, chewing, until the storm gives up and goes somewhere else.",
+  },
+
+  // ------------------------ GLEAMCAVE HOLLOWS ---------------------------
+  {
+    id: "quartzling", name: "Quartzling", species: "Quartz Grub", types: ["Gem"],
+    zone: "cavern", rarity: "common", hp: 46, atk: 40, def: 52, spd: 40,
+    height: "0.3 m", weight: "4 kg",
+    powers: [
+      { n: "Crystal Chew", d: "Munches raw quartz and grows a new glittering segment for each meal." },
+      { n: "Hard Shell", d: "Pulls into its crystal casing, which is every bit as tough as it looks." },
+    ],
+    story: "Quartzlings inch along the Gleamcave walls polishing them shiny as they go. A tunnel that sparkles has had Quartzlings in it recently, and miners consider that the surest sign of a safe, well-tended passage.",
+  },
+  {
+    id: "stalagmyte", name: "Stalagmyte", species: "Dripstone Mite", types: ["Stone"],
+    zone: "cavern", rarity: "common", hp: 48, atk: 44, def: 54, spd: 38,
+    height: "0.4 m", weight: "9 kg",
+    powers: [
+      { n: "Drip Build", d: "Adds one patient mineral layer to itself with every drop of cave water." },
+      { n: "Stand Still", d: "Freezes so perfectly that it becomes, for all purposes, a rock." },
+    ],
+    story: "A Stalagmyte grows about the width of a hair each year and considers this a brisk pace. Most of the 'stalagmites' in the Gleamcave are exactly what they look like — but a few of them, if you wait long enough, will blink.",
+  },
+  {
+    id: "umbrite", name: "Umbrite", species: "Shadow Geode", types: ["Shade", "Gem"],
+    zone: "cavern", rarity: "uncommon", hp: 52, atk: 58, def: 56, spd: 50,
+    height: "0.6 m", weight: "18 kg",
+    powers: [
+      { n: "Open Dark", d: "Cracks itself open to reveal a hollow full of perfect, drinkable darkness." },
+      { n: "Facet Shade", d: "Splits a beam of light into shadows instead of colors, which should not be possible." },
+    ],
+    story: "Break open an ordinary geode and you find crystals. Break open an Umbrite — please don't — and you find night. They roll quietly through the deepest Gleamcave tunnels, keeping the dark tidy and well distributed.",
+  },
+  {
+    id: "veinwyrm", name: "Veinwyrm", species: "Ore Wyrm", types: ["Stone", "Gem"],
+    zone: "cavern", rarity: "rare", hp: 70, atk: 72, def: 74, spd: 46,
+    height: "3.2 m", weight: "400 kg",
+    powers: [
+      { n: "Seam Swim", d: "Slips through solid rock along a seam of ore as easily as an eel through water." },
+      { n: "Mineral Bite", d: "Bites out a mouthful of raw ore and leaves the gemstones politely behind." },
+    ],
+    story: "Veinwyrms carve the Gleamcave's richest tunnels by eating their way along the ore seams. Every great mine in history was really a Veinwyrm's old burrow, discovered later by someone who took the credit.",
+  },
+
+  // --------------------------- ASTRAL RIFT ------------------------------
+  {
+    id: "starmote", name: "Starmote", species: "Stardust Mote", types: ["Lumen"],
+    zone: "rift", rarity: "common", hp: 40, atk: 46, def: 36, spd: 66,
+    height: "0.2 m", weight: "almost none",
+    powers: [
+      { n: "Twinkle", d: "Blinks on and off so quickly it seems to be in several places at once." },
+      { n: "Dust Drift", d: "Scatters into glittering dust, drifts a little way, and reassembles." },
+    ],
+    story: "Starmotes are the crumbs left over from making stars. Whole shoals of them drift through the Astral Rift, and if you hold very still one will land on your outstretched hand and sit there, warm as a candle, until you move.",
+  },
+  {
+    id: "aethermoth", name: "Aethermoth", species: "Aether Moth", types: ["Shade", "Lumen"],
+    zone: "rift", rarity: "uncommon", hp: 48, atk: 56, def: 42, spd: 68,
+    height: "0.7 m", weight: "1 kg",
+    powers: [
+      { n: "Duskwing", d: "One wing is night and one is starlight; it flies by trading between them." },
+      { n: "Lantern Lure", d: "Glows softly to guide lost drifters back toward the return portal." },
+    ],
+    story: "Aethermoths circle the Astral Rift the way ordinary moths circle a porch light — except here, they are the light. Trainers who get turned around in the Rift look for a slow-circling Aethermoth, because it is always orbiting something worth finding.",
+  },
+  {
+    id: "quasarix", name: "Quasarix", species: "Quasar Drake", types: ["Lumen", "Spark"],
+    zone: "rift", rarity: "rare", hp: 68, atk: 78, def: 56, spd: 76,
+    height: "2.4 m", weight: "48 kg",
+    powers: [
+      { n: "Beam Breath", d: "Exhales a narrow, blinding jet of light that carries across the whole Rift." },
+      { n: "Core Flare", d: "The star burning in its chest flares, and everything nearby casts two shadows." },
+    ],
+    story: "A Quasarix has a small, genuine star where its heart should be, and the strain of carrying it makes the creature glow at both ends. It is the brightest thing in the Astral Rift and knows it, which is why it poses so much.",
+  },
+
+  // -------------------------- GLOWFEN MARSH -----------------------------
+  {
+    id: "reedling", name: "Reedling", species: "Reed Piper", types: ["Leaf", "Aqua"],
+    zone: "marsh", rarity: "common", hp: 44, atk: 44, def: 40, spd: 58,
+    height: "0.4 m", weight: "1.4 kg",
+    powers: [
+      { n: "Reed Whistle", d: "Pipes a thin, cheerful note through its hollow stem of a beak." },
+      { n: "Stalk Stand", d: "Balances on one leg atop a single reed, entirely unbothered by wind." },
+    ],
+    story: "Reedlings nest in the thickest cattails of Glowfen and pipe to one another all day long. Marsh folk have learned the whole vocabulary: three short notes means a heron, and one long note means somebody has dropped their lunch.",
+  },
+  {
+    id: "peatpaw", name: "Peatpaw", species: "Peat Badger", types: ["Leaf", "Shade"],
+    zone: "marsh", rarity: "uncommon", hp: 56, atk: 56, def: 54, spd: 46,
+    height: "0.7 m", weight: "26 kg",
+    powers: [
+      { n: "Bog Dig", d: "Tunnels through soggy peat as easily as most creatures walk on dry land." },
+      { n: "Mud Cloak", d: "Coats itself in dark peat until it is simply another lump of the marsh." },
+    ],
+    story: "Peatpaws keep the Glowfen's underground in order, turning the peat and opening little channels so the water goes where it should. Everything green in the marsh owes a Peatpaw a favor, and the Peatpaws have never once mentioned it.",
+  },
+  {
+    id: "fenwing", name: "Fenwing", species: "Fen Heron", types: ["Gale", "Shade"],
+    zone: "marsh", rarity: "rare", hp: 62, atk: 70, def: 52, spd: 72,
+    height: "1.4 m", weight: "6 kg",
+    powers: [
+      { n: "Silent Wade", d: "Steps through standing water without leaving a single ripple." },
+      { n: "Mistrise", d: "Lifts off in a sudden burst of marsh fog and is simply gone." },
+    ],
+    story: "A Fenwing can stand so still for so long that frogs use it as a perch. Then, at some moment known only to the Fenwing, it moves — and the fog comes up, and the heron is on the far side of the marsh looking innocent.",
+  },
+
+  // -------------------------- SUNDUNE DESERT ----------------------------
+  {
+    id: "sunscale", name: "Sunscale", species: "Sun Lizard", types: ["Sand", "Ember"],
+    zone: "desert", rarity: "uncommon", hp: 50, atk: 58, def: 48, spd: 60,
+    height: "0.6 m", weight: "7 kg",
+    powers: [
+      { n: "Solar Bask", d: "Soaks up noon sunlight and releases it as a shimmering heat-haze after dark." },
+      { n: "Scale Flash", d: "Angles its mirror-bright scales to blind whatever is chasing it." },
+    ],
+    story: "Sunscales spend all morning collecting sunshine and all night giving it back, which is why the rocks of Sundune stay warm long after sunset. Desert travellers sleep beside a Sunscale's boulder on purpose.",
+  },
+  {
+    id: "oasisling", name: "Oasisling", species: "Oasis Sprite", types: ["Aqua", "Sand"],
+    zone: "desert", rarity: "rare", hp: 60, atk: 62, def: 58, spd: 64,
+    height: "0.7 m", weight: "9 kg",
+    powers: [
+      { n: "Wellspring", d: "Presses a palm to the sand and clean water rises where there was none." },
+      { n: "Green Promise", d: "Where it sleeps, one stubborn palm tree is standing by morning." },
+    ],
+    story: "Every oasis in Sundune was started by an Oasisling deciding that this particular patch of nowhere ought to have water in it. They are shy, generous, and quietly responsible for every caravan that ever made it across.",
+  },
+
+  // ------------- QUEST CREATURES (fourth-wave quests) -------------------
+  {
+    id: "fablewyrm", name: "Fablewyrm", species: "Story Serpent", types: ["Frost", "Song"],
+    zone: "tundra", rarity: "mythical", quest: "q-frostfable", guard: 2, hp: 86, atk: 84, def: 76, spd: 80,
+    height: "5.0 m", weight: "290 kg",
+    powers: [
+      { n: "Told Tale", d: "Speaks a story aloud and, for as long as the telling lasts, it is true." },
+      { n: "Frostbound Verse", d: "Freezes a moment into a scene as still and perfect as a page." },
+    ],
+    story: "Every fable the Frostpeak villages tell on winter nights came from the Fablewyrm, who has been collecting stories since before there were people to tell them to. It sleeps coiled around the oldest tale of all, and will only share that one with a trainer who brings it a story it has never heard.",
+  },
+  {
+    id: "resonyx", name: "Resonyx", species: "Echo Sovereign", types: ["Song", "Gem"],
+    zone: "cavern", rarity: "mythical", quest: "q-deepecho", guard: 2, hp: 88, atk: 86, def: 82, spd: 66,
+    height: "3.0 m", weight: "1,100 kg",
+    powers: [
+      { n: "Deep Echo", d: "Answers a single note with the voice of the entire mountain." },
+      { n: "Crystal Chorus", d: "Every crystal in the cavern rings at once, in perfect harmony." },
+    ],
+    story: "Shout into the Gleamcave and the answer that comes back is not your own voice — it is Resonyx, repeating you kindly and a little better than you managed. It has been holding every echo ever made down there, and it remembers all of them.",
+  },
+  {
+    id: "aetherion", name: "Aetherion", species: "Rift Warden", types: ["Lumen", "Shade"],
+    zone: "rift", rarity: "mythical", quest: "q-riftwalker", guard: 2, hp: 90, atk: 88, def: 78, spd: 84,
+    height: "4.0 m", weight: "unmeasured",
+    powers: [
+      { n: "Seam Mend", d: "Draws a torn edge of reality closed with a stitch of pure starlight." },
+      { n: "Warden's Gaze", d: "Looks straight through a creature to the place it truly belongs." },
+    ],
+    story: "Aetherion has walked the Astral Rift since the first star, mending the seams where the sky wears thin. It never speaks, but trainers who meet it report the distinct feeling of having been checked over, approved of, and gently sent home.",
+  },
+  {
+    id: "mirevail", name: "Mirevail", species: "Masked Marshlord", types: ["Shade", "Leaf"],
+    zone: "marsh", rarity: "mythical", quest: "q-marshlight", guard: 2, hp: 84, atk: 86, def: 74, spd: 78,
+    height: "2.6 m", weight: "150 kg",
+    powers: [
+      { n: "Hundred Masks", d: "Wears a different face for every visitor, and none of them are the real one." },
+      { n: "Lantern Waltz", d: "Leads the marsh lights in a slow dance that is very hard to look away from." },
+    ],
+    story: "Once a year the lights of Glowfen Marsh gather for a masquerade, and Mirevail presides over it in a mask nobody has ever seen twice. It is playful rather than wicked — but do remember to say thank you before you leave, because it does keep score.",
+  },
+
   // ========================= SKYHAVEN REACH =============================
   {
     id: "nimbik", name: "Nimbik", species: "Cloud Lamb", types: ["Gale"],
