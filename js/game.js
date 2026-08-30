@@ -594,6 +594,7 @@
       : "It watches you curiously. Answer challenges to weaken its will, then it throws itself into your orb!");
     startChallenges({
       pref: S.settings.challenge, method: null, forceKangaroo: ENC.forceKangaroo,
+      forceAlgebra: !!c.algebra, algebraType: c.algebra,
       mathLevel: S.settings.mathLevel, spellLevel: S.settings.spellLevel,
       actionWord: "throw your orb", doWord: "Throw!",
     }, $("enc-challenge"), resolveAnswer, function () { return ENC.busy; });
@@ -733,6 +734,7 @@
   function nextChallenge() {
     var box = chalBox;
     box.innerHTML = "";
+    if (chalCtx.forceAlgebra) { showAlgebra(box); return; }
     if (chalCtx.forceKangaroo) { showKangaroo(box); return; }
     var pref = chalCtx.pref;
     if (pref === "ask" && chalCtx.method == null) {
@@ -757,6 +759,46 @@
     var link = el("button", "switch-link", current === "math" ? "switch to spelling →" : "← switch to math");
     link.onclick = function () { chalCtx.method = current === "math" ? "spell" : "math"; nextChallenge(); };
     box.appendChild(link);
+  }
+
+  // Solve-for-x challenge, used by the algebra-gated critters of the Scales
+  // quest. A "Show me the steps" link reveals the full worked solution, so a
+  // stuck player is taught rather than just stopped.
+  function showAlgebra(box) {
+    var type = chalCtx.algebraType || "two-step";
+    var prob = makeAlgebraProblem(type);
+    var info = ALGEBRA_BY_ID[type] || {};
+    box.appendChild(el("div", "chal-title",
+      "⚖️ Solve for <b>x</b> to " + chalCtx.actionWord + "  <span class='lvl-tag alg'>" + esc(info.name || "Algebra") + "</span>"));
+    box.appendChild(el("div", "alg-q", prob.equation));
+    var row = el("div", "answer-row center");
+    var input = document.createElement("input");
+    input.type = "number"; input.step = "1"; input.className = "answer-input"; input.placeholder = "x = ?";
+    input.autocomplete = "off";
+    var btn = el("button", "big-btn go", chalCtx.doWord);
+    row.appendChild(input); row.appendChild(btn);
+    box.appendChild(row);
+
+    var hint = el("button", "switch-link", "🤔 Show me the steps");
+    var shown = false;
+    hint.onclick = function () {
+      if (shown) return;
+      shown = true;
+      hint.textContent = "(worked through below — now try it!)";
+      var work = document.createElement("div");
+      work.innerHTML = algebraWorkHTML(prob);
+      box.insertBefore(work, row);
+    };
+    box.appendChild(hint);
+
+    function submit() {
+      if (chalBusy() || input.value.trim() === "") return;
+      chalResolve(parseInt(input.value, 10) === prob.answer,
+        "x was <b>" + prob.answer + "</b>." + algebraWorkHTML(prob));
+    }
+    btn.onclick = submit;
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    setTimeout(function () { input.focus(); }, 50);
   }
 
   // Visual Math-Kangaroo problem (typed answer OR multiple-choice).
@@ -1837,10 +1879,25 @@
     // quest "talk to this person" step takes priority over the usual clue
     var talk = questTalkFor(poi.id);
     if (talk) {
+      // A talk step may also TEACH: the townsperson works an example of one
+      // algebra type on the spot before sending you on.
+      var teach = "";
+      if (talk.step.teach) {
+        var ti = ALGEBRA_BY_ID[talk.step.teach] || {};
+        if (!npcState.demo || npcState.demoType !== talk.step.teach) {
+          npcState.demo = makeAlgebraProblem(talk.step.teach); npcState.demoType = talk.step.teach;
+        }
+        teach = '<div class="alg-lesson"><div class="alg-lesson-tag">' + esc(ti.name || "") + "</div>" +
+          '<div class="alg-idea">💡 ' + esc(ti.idea || "") + "</div>" +
+          algebraWorkHTML(npcState.demo) +
+          '<div class="alg-answer-line">so <b>x = ' + npcState.demo.answer + "</b></div></div>" +
+          (talk.step.line2 ? '<div class="npc-line">"' + esc(talk.step.line2) + '"</div>' : "");
+      }
       body.innerHTML = av +
         '<div class="npc-name">' + esc(poi.name) + "</div>" +
         '<div class="quest-title" style="color:' + talk.quest.color + '">' + talk.quest.icon + " " + esc(talk.quest.name) + "</div>" +
         '<div class="npc-line">"' + esc(talk.step.line || "Ah, you're the one on the quest! Here's what you need.") + '"</div>' +
+        teach +
         '<button class="big-btn go" id="npc-talk-go">Continue</button>';
       $("npc-talk-go").onclick = function () { closeModal("npc"); advanceQuest(talk.quest.id); };
       return;
@@ -2559,6 +2616,101 @@
       $("quest-go").onclick = submit;
       input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
       setTimeout(function () { input.focus(); }, 60);
+    } else if (step.kind === "lesson") {
+      // The giver works one example all the way through, names the idea, then
+      // hands you one of the same kind to try. Teaching, then practice.
+      var info = ALGEBRA_BY_ID[step.algebra] || {};
+      if (!questState.lesson || questState.lesson.at !== st.step) {
+        questState.lesson = { at: st.step, demo: makeAlgebraProblem(step.algebra), prob: makeAlgebraProblem(step.algebra) };
+      }
+      var L = questState.lesson;
+      act.innerHTML =
+        '<div class="npc-line">"' + esc(step.giverLine || "Watch closely.") + '"</div>' +
+        '<div class="alg-lesson"><div class="alg-lesson-tag">' + esc(info.name || "") + "</div>" +
+        '<div class="alg-idea">💡 ' + esc(info.idea || "") + "</div>" +
+        '<div class="alg-demo-label">Watch — here is one worked all the way through:</div>' +
+        algebraWorkHTML(L.demo) +
+        '<div class="alg-answer-line">so <b>x = ' + L.demo.answer + "</b></div></div>" +
+        '<div class="alg-your-turn">Now you try one:</div>' +
+        '<div class="alg-q">' + L.prob.equation + "</div>" +
+        '<div class="answer-row center"><input class="answer-input" id="quest-input" type="number" inputmode="numeric" placeholder="x = ?" autocomplete="off"><button class="big-btn go" id="quest-go">Solve</button></div>' +
+        '<div class="npc-feedback" id="quest-feedback"></div>';
+      var lin = $("quest-input");
+      function lsubmit() {
+        if (lin.value.trim() === "") return;
+        if (parseInt(lin.value, 10) === L.prob.answer) { sfx("correct"); advanceQuest(def.id); renderQuestGiver(); }
+        else {
+          sfx("wrong");
+          $("quest-feedback").innerHTML = "❌ Not quite — x was <b>" + L.prob.answer + "</b>. Here's how:" +
+            algebraWorkHTML(L.prob) + "<div>Try a fresh one…</div>";
+          setTimeout(function () { questState.lesson = null; renderQuestGiver(); }, 4200);
+        }
+      }
+      $("quest-go").onclick = lsubmit;
+      lin.addEventListener("keydown", function (e) { if (e.key === "Enter") lsubmit(); });
+      setTimeout(function () { var i = $("quest-input"); if (i) i.focus(); }, 60);
+    } else if (step.kind === "fillstep") {
+      // A half-finished solution: the player supplies the missing moves and
+      // the missing results.
+      if (!questState.fill || questState.fill.at !== st.step) {
+        questState.fill = { at: st.step, data: makeAlgebraFill(step.algebra, step.blanks || 2), picked: {} };
+      }
+      var F = questState.fill, fp = F.data.prob;
+      var byRow = {}; F.data.blanks.forEach(function (b) { byRow[b.row] = b; });
+      var html = '<div class="npc-line">"' + esc(step.giverLine || "Finish the working.") + '"</div>' +
+        '<div class="alg-work fill"><div class="alg-eq start">' + fp.equation + "</div>";
+      fp.rows.forEach(function (r, i) {
+        var b = byRow[i];
+        var opCell, resCell;
+        if (b && b.kind === "op") {
+          opCell = '<span class="alg-op"><span class="alg-choices" data-row="' + i + '">' +
+            b.choices.map(function (c) {
+              return '<button class="alg-choice" data-row="' + i + '" data-val="' + esc(c) + '">' + esc(c) + "</button>";
+            }).join("") + "</span></span>";
+        } else {
+          opCell = '<span class="alg-op">' + r.opText + "</span>";
+        }
+        if (b && b.kind === "val") {
+          resCell = '<span class="alg-res">' + r.left + ' = <input class="alg-blank" data-row="' + i + '" type="number" inputmode="numeric" placeholder="?"></span>';
+        } else {
+          resCell = '<span class="alg-res">' + r.left + " = " + r.right + "</span>";
+        }
+        html += '<div class="alg-row" data-rowline="' + i + '">' + opCell + resCell + "</div>";
+      });
+      html += "</div>" +
+        '<div class="catch-actions"><button class="big-btn go" id="fill-check">Check my working</button></div>' +
+        '<div class="npc-feedback" id="quest-feedback"></div>';
+      act.innerHTML = html;
+
+      act.querySelectorAll(".alg-choice").forEach(function (btn) {
+        btn.onclick = function () {
+          var r = btn.getAttribute("data-row");
+          act.querySelectorAll('.alg-choice[data-row="' + r + '"]').forEach(function (o) { o.classList.remove("sel"); });
+          btn.classList.add("sel");
+          F.picked[r] = btn.getAttribute("data-val");
+        };
+      });
+      $("fill-check").onclick = function () {
+        var allRight = true, anyBlank = false;
+        F.data.blanks.forEach(function (b) {
+          var line = act.querySelector('[data-rowline="' + b.row + '"]');
+          var got;
+          if (b.kind === "op") got = F.picked[b.row];
+          else { var inp = act.querySelector('.alg-blank[data-row="' + b.row + '"]'); got = inp && inp.value.trim(); }
+          if (!got) { anyBlank = true; allRight = false; if (line) line.classList.add("miss"); return; }
+          var ok = String(got) === String(b.answer);
+          if (line) { line.classList.remove("miss"); line.classList.toggle("bad", !ok); line.classList.toggle("good", ok); }
+          if (!ok) allRight = false;
+        });
+        if (anyBlank) { $("quest-feedback").textContent = "Fill in every blank first!"; return; }
+        if (allRight) { sfx("correct"); $("quest-feedback").innerHTML = "✅ Perfect working — so x = <b>" + fp.answer + "</b>!";
+          setTimeout(function () { advanceQuest(def.id); renderQuestGiver(); }, 900); }
+        else {
+          sfx("wrong");
+          $("quest-feedback").innerHTML = "❌ Not quite. The red lines aren't right — here's the full working:" + algebraWorkHTML(fp);
+          setTimeout(function () { questState.fill = null; renderQuestGiver(); }, 5000);
+        }
+      };
     } else if (step.kind === "riddle") {
       act.innerHTML = '<div class="npc-line">"' + esc(step.giverLine || "Answer my riddle…") + '"</div>' +
         '<div class="quest-riddle">' + esc(step.prompt) + "</div>" +

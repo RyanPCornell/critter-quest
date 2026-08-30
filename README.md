@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **178 original critters** by solving **math
+hand-drawn SVG world and catch **183 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -91,14 +91,14 @@ Works great on desktop and iPad.
   spires and ash. Home to Sootpip, Slagpup, Charcoil, Basaltusk, Pyrolith,
   Ashenmaw and the mythical Volcanyx, plus its own **Magma Orb**.
   **Thirteen regions in all.**
-- **Quests** (📜): visit the person living in one of **nineteen houses** to start a
+- **Quests** (📜): visit the person living in one of **twenty houses** to start a
   multi-step story quest. Steps can ask you to solve a **math puzzle**, answer a
   **word riddle**, **talk to a specific townsperson**, collect a glowing magical
   item, catch a special quest-only critter, travel to a secret location that only
   appears once the quest is active, face a boss, or fight the **Guardian of
   Paradoxis**. Each quest introduces its own creature and items and grants a big
   XP + orb reward. The 📜 Quests button opens your quest log with every active
-  and available quest. There are **nineteen quests**:
+  and available quest. There are **twenty quests**:
   - Five **starter quests** (4–5 steps): the Emberheart Cinders, Greenheart
     Hollow, Song of the Deep, Singing Dunes, and Chasing the Starfall.
   - Two **epic quests** (8 steps, tougher math, a **mythical boss with an aura
@@ -126,6 +126,20 @@ Works great on desktop and iPad.
     (Riftwalker Sable → mend the thinning seams of the sky with Aetherion), and
     **The Marshlight Masquerade** (Mask-maker Wren-Ellis → make a mask for
     Mirevail's yearly marsh ball, and remember to say thank you).
+  - One **algebra epic** — **⚖️ The Scales of Aequor** (Keeper Aequa's Balance
+    House, **21 steps**), which quietly teaches how to solve multi-step
+    equations. Five tiers, each introducing one idea: two-step equations →
+    combining like terms → variables on both sides → the distributive property →
+    the full multi-step method. Every tier is **taught** (Keeper Aequa works an
+    example all the way through, and townsfolk explain the idea in their own
+    words — Mayor Pom counts votes in piles, Weigh-master Ballas shares out
+    crates), then **practised** by filling in the missing moves and results of a
+    half-written solution, then **tested** by catching the critter that embodies
+    it — Balanx the level scales, Tallyx who gathers matching tallies, Mirrolyn
+    who stands on both sides, Sharewing whose bracket wings share out to
+    everyone, and finally **Aequoron**, Keeper of the Great Scale, who asks for
+    all five ideas at once. Every one of these encounters is a *solve for x*,
+    with a "show me the steps" button that teaches rather than blocks.
   - One **Epic Quest** — **The Key to Paradoxis** (Professor Vex's Study, **12
     steps** across four regions, weaving math, three paradox riddles, two
     townsfolk, and Paradox-Shard hunts on the ridge, in the Sunken Sanctum and

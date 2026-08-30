@@ -1296,6 +1296,66 @@ window.CREATURES = [
     story: "The Nightjet is the fastest flyer in the world after dusk, a swift stitched from twilight that hunts the evening insects in blinks and blurs. It flies rings around anything that chases it, and gives its trust to the one trainer nimble enough — in wit — to keep up.",
   },
 
+  // ===================== THE SCALES OF AEQUOR ===========================
+  //  Algebra-gated quest creatures. Each one's nature IS the idea it guards —
+  //  the `algebra` field makes its encounter ask a solve-for-x of that type
+  //  instead of the usual math/spelling challenge.
+  {
+    id: "balanx", name: "Balanx", species: "Scale Sprite", types: ["Lumen", "Stone"],
+    zone: "meadow", rarity: "rare", quest: "q-scales", algebra: "two-step",
+    hp: 58, atk: 60, def: 62, spd: 56,
+    height: "0.6 m", weight: "exactly as much as it needs to",
+    powers: [
+      { n: "Even Keel", d: "Whatever is added to one of its pans it instantly adds to the other." },
+      { n: "Undo", d: "Takes back the last thing that happened to it, then the thing before that." },
+    ],
+    story: "A Balanx carries a tiny set of scales that is never, ever uneven. Drop a pebble on one side and it will calmly drop an identical pebble on the other. It is the first thing every student of the Scales meets, because it teaches the only rule that matters: do the same to both sides.",
+  },
+  {
+    id: "tallyx", name: "Tallyx", species: "Tally Beetle", types: ["Leaf", "Gem"],
+    zone: "forest", rarity: "rare", quest: "q-scales", algebra: "like-terms",
+    hp: 56, atk: 62, def: 58, spd: 60,
+    height: "0.4 m", weight: "3 kg",
+    powers: [
+      { n: "Gather Like", d: "Sweeps everything matching into one tidy pile before it does anything else." },
+      { n: "Count Up", d: "Adds its identical little tallies together into a single larger mark." },
+    ],
+    story: "A Tallyx cannot bear to see matching things kept apart. Leave four acorns and three acorns on opposite ends of a log and it will fret until they are one pile of seven. Foresters find this endearing; the Tallyx finds it simply obvious.",
+  },
+  {
+    id: "mirrolyn", name: "Mirrolyn", species: "Mirror Deer", types: ["Aqua", "Lumen"],
+    zone: "lake", rarity: "rare", quest: "q-scales", algebra: "both-sides",
+    hp: 60, atk: 64, def: 58, spd: 68,
+    height: "1.2 m", weight: "48 kg",
+    powers: [
+      { n: "Both Shores", d: "Stands on both banks of Lake Lumen at once, and is the same on each." },
+      { n: "Bring Across", d: "Carries whatever is on one side over to join what is on the other." },
+    ],
+    story: "Look at a Mirrolyn's reflection in Lake Lumen and you will find it is the deer that is the reflection. It exists on both sides of everything, and the only way to hold its attention is to gather all of something onto one side — which, it turns out, is exactly how you solve for x.",
+  },
+  {
+    id: "sharewing", name: "Sharewing", species: "Bracket Moth", types: ["Gale", "Song"],
+    zone: "ridge", rarity: "rare", quest: "q-scales", algebra: "distribute",
+    hp: 54, atk: 66, def: 52, spd: 72,
+    height: "0.7 m", weight: "1 kg",
+    powers: [
+      { n: "Share Out", d: "Whatever it is handed, it gives a full share to every creature inside its wings." },
+      { n: "Bracket Fold", d: "Folds its curved wings around a group so they can all be carried at once." },
+    ],
+    story: "Give a Sharewing one crumb and it will give one crumb to each of the little ones sheltering under its curved, bracket-shaped wings — not one crumb split between them, a whole one each. It has never understood why anyone finds this surprising.",
+  },
+  {
+    id: "aequoron", name: "Aequoron", species: "Keeper of the Great Scale", types: ["Lumen", "Stone"],
+    zone: "meadow", rarity: "mythical", quest: "q-scales", algebra: "multi", guard: 2,
+    hp: 92, atk: 86, def: 84, spd: 70,
+    height: "3.6 m", weight: "perfectly balanced",
+    powers: [
+      { n: "The Great Scale", d: "Holds up the enormous scale on which every equation in the world is weighed." },
+      { n: "Solve", d: "Strips a tangled problem down, step by patient step, until only the answer is left." },
+    ],
+    story: "Aequoron has held the Great Scale of Aequor level since the first person asked 'how many?' It does not fight so much as set you a problem and wait, with enormous patience, to see whether you have understood. Everything it has ever guarded, it guards for the person who finally works it out.",
+  },
+
   // ============= FILLING OUT THE OLDER REGIONS (fourth wave) ============
   // ------------------------------ TUNDRA --------------------------------
   {

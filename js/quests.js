@@ -489,6 +489,90 @@ window.QUESTS = [
     reward: { xp: 640, orbs: { marsh: 6, prism: 2 } },
     outro: "Mirevail wears your mask for the last dance of the night, and when it lifts the edge to say goodbye there is — just for a second — an ordinary, delighted face underneath. You remembered to say thank you. Wren-Ellis says that is why you were invited at all.",
   },
+
+  // ================= THE SCALES OF AEQUOR (algebra epic) ================
+  //  A long teaching quest. Each tier of the Great Scale introduces one new
+  //  idea about solving multi-step equations: it is TAUGHT (lesson / a
+  //  townsperson working an example), then PRACTISED by finishing a piece of
+  //  written working (fillstep), then TESTED by catching the creature that
+  //  embodies it. The boss asks for all of it at once.
+  {
+    id: "q-scales", name: "The Scales of Aequor", color: "#c9a227", icon: "⚖️", epic: true,
+    house: { id: "house-balance", name: "The Balance House", tx: 22, ty: 36, deco: "house1" },
+    giverName: "Keeper Aequa", giverAv: { skin: 2, hair: 1, shirt: 4, pants: 1, hat: "none", glasses: "round" },
+    intro: "The Great Scale of Aequor has weighed every question ever asked, and it has begun to tilt. Its Keeper, Aequoron, will only right it for someone who understands what a scale really is — that the two sides must always stay equal, no matter what you do to them. That is the whole secret of solving for x. Stay with me and I'll teach you the five tiers, one at a time. It is a long road, but you will finish it knowing something rather wonderful.",
+    steps: [
+      // ---- TIER I: two-step equations ----
+      { kind: "lesson", algebra: "two-step",
+        giverLine: "Tier one. An equation is a scale: the = is the pivot. To get x on its own you undo what was done to it — and you undo it in reverse order, like taking off your boots before your socks. Watch.",
+        text: "Tier I — learn to solve a two-step equation with Keeper Aequa." },
+      { kind: "fillstep", algebra: "two-step", blanks: 2,
+        giverLine: "Now write it out yourself. I've left gaps — choose the move, and give me the number it leaves behind.",
+        text: "Tier I — fill in the missing steps of a two-step solution." },
+      { kind: "catch", creature: "balanx", zone: "meadow",
+        text: "Tier I — a Balanx has appeared in the meadow. Solve its equation to befriend it." },
+
+      // ---- TIER II: combining like terms ----
+      { kind: "talk", npc: "npc-mayor", npcName: "Mayor Pom", teach: "like-terms",
+        line: "Aequa sent you? Ha! Here's how I count votes: I don't add a 'yes' to a 'no' — I put all the yeses in one pile first. Same with x's. Four x and three x are just seven x. Tidy up before you do anything else.",
+        line2: "Gather the matching terms, then carry on exactly as you did in tier one. Off you go!",
+        text: "Tier II — Mayor Pom counts votes in piles. Go and hear how it applies to x." },
+      { kind: "lesson", algebra: "like-terms",
+        giverLine: "Pom is right, of course. Before you undo anything, gather the x-terms into one. Then it's a two-step equation again — which you already know how to finish.",
+        text: "Tier II — learn to combine like terms with Keeper Aequa." },
+      { kind: "fillstep", algebra: "like-terms", blanks: 2,
+        giverLine: "Your turn. Remember: gather first, then undo in reverse order.",
+        text: "Tier II — fill in the missing steps of a combining-like-terms solution." },
+      { kind: "catch", creature: "tallyx", zone: "forest",
+        text: "Tier II — a Tallyx is gathering acorns in the Whispering Woods. Solve its equation to befriend it." },
+      { kind: "item", item: "scale-weight", itemName: "Balance Weight", emoji: "⚖️", count: 3, zone: "meadow",
+        text: "Tier II — gather 3 Balance Weights around Willowmere; the Great Scale will need them." },
+
+      // ---- TIER III: variables on both sides ----
+      { kind: "talk", npc: "npc-scribe", npcName: "Scribe Tessel", teach: "both-sides",
+        line: "x on BOTH sides? Don't panic. Take the smaller pile of x's away from both sides at once — the scale stays level, and suddenly there's only x on the left. Then it's an ordinary tier-one problem again.",
+        line2: "Every hard equation is just an easy one wearing a disguise. Peel the disguise off.",
+        text: "Tier III — Scribe Tessel knows what to do when x appears twice. Go and ask." },
+      { kind: "lesson", algebra: "both-sides",
+        giverLine: "Tier three, and the trick Tessel gave you: subtract the smaller x-term from both sides. All the x's end up together, and the scale never tilts.",
+        text: "Tier III — learn to handle variables on both sides with Keeper Aequa." },
+      { kind: "fillstep", algebra: "both-sides", blanks: 2,
+        giverLine: "Show me. Move the x's first, then the number, then divide.",
+        text: "Tier III — fill in the missing steps of a variables-on-both-sides solution." },
+      { kind: "catch", creature: "mirrolyn", zone: "lake",
+        text: "Tier III — a Mirrolyn stands on both shores of Lake Lumen. Solve its equation to befriend it." },
+
+      // ---- TIER IV: the distributive property ----
+      { kind: "talk", npc: "npc-weigher", npcName: "Weigh-master Ballas", teach: "distribute",
+        line: "Brackets! Look — if I've three crates and each holds an x and a 4, I don't have 'three crates', I have 3x and 12. The number outside gets shared with EVERYTHING inside. Not just the first thing. Everything.",
+        line2: "Share it out fairly, then you're back on familiar ground.",
+        text: "Tier IV — Weigh-master Ballas can explain brackets. Go and see him." },
+      { kind: "lesson", algebra: "distribute",
+        giverLine: "Tier four. The number outside the brackets multiplies every term inside — that's all 'distributing' means. Share it out, then solve as before.",
+        text: "Tier IV — learn the distributive property with Keeper Aequa." },
+      { kind: "fillstep", algebra: "distribute", blanks: 2,
+        giverLine: "Distribute first. Then undo, in reverse order, as always.",
+        text: "Tier IV — fill in the missing steps of a distributive solution." },
+      { kind: "catch", creature: "sharewing", zone: "ridge",
+        text: "Tier IV — a Sharewing is handing out shares on Ember Ridge. Solve its equation to befriend it." },
+
+      // ---- TIER V: the full multi-step ----
+      { kind: "lesson", algebra: "multi",
+        giverLine: "The fifth and last tier, and it is only the other four stacked together: distribute, gather the x's onto one side, then undo in reverse order. Nothing new — just all of it at once.",
+        text: "Tier V — learn the full multi-step method with Keeper Aequa." },
+      { kind: "fillstep", algebra: "multi", blanks: 3,
+        giverLine: "This is the master working. Four lines, three gaps. Take your time — I have every confidence.",
+        text: "Tier V — complete the master working (three missing steps)." },
+      { kind: "item", item: "true-token", itemName: "Token of True Measure", emoji: "🪙", count: 3, zone: "meadow",
+        text: "Tier V — collect 3 Tokens of True Measure; Aequoron accepts no other payment." },
+      { kind: "goto", loc: "loc-greatscale", locName: "the Great Scale", tx: 24, ty: 40, zone: "meadow",
+        text: "Carry the Weights and Tokens to the Great Scale, west of the village." },
+      { kind: "boss", creature: "aequoron", loc: "loc-greatscale", tx: 24, ty: 40, zone: "meadow",
+        text: "Aequoron rises to weigh you. Solve its full multi-step equations to befriend it (its Scale will guard it)." },
+    ],
+    reward: { xp: 1000, orbs: { meadow: 6, prism: 4 } },
+    outro: "Aequoron sets the Great Scale level with one finger and it stays there, perfectly balanced, for the first time in years. \"You did not memorise,\" Keeper Aequa says, sounding rather pleased. \"You understood. There is a great deal of difference, and the Scale can tell.\" You can solve for x now — properly, any equation they care to throw at you. That is the real reward, and Aequoron knew it all along.",
+  },
 ];
 
 window.QUEST_BY_ID = {};

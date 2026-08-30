@@ -802,6 +802,8 @@
     npc(52, 33, "npc-trader",  "Trader Vish",  { skin: 3, hair: 6, shirt: 0, pants: 3, hat: "beanie", glasses: "shades" });
     npc(14, 6,  "npc-icewright", "Icewright Thora", { skin: 0, hair: 0, shirt: 5, pants: 2, hat: "beanie", glasses: "square" });
     npc(24, 45, "npc-fenwarden", "Fen-warden Cobb", { skin: 5, hair: 4, shirt: 2, pants: 3, hat: "ranger", glasses: "green" });
+    npc(34, 28, "npc-scribe",   "Scribe Tessel",   { skin: 1, hair: 5, shirt: 1, pants: 1, hat: "none", glasses: "round" });
+    npc(44, 38, "npc-weigher",  "Weigh-master Ballas", { skin: 4, hair: 2, shirt: 7, pants: 2, hat: "cap", glasses: "square" });
 
     // Ultra Legendary hiding spots — validated walkable tiles across the world.
     var ultraCandidates = [
