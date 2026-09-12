@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **183 original critters** by solving **math
+hand-drawn SVG world and catch **193 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -49,10 +49,13 @@ Works great on desktop and iPad.
     continue a dot sequence, tell the time, compare rows; all hand-drawn SVG).
     A Settings toggle can also make **every legendary require a Kangaroo puzzle**
     (no other challenge choice is offered for legendaries).
-  - **Spelling** — 5 levels. The easiest is **Picture Words**: a picture (emoji
+  - **Spelling** — 6 levels. The easiest is **Picture Words**: a picture (emoji
     or hand-drawn SVG, 130+ of them) is shown with some letters blanked, and you
-    fill in the missing letters — no timer. The 3 word-list levels flash the
-    word for an adjustable time (0.5–6 s), then you type it. Plus **My Word
+    fill in the missing letters — no timer. The word-list levels flash the
+    word for an adjustable time (0.5–6 s), then you type it: **Hatchling** (3–5
+    letters), **Fledgling** (6–8), **Wordsmith** (tricky spellings & long science
+    words), and **🐝 Spelling Bee Words** (a curated bee list — edit it between
+    the `BEE LIST START/END` markers in `js/challenges.js`). Plus **My Word
     Bank** (paste or upload a .txt/.csv list — e.g. a weekly spelling list).
 - **Ultra Legendaries:** a tier above legendary (★★★★★). Only one or two exist
   in the world at a time, each waiting at a fixed hidden spot (a glowing ✦

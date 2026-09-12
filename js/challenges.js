@@ -50,6 +50,7 @@
     { id: 2, name: "Wordsmith", desc: "Tricky spellings & long words" },
     { id: 3, name: "My Word Bank", desc: "Your own uploaded word list" },
     { id: 4, name: "Picture Words", desc: "See a picture, fill in the missing letters", picture: true },
+    { id: 5, name: "Spelling Bee Words", desc: "Classic spelling-bee words" },
   ];
 
   // 80 words per level. Keep each list inside its level's brief: 0 = 3–5
@@ -97,6 +98,22 @@
       "invertebrate","magnetism","marsupial","meteorite","microscope","molecular","nocturnal","nutrients","organism","oxygen",
       "parasite","pollination","predator","renewable","respiration","sediment","symbiosis","telescope","thermometer","vertebrate",
     ],
+
+    // ======================================================================
+    //  5 = SPELLING BEE WORDS
+    //  ★ PASTE RYAN'S BEE LIST HERE — replace everything between the two
+    //    markers below. One word per entry, lowercase, in quotes, comma after.
+    //    Nothing else needs changing; the level picks up the new list at once.
+    // ---------------------------- BEE LIST START --------------------------
+    5: [
+      "accordion","acquiesce","aerial","aisle","allegiance","ambulance","anemone","antique","apparatus","appetite",
+      "aquarium","architect","artificial","asthma","atrocious","audible","auxiliary","avalanche","bachelor","balloon",
+      "banquet","barometer","beguile","beleaguer","beneficial","bicycle","biscuit","bouquet","boutique","brochure",
+      "buoyant","bureau","cafeteria","caffeine","cantaloupe","caramel","caricature","carriage","catastrophe","cathedral",
+      "cellar","census","chalet","chameleon","chandelier","chaos","chauffeur","chimney","chocolate","chorus",
+      "cinnamon","colonel","colossal","commemorate","conscientious","cornucopia","courteous","croissant","crescendo","cylinder",
+    ],
+    // ----------------------------- BEE LIST END ---------------------------
   };
 
   // Parse a pasted/uploaded word list: accepts one word per line, or

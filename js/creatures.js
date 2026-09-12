@@ -1296,6 +1296,115 @@ window.CREATURES = [
     story: "The Nightjet is the fastest flyer in the world after dusk, a swift stitched from twilight that hunts the evening insects in blinks and blurs. It flies rings around anything that chases it, and gives its trust to the one trainer nimble enough — in wit — to keep up.",
   },
 
+  // ============ FIFTH WAVE — topping up the portal regions ==============
+  // -------------------------- SUNKEN SANCTUM ----------------------------
+  {
+    id: "pearlnub", name: "Pearlnub", species: "Pearl Snail", types: ["Aqua"],
+    zone: "sanctum", rarity: "common", hp: 46, atk: 38, def: 56, spd: 34,
+    height: "0.3 m", weight: "5 kg",
+    powers: [
+      { n: "Nacre Coat", d: "Layers its shell with mother-of-pearl until it shines like the inside of the moon." },
+      { n: "Slow and Sure", d: "Gets there eventually, and arrives entirely unbothered." },
+    ],
+    story: "Pearlnubs inch along the Sanctum's fallen columns polishing them to a shine, and every few years each one produces a single flawless pearl and leaves it somewhere it will be found. Nobody has ever worked out how they decide who deserves one.",
+  },
+  {
+    id: "brineling", name: "Brineling", species: "Saltwater Imp", types: ["Aqua", "Shade"],
+    zone: "sanctum", rarity: "uncommon", hp: 50, atk: 58, def: 44, spd: 62,
+    height: "0.5 m", weight: "6 kg",
+    powers: [
+      { n: "Salt Sting", d: "Flicks a stinging spray of concentrated brine with unerring aim." },
+      { n: "Cellar Dark", d: "Slips into the black water under a flagstone and waits, grinning." },
+    ],
+    story: "Brinelings are the Sanctum's mischief-makers, hiding sandals and rearranging the offerings on the altars overnight. Maridian has given up scolding them and now simply counts everything twice.",
+  },
+  {
+    id: "vaultfin", name: "Vaultfin", species: "Reliquary Ray", types: ["Aqua", "Gem"],
+    zone: "sanctum", rarity: "rare", hp: 64, atk: 66, def: 70, spd: 58,
+    height: "2.0 m", weight: "62 kg",
+    powers: [
+      { n: "Sealed Hold", d: "Folds its wings into a locked vault that nothing has ever been pried open." },
+      { n: "Keeper's Glide", d: "Sweeps silently along the temple corridors it has guarded for centuries." },
+    ],
+    story: "When the Sanctum sank, the priests gave their treasures to the Vaultfins for safekeeping — and the Vaultfins are still keeping them, gliding the drowned corridors with the temple's riches folded away inside. They will hand it all back the moment someone proves they are the rightful owner. So far, nobody has.",
+  },
+
+  // --------------------------- SKYHAVEN REACH ---------------------------
+  {
+    id: "driftling", name: "Driftling", species: "Seedcloud Sprite", types: ["Gale"],
+    zone: "sky", rarity: "common", hp: 42, atk: 42, def: 38, spd: 64,
+    height: "0.3 m", weight: "0.2 kg",
+    powers: [
+      { n: "Idle Drift", d: "Goes wherever the wind is going and is perfectly happy about it." },
+      { n: "Catch a Ride", d: "Hooks its fluff onto a passing creature and travels the Reach for free." },
+    ],
+    story: "Driftlings have no particular destination and never have. They blow across Skyhaven in soft white clusters, landing on whatever is warmest, and this is the entire plan. Somehow it works out for them every single time.",
+  },
+  {
+    id: "halolark", name: "Halolark", species: "Ringlight Lark", types: ["Lumen", "Gale"],
+    zone: "sky", rarity: "uncommon", hp: 48, atk: 56, def: 42, spd: 74,
+    height: "0.4 m", weight: "0.5 kg",
+    powers: [
+      { n: "Sun Ring", d: "Circles so fast at dawn that it leaves a glowing halo hanging in the air." },
+      { n: "Morning Call", d: "Sings the note that tells all of Skyhaven the sun is on its way up." },
+    ],
+    story: "The rings of light you sometimes see around the sun are Halolarks, flying a perfect circle so quickly that the eye joins them together. They take this duty extremely seriously and are quietly furious on cloudy days.",
+  },
+  {
+    id: "thermalon", name: "Thermalon", species: "Updraft Drake", types: ["Gale", "Ember"],
+    zone: "sky", rarity: "rare", hp: 66, atk: 70, def: 56, spd: 76,
+    height: "2.2 m", weight: "34 kg",
+    powers: [
+      { n: "Column Climb", d: "Finds the warm column rising off the ridge and spirals it to the very top." },
+      { n: "Warm Breath", d: "Breathes heat beneath a struggling flier to give it a lift." },
+    ],
+    story: "Thermalons are the reason the Windrise exists at all — a dozen of them breathing warmth into the same column of air, day after day, century after century. Aeronaut Wren calls them the caretakers of the road to Skyhaven, and always waves on the way up.",
+  },
+
+  // ------------------------- EMBERDEEP CALDERA --------------------------
+  {
+    id: "ignilit", name: "Ignilit", species: "Ember Grub", types: ["Ember"],
+    zone: "caldera", rarity: "common", hp: 44, atk: 46, def: 44, spd: 42,
+    height: "0.3 m", weight: "3 kg",
+    powers: [
+      { n: "Glow Crawl", d: "Leaves a warm luminous trail behind it along the tunnel floor." },
+      { n: "Coal Nap", d: "Curls up in the embers and, rather sensibly, goes to sleep." },
+    ],
+    story: "Ignilits are the first thing to appear on a lava flow once it has cooled just enough to walk on. They light the way for everything that comes after, which in the Emberdeep makes them something close to pioneers.",
+  },
+  {
+    id: "flarecrest", name: "Flarecrest", species: "Flare Rooster", types: ["Ember"],
+    zone: "caldera", rarity: "uncommon", hp: 52, atk: 62, def: 46, spd: 66,
+    height: "0.7 m", weight: "8 kg",
+    powers: [
+      { n: "Crest Flare", d: "Snaps its comb into a fan of flame twice the size of its head." },
+      { n: "Dawn Holler", d: "Crows the hour even though there has never been a sunrise down here." },
+    ],
+    story: "There is no daylight in the Emberdeep and no reason whatsoever to announce the dawn, but every single morning a Flarecrest does it anyway, flaring its burning comb and hollering into the dark. The other creatures have come to rely on it.",
+  },
+
+  // ---------------------------- ASTRAL RIFT -----------------------------
+  {
+    id: "gleamdrift", name: "Gleamdrift", species: "Lightshoal Minnow", types: ["Lumen"],
+    zone: "rift", rarity: "common", hp: 40, atk: 44, def: 38, spd: 68,
+    height: "0.2 m", weight: "almost none",
+    powers: [
+      { n: "Shoal Shine", d: "Turns with a thousand others at once, and the whole Rift flashes bright." },
+      { n: "Slipstream Swim", d: "Swims through empty space as though it were perfectly ordinary water." },
+    ],
+    story: "Gleamdrifts move through the Astral Rift in enormous glittering shoals that bank and turn as one body. Trainers who drift among them describe it as being inside a school of fish made of light, which is very close to exactly what it is.",
+  },
+  {
+    id: "voidpetal", name: "Voidpetal", species: "Nightbloom", types: ["Shade", "Leaf"],
+    zone: "rift", rarity: "uncommon", hp: 50, atk: 54, def: 50, spd: 52,
+    height: "0.6 m", weight: "2 kg",
+    powers: [
+      { n: "Open at Dark", d: "Unfolds its petals in the total absence of light, which should be impossible." },
+      { n: "Stardust Pollen", d: "Releases a slow drift of glittering pollen that seeds new little stars." },
+    ],
+    story: "A Voidpetal is a flower that grows where there is no soil, no water and no sun, and it blooms anyway out of what appears to be sheer stubbornness. Botanists who have studied them come back changed, and mostly just say that it is very beautiful out there.",
+  },
+
   // ===================== THE SCALES OF AEQUOR ===========================
   //  Algebra-gated quest creatures. Each one's nature IS the idea it guards —
   //  the `algebra` field makes its encounter ask a solve-for-x of that type
