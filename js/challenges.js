@@ -105,13 +105,21 @@
     //    markers below. One word per entry, lowercase, in quotes, comma after.
     //    Nothing else needs changing; the level picks up the new list at once.
     // ---------------------------- BEE LIST START --------------------------
+    //  Ryan's spelling-bee list, kept in his three rounds. All lowercase, to
+    //  match the other banks. (The answer check is case-insensitive either way.)
     5: [
-      "accordion","acquiesce","aerial","aisle","allegiance","ambulance","anemone","antique","apparatus","appetite",
-      "aquarium","architect","artificial","asthma","atrocious","audible","auxiliary","avalanche","bachelor","balloon",
-      "banquet","barometer","beguile","beleaguer","beneficial","bicycle","biscuit","bouquet","boutique","brochure",
-      "buoyant","bureau","cafeteria","caffeine","cantaloupe","caramel","caricature","carriage","catastrophe","cathedral",
-      "cellar","census","chalet","chameleon","chandelier","chaos","chauffeur","chimney","chocolate","chorus",
-      "cinnamon","colonel","colossal","commemorate","conscientious","cornucopia","courteous","croissant","crescendo","cylinder",
+      // --- Round 1 ---
+      "cliffs","yarn","tangy","parade","truck","humble","sloth","rich","source","heart",
+      "even","fear","thirsty","claws","peer","spray","pump","peach","carve","lizard",
+      "market","house","rabbit","entire","drink","still","sweater","bamboo","breeze","mossy",
+      // --- Round 2 ---
+      "sorceress","compliment","annoyance","examine","cutlery","suspension","molten","oregon","beneath","disappointment",
+      "proclaim","snarkiness","chimpanzees","woven","prejudice","persnickety","tiptoed","custody","glaucoma","sputnik",
+      "bellowed","lounge","duration","clever","opposite","tissues","granola","polaroid","japanese","arthritis",
+      "duende","incident","hypothermia","calico","invite","rigid","indigo","inferior","reservoir","marlin",
+      "collateral","magnesium","cuddle","pheasants","halloween","permit","segregation","predecessor","pinata","organism",
+      // --- Round 3 ---
+      "cataract","psychological","eponymous","quizzically","aphrodite","solenodon","appetizing","mysticetes","tripoli","canter",
     ],
     // ----------------------------- BEE LIST END ---------------------------
   };
