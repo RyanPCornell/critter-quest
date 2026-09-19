@@ -28,7 +28,7 @@ window.CREATURES = [
   {
     id: "bloomble", name: "Bloomble", species: "Blossom Hare", types: ["Leaf"],
     zone: "meadow", rarity: "common", hp: 42, atk: 36, def: 34, spd: 58,
-    evolvesTo: "floralope", evolveOrbs: 12,
+    evolvesTo: "floralope", evolveOrbs: 12, evolveWords: 3,
     height: "0.4 m", weight: "3.1 kg",
     powers: [
       { n: "Petal Flurry", d: "Spins in place and flings a whirlwind of razor-edged petals." },
@@ -48,6 +48,7 @@ window.CREATURES = [
   },
   {
     id: "chirpit", name: "Chirpit", species: "Melody Finch", types: ["Song", "Gale"],
+    evolvesTo: "trillark", evolveOrbs: 12, evolveWords: 3,
     zone: "meadow", rarity: "common", hp: 40, atk: 34, def: 30, spd: 70,
     height: "0.25 m", weight: "0.6 kg",
     powers: [
@@ -90,6 +91,7 @@ window.CREATURES = [
   // ---------------------------- WHISPERING WOODS ---------------------------
   {
     id: "mossling", name: "Mossling", species: "Moss Golem", types: ["Leaf", "Stone"],
+    evolvesTo: "mosswarden", evolveOrbs: 12, evolveWords: 3,
     zone: "forest", rarity: "common", hp: 58, atk: 40, def: 60, spd: 22,
     height: "0.5 m", weight: "12 kg",
     powers: [
@@ -153,7 +155,7 @@ window.CREATURES = [
   {
     id: "puddlet", name: "Puddlet", species: "Droplet Axolotl", types: ["Aqua"],
     zone: "lake", rarity: "common", hp: 46, atk: 32, def: 36, spd: 50,
-    evolvesTo: "cascolotl", evolveOrbs: 12,
+    evolvesTo: "cascolotl", evolveOrbs: 12, evolveWords: 3,
     height: "0.25 m", weight: "1.4 kg",
     powers: [
       { n: "Splish Splash", d: "Flails adorably, somehow soaking everything within ten paces." },
@@ -163,6 +165,7 @@ window.CREATURES = [
   },
   {
     id: "finling", name: "Finling", species: "Sailfin Minnow", types: ["Aqua", "Gale"],
+    evolvesTo: "rapidfin", evolveOrbs: 12, evolveWords: 3,
     zone: "lake", rarity: "common", hp: 40, atk: 36, def: 32, spd: 68,
     height: "0.3 m", weight: "1.1 kg",
     powers: [
@@ -216,7 +219,7 @@ window.CREATURES = [
   {
     id: "emberling", name: "Emberling", species: "Cinder Newt", types: ["Ember"],
     zone: "ridge", rarity: "common", hp: 44, atk: 48, def: 34, spd: 54,
-    evolvesTo: "magmander", evolveOrbs: 12,
+    evolvesTo: "magmander", evolveOrbs: 12, evolveWords: 3,
     height: "0.3 m", weight: "1.8 kg",
     powers: [
       { n: "Spark Spit", d: "Spits a hot little ember that pops like a firecracker." },
@@ -226,6 +229,7 @@ window.CREATURES = [
   },
   {
     id: "rocklet", name: "Rocklet", species: "Pebble Sprite", types: ["Stone"],
+    evolvesTo: "granitor", evolveOrbs: 12, evolveWords: 3,
     zone: "ridge", rarity: "common", hp: 52, atk: 44, def: 62, spd: 30,
     height: "0.25 m", weight: "9 kg",
     powers: [
@@ -278,6 +282,7 @@ window.CREATURES = [
   // ----------------------------- SUNDUNE DESERT ----------------------------
   {
     id: "duneling", name: "Duneling", species: "Sand Fox", types: ["Sand", "Gale"],
+    evolvesTo: "duneveil", evolveOrbs: 12, evolveWords: 3,
     zone: "desert", rarity: "common", hp: 43, atk: 40, def: 34, spd: 69,
     height: "0.4 m", weight: "2.9 kg",
     powers: [
@@ -491,7 +496,7 @@ window.CREATURES = [
   {
     id: "snowlet", name: "Snowlet", species: "Snow Pup", types: ["Frost"],
     zone: "tundra", rarity: "common", hp: 44, atk: 38, def: 38, spd: 56,
-    evolvesTo: "frostfang", evolveOrbs: 12,
+    evolvesTo: "frostfang", evolveOrbs: 12, evolveWords: 3,
     height: "0.4 m", weight: "4.2 kg",
     powers: [
       { n: "Powder Pounce", d: "Leaps into deep snow and erupts out somewhere unexpected, grinning." },
@@ -533,6 +538,7 @@ window.CREATURES = [
   // ----------------------------- GLOWFEN MARSH -----------------------------
   {
     id: "bogbit", name: "Bogbit", species: "Bog Tadpole", types: ["Aqua", "Shade"],
+    evolvesTo: "bogbaron", evolveOrbs: 12, evolveWords: 3,
     zone: "marsh", rarity: "common", hp: 39, atk: 33, def: 34, spd: 58,
     height: "0.2 m", weight: "0.8 kg",
     powers: [
@@ -586,7 +592,7 @@ window.CREATURES = [
   {
     id: "sparkmole", name: "Sparkmole", species: "Tunnel Sparker", types: ["Spark", "Stone"],
     zone: "cavern", rarity: "common", hp: 43, atk: 46, def: 42, spd: 50,
-    evolvesTo: "voltcavor", evolveOrbs: 12,
+    evolvesTo: "voltcavor", evolveOrbs: 12, evolveWords: 3,
     height: "0.35 m", weight: "5.5 kg",
     powers: [
       { n: "Static Dig", d: "Rubs through the rock so fast its fur crackles with blue sparks." },
@@ -596,6 +602,7 @@ window.CREATURES = [
   },
   {
     id: "glowbat", name: "Glowbat", species: "Gleam Bat", types: ["Shade", "Lumen"],
+    evolvesTo: "noctilume", evolveOrbs: 12, evolveWords: 3,
     zone: "cavern", rarity: "common", hp: 39, atk: 44, def: 30, spd: 66,
     height: "0.3 m", weight: "0.5 kg",
     powers: [
@@ -633,6 +640,121 @@ window.CREATURES = [
       { n: "Gemquake", d: "Stamps once; geodes crack open across the floor in a glittering wave." },
     ],
     story: "A Geodrake sleeps for a hundred years curled around a single growing geode, and when it finally hatches free, the hollow gem it leaves behind becomes a Gleamcave landmark. The oldest chambers are ringed with these empty geode-thrones, each the size of a house.",
+  },
+
+  // --------------------------- EVOLUTIONS, WAVE 2 --------------------------
+  //  Ten more evolved forms. Like the originals these never spawn wild — the
+  //  only way to get one is to raise its base form, gather the orbs, and pass
+  //  the Spelling Trial.
+  {
+    id: "trillark", name: "Trillark", species: "Dawn Chorister", types: ["Song", "Gale"],
+    zone: "meadow", rarity: "uncommon", evolved: true, evolvesFrom: "chirpit",
+    hp: 58, atk: 60, def: 44, spd: 84,
+    height: "0.5 m", weight: "0.9 kg",
+    powers: [
+      { n: "Dawn Chorus", d: "Starts the morning song, and every bird in Willowmere joins in behind it." },
+      { n: "Rolling Trill", d: "Spins out a run of notes so long that listeners forget to breathe." },
+    ],
+    story: "A Chirpit that is sung to every day will one day sing back something new — and that is the morning it becomes a Trillark. It leads the dawn chorus from the tallest willow, and the meadow has never once had to wake itself up.",
+  },
+  {
+    id: "mosswarden", name: "Mosswarden", species: "Forest Warden", types: ["Leaf", "Stone"],
+    zone: "forest", rarity: "uncommon", evolved: true, evolvesFrom: "mossling",
+    hp: 84, atk: 58, def: 86, spd: 24,
+    height: "2.2 m", weight: "410 kg",
+    powers: [
+      { n: "Rootwall", d: "Drives its knuckles into the soil and raises a hedge of roots across the path." },
+      { n: "Long Patience", d: "Simply waits. Most troubles in a forest sort themselves out if you wait." },
+    ],
+    story: "A Mossling that stands in one helpful spot long enough stops being a boulder with moss on it and becomes a Mosswarden — slow, enormous and entirely kind. It walks a circuit of the Whispering Woods that takes it a full year, and everything it passes grows a little better for it.",
+  },
+  {
+    id: "rapidfin", name: "Rapidfin", species: "River Runner", types: ["Aqua", "Gale"],
+    zone: "lake", rarity: "uncommon", evolved: true, evolvesFrom: "finling",
+    hp: 56, atk: 62, def: 44, spd: 86,
+    height: "0.8 m", weight: "6 kg",
+    powers: [
+      { n: "Whitewater Leap", d: "Flings itself up a waterfall in three impossible bounds." },
+      { n: "Sail Snap", d: "Snaps its tall dorsal sail open to catch the current and change direction instantly." },
+    ],
+    story: "Finlings spend their whole childhood practising against the inflow at the north of Lake Lumen, and the day one finally beats the current it comes out the other side a Rapidfin. They spend the rest of their lives running rivers for fun, and always swim home before dark.",
+  },
+  {
+    id: "granitor", name: "Granitor", species: "Standing Stone", types: ["Stone"],
+    zone: "ridge", rarity: "uncommon", evolved: true, evolvesFrom: "rocklet",
+    hp: 82, atk: 66, def: 88, spd: 26,
+    height: "2.6 m", weight: "1,200 kg",
+    powers: [
+      { n: "Set Fast", d: "Roots itself to the mountain so firmly that the mountain would move first." },
+      { n: "Quarry Fist", d: "Swings a fist of solid granite with the unhurried certainty of a landslide." },
+    ],
+    story: "The standing stones along the old ridge paths are Granitors, resting. A Rocklet becomes one after it has sheltered enough travellers from enough storms, and the change is permanent in the way a mountain is permanent. Ridge folk leave flowers at their feet.",
+  },
+  {
+    id: "duneveil", name: "Duneveil", species: "Veiled Sandfox", types: ["Sand", "Gale"],
+    zone: "desert", rarity: "uncommon", evolved: true, evolvesFrom: "duneling",
+    hp: 58, atk: 64, def: 48, spd: 82,
+    height: "0.9 m", weight: "14 kg",
+    powers: [
+      { n: "Veil of Sand", d: "Wraps itself in a shimmering curtain of sand and simply is not there any more." },
+      { n: "Mirage Step", d: "Appears to be four dunes away from wherever it actually is." },
+    ],
+    story: "A Duneling that has crossed the whole of Sundune alone comes back with a coat of fine pale sand it can never quite shake off — and that veil is the mark of a Duneveil. Nomads say one has walked beside your caravan the entire way and you simply never saw it.",
+  },
+  {
+    id: "bogbaron", name: "Bogbaron", species: "Fen Lord", types: ["Aqua", "Shade"],
+    zone: "marsh", rarity: "uncommon", evolved: true, evolvesFrom: "bogbit",
+    hp: 72, atk: 64, def: 62, spd: 50,
+    height: "1.4 m", weight: "70 kg",
+    powers: [
+      { n: "Deep Croak", d: "Calls one low note that carries across the entire marsh and quiets everything in it." },
+      { n: "Silt Cloak", d: "Sinks into the peat until only two patient eyes remain above the water." },
+    ],
+    story: "Every Bogbit in Glowfen is trying to grow into the Bogbaron, and exactly one of them manages it each generation. The Bogbaron settles the arguments, decides which pools belong to whom, and is unfailingly fair — which is why the others keep letting it.",
+  },
+  {
+    id: "noctilume", name: "Noctilume", species: "Cavern Lantern", types: ["Shade", "Lumen"],
+    zone: "cavern", rarity: "uncommon", evolved: true, evolvesFrom: "glowbat",
+    hp: 58, atk: 66, def: 46, spd: 80,
+    height: "0.9 m", weight: "3 kg",
+    powers: [
+      { n: "Hanging Light", d: "Roosts at a tunnel junction and lights every passage at once." },
+      { n: "Echo Map", d: "Calls once and knows the shape of the whole cave system by the answer." },
+    ],
+    story: "A Glowbat that has guided enough lost miners home grows bright enough to become a Noctilume, and then it stops flying altogether — it picks the darkest junction in the Gleamcave and hangs there for good, on purpose, so nobody else ever gets lost.",
+  },
+  {
+    id: "coralynx", name: "Coralynx", species: "Reef Prowler", types: ["Aqua", "Gem"],
+    zone: "sanctum", rarity: "uncommon", evolved: true, evolvesFrom: "coralkit",
+    hp: 66, atk: 68, def: 62, spd: 66,
+    height: "1.1 m", weight: "34 kg",
+    powers: [
+      { n: "Reef Prowl", d: "Slips between the fallen columns without disturbing a single grain of silt." },
+      { n: "Coral Crown", d: "The living coral along its spine flares into a crown of impossible colours." },
+    ],
+    story: "Coralkits tend the Sanctum's avenues; a Coralynx patrols them. The coral it grew as a pup has spread into a full mane by now, and it walks the drowned halls at the head of a trail of small bright fish who have decided it is worth following.",
+  },
+  {
+    id: "cumulon", name: "Cumulon", species: "Thunderhead Ram", types: ["Gale", "Spark"],
+    zone: "sky", rarity: "uncommon", evolved: true, evolvesFrom: "nimbik",
+    hp: 78, atk: 70, def: 64, spd: 58,
+    height: "2.0 m", weight: "as much as a rain shower",
+    powers: [
+      { n: "Thunderhead", d: "Swells into a towering storm cloud with two horns and a temper." },
+      { n: "Cloudbreak Charge", d: "Lowers its horns and butts a storm apart so the islands get their sunshine back." },
+    ],
+    story: "When a Nimbik has eaten enough cloud it stops being fluffy and starts being weather. A Cumulon is a thunderhead with horns and opinions, and the shepherds of Skyhaven are quietly delighted about it — nothing clears a bad storm off the Reach faster than one annoyed ram.",
+  },
+  {
+    id: "emberoost", name: "Emberoost", species: "Ash Phoenix", types: ["Ember"],
+    zone: "caldera", rarity: "uncommon", evolved: true, evolvesFrom: "sootpip",
+    hp: 68, atk: 72, def: 52, spd: 72,
+    height: "1.2 m", weight: "14 kg",
+    powers: [
+      { n: "Ashrise", d: "Steps into its own cooling ashes and steps back out brand new." },
+      { n: "Roost Flame", d: "Settles onto a cold vent and coaxes it back to a steady burn." },
+    ],
+    story: "A Sootpip covered in ash its whole life finally does something about it: it lights. An Emberoost burns low and steady rather than fierce, and spends its days rekindling the Emberdeep's dying vents one at a time — the quiet, patient work that keeps the mountain warm.",
   },
 
   // ------------------------------- EVOLUTIONS ------------------------------
@@ -1016,6 +1138,7 @@ window.CREATURES = [
   // ---------------------- SUNKEN SANCTUM (wild) -------------------------
   {
     id: "coralkit", name: "Coralkit", species: "Reef Pup", types: ["Aqua"],
+    evolvesTo: "coralynx", evolveOrbs: 12, evolveWords: 3,
     zone: "sanctum", rarity: "common", hp: 46, atk: 42, def: 44, spd: 52,
     height: "0.4 m", weight: "4 kg",
     powers: [
@@ -1681,6 +1804,7 @@ window.CREATURES = [
   // ========================= SKYHAVEN REACH =============================
   {
     id: "nimbik", name: "Nimbik", species: "Cloud Lamb", types: ["Gale"],
+    evolvesTo: "cumulon", evolveOrbs: 12, evolveWords: 3,
     zone: "sky", rarity: "common", hp: 46, atk: 40, def: 44, spd: 54,
     height: "0.5 m", weight: "2 kg (mostly fluff)",
     powers: [
@@ -1753,6 +1877,7 @@ window.CREATURES = [
   // ======================= EMBERDEEP CALDERA ============================
   {
     id: "sootpip", name: "Sootpip", species: "Cinder Chick", types: ["Ember"],
+    evolvesTo: "emberoost", evolveOrbs: 12, evolveWords: 3,
     zone: "caldera", rarity: "common", hp: 44, atk: 46, def: 38, spd: 56,
     height: "0.3 m", weight: "1 kg",
     powers: [

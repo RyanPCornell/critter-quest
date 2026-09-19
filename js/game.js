@@ -872,7 +872,7 @@
     timerBar.firstChild.style.transitionDuration = flashMs + "ms";
     requestAnimationFrame(function () { timerBar.firstChild.classList.add("run"); });
     setTimeout(function () {
-      if (mode !== "encounter" && mode !== "battle") return;
+      if (mode !== "encounter" && mode !== "battle" && mode !== "evotrial") return;
       flash.textContent = "• • •";
       flash.classList.add("hidden-word");
       timerBar.style.visibility = "hidden";
@@ -1110,7 +1110,7 @@
       if (evolveReady(c)) {
         if (!S._evoNotified[c.id]) {
           S._evoNotified[c.id] = true;
-          toast("✨ " + c.name + " is ready to evolve! Open your 📖 Critterdex.", 3800);
+          toast("✨ " + c.name + " has all its orbs — open your 📖 Critterdex to take the 🐝 Spelling Trial and evolve it!", 4200);
         }
       } else {
         S._evoNotified[c.id] = false;
@@ -1151,31 +1151,113 @@
     if (!evo) return "";
     var key = orbForZone(c.zone);
     var have = orbCount(key), need = c.evolveOrbs;
+    var words = c.evolveWords || 3;
     var ready = have >= need;
     var pct = Math.min(100, Math.round(have / need * 100));
     // the evolved form is always revealed so players know the goal
     return '<div class="evolve-box' + (ready ? " ready" : "") + '">' +
-      '<div class="evolve-title">✨ Evolution' + (ready ? " — ready!" : "") + "</div>" +
+      '<div class="evolve-title">✨ Evolution' + (ready ? " — the Trial awaits!" : "") + "</div>" +
       '<div class="evolve-row">' +
         '<div class="evolve-mon"><svg viewBox="0 0 120 120">' + (CRITTER_ART[c.id] || "") + "</svg><span>" + c.name + "</span></div>" +
         '<div class="evolve-arrow">→</div>' +
         '<div class="evolve-mon"><svg viewBox="0 0 120 120">' + (CRITTER_ART[evo.id] || "") + "</svg><span>" + evo.name +
           '</span><span class="evolve-rarity" style="color:' + RARITY_INFO[evo.rarity].color + '">' + RARITY_INFO[evo.rarity].label + "</span></div>" +
       "</div>" +
-      '<div class="evolve-cost">' + orbSVG(key, "evolve-orb") + " <b>" + have + " / " + need + "</b> " + ORB_TYPES[key].name + "s" +
-        '<div class="evolve-bar"><div class="evolve-bar-fill" style="width:' + pct + '%"></div></div></div>' +
+      // Evolving takes TWO things: the orbs, and passing the Spelling Trial.
+      '<div class="evolve-parts">' +
+        '<div class="evolve-part' + (ready ? " done" : "") + '">' +
+          '<div class="evolve-part-head">' + (ready ? "✅" : "1️⃣") + " Feed it orbs</div>" +
+          '<div class="evolve-cost">' + orbSVG(key, "evolve-orb") + " <b>" + have + " / " + need + "</b> " + ORB_TYPES[key].name + "s" +
+          '<div class="evolve-bar"><div class="evolve-bar-fill" style="width:' + pct + '%"></div></div></div>' +
+          (ready ? "" : '<div class="evolve-need">Needs <b>' + (need - have) + " more</b>.<br>" +
+            '<span class="evolve-source">🔮 ' + orbSourceHint(key) + "</span></div>") +
+        "</div>" +
+        '<div class="evolve-part">' +
+          '<div class="evolve-part-head">2️⃣ Pass the Spelling Trial</div>' +
+          '<div class="evolve-trial-line">🐝 Spell <b>' + words + "</b> Spelling Bee Words in a row." +
+          '<div class="evolve-source">Three misses and the trial ends — your orbs are safe, and you can try again.</div></div>' +
+        "</div>" +
+      "</div>" +
       (ready
-        ? '<button class="big-btn go" id="evolve-btn" data-base="' + c.id + '">✨ Evolve into ' + evo.name + " now! (spend " + need + " " + ORB_TYPES[key].name + "s)</button>"
-        : '<div class="evolve-need">Feed it <b>' + (need - have) + " more " + ORB_TYPES[key].name + "s</b> to evolve.<br>" +
-          '<span class="evolve-source">🔮 ' + orbSourceHint(key) + "</span></div>") +
+        ? '<button class="big-btn go" id="evolve-btn" data-base="' + c.id + '">🐝 Begin the Spelling Trial</button>'
+        : '<div class="evolve-need">Gather the orbs first, then the Trial begins.</div>') +
       "</div>";
   }
 
-  function doEvolve(baseId) {
+  // ---- the Spelling Trial: the second half of every evolution ----------
+  //  Reuses the ordinary spelling widget, locked to the Spelling Bee Words
+  //  bank (level 5). Orbs are only spent once the trial is passed.
+  var EVO = null;
+  function startEvoTrial(baseId) {
+    var c = CREATURE_BY_ID[baseId];
+    if (!c || !c.evolvesTo) return;
+    if (orbCount(orbForZone(c.zone)) < c.evolveOrbs) { toast("Not enough orbs yet."); return; }
+    if (!SPELL_BANKS[5] || !SPELL_BANKS[5].length) { doEvolve(baseId, true); return; }
+    mode = "evotrial";
+    EVO = { baseId: baseId, need: c.evolveWords || 3, got: 0, misses: 0, busy: false };
+    renderEvoTrial();
+    $("evotrial").classList.add("open");
+    startChallenges({
+      pref: "spell", method: "spell", forceKangaroo: false, forceAlgebra: false,
+      mathLevel: S.settings.mathLevel, spellLevel: 5,
+      actionWord: "evolve it", doWord: "Spell it!",
+    }, $("evo-challenge"), evoResolve, function () { return EVO && EVO.busy; });
+  }
+  function renderEvoTrial(msg) {
+    if (!EVO) return;
+    var c = CREATURE_BY_ID[EVO.baseId], evo = CREATURE_BY_ID[c.evolvesTo];
+    var pips = "";
+    for (var i = 0; i < EVO.need; i++) pips += '<span class="evo-pip' + (i < EVO.got ? " on" : "") + '">🐝</span>';
+    var hearts = "";
+    for (var h = 0; h < 3; h++) hearts += '<span class="evo-heart' + (h < 3 - EVO.misses ? " on" : "") + '">♥</span>';
+    $("evo-head").innerHTML =
+      '<div class="evolve-row">' +
+        '<div class="evolve-mon"><svg viewBox="0 0 120 120">' + (CRITTER_ART[c.id] || "") + "</svg><span>" + esc(c.name) + "</span></div>" +
+        '<div class="evolve-arrow">→</div>' +
+        '<div class="evolve-mon dim"><svg viewBox="0 0 120 120">' + (CRITTER_ART[evo.id] || "") + "</svg><span>" + esc(evo.name) + "</span></div>" +
+      "</div>" +
+      '<div class="evo-progress">' + pips + '<span class="evo-hearts">' + hearts + "</span></div>" +
+      '<div class="evo-msg">' + (msg || "Spell " + EVO.need + " bee words in a row to complete the evolution!") + "</div>";
+  }
+  function evoResolve(correct, reveal) {
+    if (!EVO) return;
+    EVO.busy = true;
+    if (correct) {
+      sfx("correct");
+      EVO.got++;
+      if (EVO.got >= EVO.need) {
+        renderEvoTrial("✨ Perfect! The evolution takes hold…");
+        $("evo-challenge").innerHTML = "";
+        setTimeout(function () { var id = EVO.baseId; closeModal("evotrial"); doEvolve(id, true); }, 1200);
+        return;
+      }
+      renderEvoTrial("✅ Correct! " + (EVO.need - EVO.got) + " to go.");
+      setTimeout(function () { if (EVO) { EVO.busy = false; nextChallenge(); } }, 1100);
+    } else {
+      sfx("wrong");
+      EVO.misses++;
+      if (EVO.misses >= 3) { evoTrialFailed(reveal); return; }
+      renderEvoTrial("❌ " + reveal + " " + (3 - EVO.misses) + " tries left.");
+      setTimeout(function () { if (EVO) { EVO.busy = false; nextChallenge(); } }, 1600);
+    }
+  }
+  function evoTrialFailed(reveal) {
+    var c = CREATURE_BY_ID[EVO.baseId];
+    sfx("flee");
+    $("evo-challenge").innerHTML = "";
+    renderEvoTrial("💤 " + reveal + " The trial ends — but <b>you kept every orb</b>. Practise those bee words and try again any time!");
+    var b = document.createElement("button");
+    b.className = "big-btn go"; b.textContent = "Back to " + c.name;
+    b.onclick = function () { closeModal("evotrial"); openDex(); };
+    $("evo-challenge").appendChild(b);
+  }
+
+  function doEvolve(baseId, trialPassed) {
     var c = CREATURE_BY_ID[baseId];
     var evo = CREATURE_BY_ID[c.evolvesTo];
     var key = orbForZone(c.zone);
     if (orbCount(key) < c.evolveOrbs) { toast("Not enough orbs yet."); return; }
+    if (!trialPassed) { startEvoTrial(baseId); return; }
     spendOrb(key, c.evolveOrbs);
     var isNew = !S.dex[evo.id];
     if (isNew) S.dex[evo.id] = { count: 1, first: Date.now() };
@@ -1184,6 +1266,9 @@
     grantXP(RARITY_INFO[evo.rarity].xp);
     updateHUD(); persist();
     toast("🎉 " + c.name + " evolved into " + evo.name + "!");
+    // the trial closes the dex on its way out, so make sure it's open again
+    mode = "dex";
+    $("dex").classList.add("open");
     showDexDetail(evo);
   }
 
@@ -1210,7 +1295,7 @@
     d.style.display = "";
     $("dex-back").onclick = function () { d.style.display = "none"; $("dex-grid").style.display = ""; };
     var evb = $("evolve-btn");
-    if (evb) evb.onclick = function () { doEvolve(evb.getAttribute("data-base")); };
+    if (evb) evb.onclick = function () { startEvoTrial(evb.getAttribute("data-base")); };
   }
 
   // =================================================================== BAG
@@ -1608,7 +1693,7 @@
       var DIRS = { ArrowUp: [0,-1], KeyW: [0,-1], ArrowDown: [0,1], KeyS: [0,1], ArrowLeft: [-1,0], KeyA: [-1,0], ArrowRight: [1,0], KeyD: [1,0] };
       if (mode === "world" && DIRS[e.code]) { queuedDir = DIRS[e.code]; queuedAt = performance.now(); }
       if (e.code === "Escape") {
-        ["dex","settings","help","friends","bag","npc","shop","arena","square","quest","questlog","guardian"].forEach(function (m) {
+        ["dex","settings","help","friends","bag","npc","shop","arena","square","quest","questlog","guardian","evotrial"].forEach(function (m) {
           if (mode === m) closeModal(m);
         });
       }
@@ -1644,6 +1729,7 @@
 
   function closeModal(id) {
     if (id === "guardian") { clearInterval(guardianTimer); guardianTimer = null; GUARDIAN = null; }
+    if (id === "evotrial") { EVO = null; }
     $(id).classList.remove("open");
     mode = "world";
   }

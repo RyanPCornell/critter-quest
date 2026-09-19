@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **193 original critters** by solving **math
+hand-drawn SVG world and catch **203 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -170,12 +170,22 @@ Works great on desktop and iPad.
 - **Touch / iPad:** fully playable by tapping (walk, pick up orbs, enter places)
   with an on-screen D-pad on touch devices; controls use `touch-action` to avoid
   zoom/scroll interference, and the viewport is locked for a clean full-screen feel.
-- **Evolutions:** each evolvable critter's Critterdex page shows exactly what it
-  becomes, a progress bar of orbs collected vs. needed, and where to find those
-  orbs. The Critterdex flags which critters can evolve (a ⬆ badge, ✨ when ready)
-  and you get a toast the moment one becomes ready. Feed the orbs to evolve it —
-  e.g. Bloomble → Floralope, Snowlet → Frostfang. Evolved forms are their own
-  Critterdex entries and can't be caught in the wild.
+- **Evolutions:** **15 chains.** Each evolvable critter's Critterdex page shows
+  exactly what it becomes and what evolving takes, because it takes **two**
+  things:
+  1. **Orbs** — a progress bar of orbs collected vs. needed (12), plus a hint
+     about where to farm them.
+  2. **🐝 The Spelling Trial** — once the orbs are in, a trial begins: spell
+     **3 Spelling Bee Words** in a row. Three misses ends the trial, but **your
+     orbs are never spent on a failed attempt**, so you can practise and come
+     back. Pass it and the evolution takes hold.
+
+  The Critterdex flags which critters can evolve (a ⬆ badge, ✨ when the orbs
+  are ready) and you get a toast the moment one is ready for its Trial. Chains
+  include Bloomble → Floralope, Snowlet → Frostfang, Chirpit → Trillark,
+  Mossling → Mosswarden, Rocklet → Granitor, Glowbat → Noctilume, Nimbik →
+  Cumulon and Sootpip → Emberoost. Evolved forms are their own Critterdex
+  entries and can't be caught in the wild — the Trial is the only way to get one.
 - **Avatar** — customize your trainer in Settings → My Avatar: hat style,
   skin tone, hair, shirt, and pants colors, all hand-drawn SVG; updates the
   world sprite and HUD portrait instantly.
