@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **203 original critters** by solving **math
+hand-drawn SVG world and catch **213 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -94,64 +94,65 @@ Works great on desktop and iPad.
   spires and ash. Home to Sootpip, Slagpup, Charcoil, Basaltusk, Pyrolith,
   Ashenmaw and the mythical Volcanyx, plus its own **Magma Orb**.
   **Thirteen regions in all.**
-- **Quests** (📜): visit the person living in one of **twenty houses** to start a
-  multi-step story quest. Steps can ask you to solve a **math puzzle**, answer a
-  **word riddle**, **talk to a specific townsperson**, collect a glowing magical
-  item, catch a special quest-only critter, travel to a secret location that only
-  appears once the quest is active, face a boss, or fight the **Guardian of
-  Paradoxis**. Each quest introduces its own creature and items and grants a big
-  XP + orb reward. The 📜 Quests button opens your quest log with every active
-  and available quest. There are **twenty quests**:
-  - Five **starter quests** (4–5 steps): the Emberheart Cinders, Greenheart
-    Hollow, Song of the Deep, Singing Dunes, and Chasing the Starfall.
-  - Two **epic quests** (8 steps, tougher math, a **mythical boss with an aura
-    guard**): **The Frostcrown Trials** (Yuki's Lodge, tundra → Auravern) and
-    **Heart of the Gleamcave** (Garnet's Dig, caverns → Prismegis).
-  - Two **intricate quests** (9 steps, spanning several regions with talk +
-    riddle + math steps): **The Tideglass Prophecy** (Oracle Maris by Lake Lumen
-    → learn a tide-word from Angler Moss, dive the Sunken Sanctum, wake Abyssalux
-    the leviathan of light) and **The Clockwork Heart** (Tinker Cog's Workshop →
-    gather automaton parts from the ridge, caverns and Sunken Sanctum, and wake
-    the golden Aurumaton).
-  - Five **new-region quests** (5–8 steps each): **The Song of Skyhaven**
-    (Aeronaut Wren → ride the Windrise, learn the Skysong, wake Zephyrion the
-    Storm Sovereign), **Heart of the Emberdeep** (Smith Bellows → gather ore and
-    everburning coals, wake Vulcanor the Forge Titan), **The Storm That Never
-    Ends** (Stormwatcher Isolde → a three-hundred-year storm and the lonely
-    Nimbaros at its eye), **The Lost Lantern** (Lampwright Odell → bring his
-    grandmother's sixty-year-lost lantern home), and **The Wandering Menagerie**
-    (Ringmaster Pip → befriend a creature from four different regions to coax
-    back the patchwork Chimerakit).
-  - Four **home-region quests** (6–7 steps each) that fill out the older
-    regions: **The Frostpeak Fable** (Storyteller Vela → bring the Fablewyrm a
-    story it has never heard), **The Deep Echo** (Echo-listener Bram → find out
-    why the Gleamcave's echoes came back sad), **The Riftwalker's Trail**
-    (Riftwalker Sable → mend the thinning seams of the sky with Aetherion), and
-    **The Marshlight Masquerade** (Mask-maker Wren-Ellis → make a mask for
-    Mirevail's yearly marsh ball, and remember to say thank you).
-  - One **algebra epic** — **⚖️ The Scales of Aequor** (Keeper Aequa's Balance
-    House, **21 steps**), which quietly teaches how to solve multi-step
-    equations. Five tiers, each introducing one idea: two-step equations →
-    combining like terms → variables on both sides → the distributive property →
-    the full multi-step method. Every tier is **taught** (Keeper Aequa works an
-    example all the way through, and townsfolk explain the idea in their own
-    words — Mayor Pom counts votes in piles, Weigh-master Ballas shares out
-    crates), then **practised** by filling in the missing moves and results of a
-    half-written solution, then **tested** by catching the critter that embodies
-    it — Balanx the level scales, Tallyx who gathers matching tallies, Mirrolyn
-    who stands on both sides, Sharewing whose bracket wings share out to
-    everyone, and finally **Aequoron**, Keeper of the Great Scale, who asks for
-    all five ideas at once. Every one of these encounters is a *solve for x*,
-    with a "show me the steps" button that teaches rather than blocks.
-  - One **Epic Quest** — **The Key to Paradoxis** (Professor Vex's Study, **12
-    steps** across four regions, weaving math, three paradox riddles, two
-    townsfolk, and Paradox-Shard hunts on the ridge, in the Sunken Sanctum and
-    in the Astral Rift). It culminates in the **Guardian of Paradoxis** battle: a
-    special timed duel where you send out one champion and must solve **two
-    multiplication problems every 10 seconds** to land a blow — miss the clock
-    and the Guardian strikes your champion instead. Land enough blows before your
-    champion faints and you win the **Orb of Entry**, which unseals the Paradox
-    Gate for good so you can explore Paradoxis whenever you like.
+- **Quests** (📜): visit the person living in one of **thirty houses** to start a
+  multi-step story quest. Steps can ask you to solve a **math puzzle**, learn and
+  practise **algebra or division** in the quest-giver's dialog, drill **Spelling
+  Bee words**, answer a **word riddle**, **talk to a specific townsperson**,
+  collect a glowing magical item, catch a special quest-only critter, travel to
+  a secret location that only appears once the quest is active, face a boss, or
+  fight the **Guardian of Paradoxis**. The 📜 Quests button opens your quest log.
+  - **Twenty completed quests (retired).** Our player finished all of the
+    original quests, so their stories were removed from `js/quests.js` to keep
+    the game light. Their houses stay on the map and simply show **✅
+    Completed** (and the quest log lists them). The full text is in git history
+    (commit `5e828a6` and earlier). They were: the Emberheart Cinders,
+    Greenheart Hollow, Song of the Deep, Singing Dunes, Chasing the Starfall,
+    the Frostcrown Trials, Heart of the Gleamcave, the Tideglass Prophecy, the
+    Clockwork Heart, **The Key to Paradoxis** (which awards the Orb of Entry
+    that unseals the Paradox Gate), the Song of Skyhaven, Heart of the
+    Emberdeep, the Storm That Never Ends, the Lost Lantern, the Wandering
+    Menagerie, the Frostpeak Fable, the Deep Echo, the Riftwalker's Trail, the
+    Marshlight Masquerade, and the algebra epic **The Scales of Aequor**.
+    Retiring is global: a *new* player can't do these quests, and so can't
+    earn the Orb of Entry.
+  - **Five number quests** (10–12 steps each). Each idea is **taught** (the
+    quest-giver works an example, and townsfolk explain it their own way),
+    **practised** (fill in the missing moves of a worked solution, then a
+    **drill** of 3–10 problems in a row, where a miss shows the full working),
+    and **tested** by a critter whose catch asks only that kind of problem:
+    - **⚖️ The Missing Weights** (Grocer Pell): one-step equations ("do the
+      opposite") and turning **story problems** into equations; Baker Tilly runs
+      recipes backwards, Mayor Pom decodes "some / more / each / shared" →
+      **Equilibrog**.
+    - **🍯 The Sharing Feast** (Cook Hazel): **division facts** (Ranger Fenn
+      counts by sixes) and **sharing problems** (Baker Tilly: total ÷ guests) →
+      **Divvybear**.
+    - **🧮 The Deep Ledger** (Assayer Ondine): 3-digit **long division**, with
+      Miner Quill's "Dad, Mom, Sister, Brother" (divide, multiply, subtract,
+      bring down) and Trader Vish's "check by multiplying" → **Quotaur**.
+    - **🎣 The Halvarr of Lake Lumen** (Lockkeeper Rowan): **equations with
+      division** (x ÷ a ± b = c: undo the ±, then multiply) → **Halvarr**.
+    - **🦉 The Owl's Examination** (Proctor Elba): five practice "papers" mixing
+      everything above → **Sapientowl**, which never asks the same kind twice.
+  - **Five spelling quests** that drill the **Spelling Bee list** (the words in
+    `SPELL_BANKS[5]`, between the BEE LIST markers in `js/challenges.js`). The
+    first four each take a quarter of the list and make you spell **every word
+    in it four or five times**: *copy* it, spell it from a **flash**, fill in
+    the **gaps**, **unscramble** it, then a mixed review of 20. A miss shows the
+    right spelling, makes you copy it once, and sends the word back a few words
+    later. Each quest also has a spelling tip from a townsperson, a critter to
+    catch with Bee words, and a boss that only answers Bee words from that
+    quarter:
+    - **🐝 The Humming Hive** (Beekeeper Beatrix) → **Melliqueen**;
+      **📚 The Whispering Library** (Librarian Sorrel) → **Tomewyrm**;
+      **🪁 Letters on the Wind** (Kitewright Juno) → **Glyphawk**;
+      **🖋️ The Tide Script** (Inkmaker Mira) → **Scriptide**.
+    - **🏆 The Grand Spelling Bee** (Judge Marigold): three rounds of 30 words
+      from the whole list, then a **Championship Round of every word on the
+      list**, then **Lexicorn**. Progress is saved word by word, so it can be
+      done over several sittings.
+    Because the quests slice the list by *fraction*, editing the word list
+    keeps them working (and their counts update on their own).
 - **Battle animations:** attacks lunge, the target shakes and flashes, and a
   floating damage number pops up on each hit.
 - **Village Square:** talk to the Bulletin Keeper and answer two problems in a
@@ -228,14 +229,16 @@ python3 -m http.server 7839
 ## Files
 
 - `index.html` — UI shell, all CSS, modals (encounter / dex / settings / help)
-- `js/creatures.js` — the 73-creature roster (incl. 3 Ultra Legendaries): stats, types, rarity, guard, evolution links, powers, stories
-- `js/art-critters-1..6.js` — hand-drawn SVG art per critter (`-6` = the Ultra Legendaries incl. Sergio)
+- `js/creatures.js` — the 213-creature roster: stats, types, rarity, guard, evolution links, powers, stories (`algebra` / `spellbee` fields force a challenge type)
+- `js/art-critters-1..18.js` — hand-drawn SVG art per critter (`-6` = the Ultra Legendaries incl. Sergio; `-18` = the ten number/spelling quest bosses)
 - `js/world.js` — tile art defs, map generation (72×52 grid, 8 zones), world renderer
 - `js/avatar.js` — customizable hand-drawn trainer sprite (hat/skin/hair/shirt/pants)
 - `js/orbs.js` — orb type definitions, hand-drawn orb art, helpers
 - `js/pictures.js` — 130+ picture words (emoji + hand-drawn SVG) for Picture Words spelling
 - `js/kangaroo.js` — visual Math-Kangaroo problem generators (hand-drawn SVG, numeric + multiple-choice)
-- `js/challenges.js` — math problem generator + spelling word banks / parser
+- `js/challenges.js` — math problem generator + spelling word banks / parser (the Spelling Bee list sits between the BEE LIST markers)
+- `js/algebra.js` — algebra & division problem generators with worked solutions (one-step, story problems, division facts, sharing problems, long division, equations with division, plus the older two-step → multi-step tiers)
+- `js/quests.js` — quest definitions (20 retired stubs + 10 active quests); the header comment lists every step kind
 - `js/storage.js` — cloud-or-local save layer
 - `js/social.js` — friends + trade protocol (see the header comment for the swap design)
 - `js/game.js` — game loop: movement, camera, spawns, orbs, encounters, evolution, dex, friends, POIs (shops/arenas/townsfolk), arena battles, Ultra Legendaries, touch D-pad, settings

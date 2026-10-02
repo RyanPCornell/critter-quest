@@ -533,6 +533,27 @@
   .alg-choice.sel { background: #ffd94d; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent); }
   .quest-riddle { max-width: 360px; margin: 10px auto; font-size: 16px; font-weight: 700; font-style: italic; line-height: 1.5; color: #4a3f34; background: #f3ecdd; border: 2.5px dashed #c9b98f; border-radius: 12px; padding: 12px 14px; }
   .quest-riddle-hint { font-size: 12.5px; color: #8a7a5e; margin-top: 8px; }
+  /* story problems are sentences, not equations: smaller, wrapping text */
+  .alg-q.story, .alg-eq.start.story { font-size: 17px; font-weight: 700; line-height: 1.45; letter-spacing: 0; text-align: left; }
+  .alg-q.story { max-width: 400px; }
+  .quest-retired { font-size: 22px; font-weight: 800; color: #5c9e4a; background: #e7f6e0; border: 2.5px solid #5cb85c;
+    border-radius: 14px; padding: 12px; margin: 12px auto; max-width: 260px; }
+  .quest-steps { max-height: 210px; overflow-y: auto; position: relative; }
+  /* ---- spelling-bee and practice drills inside a quest ---- */
+  .bee-bar { position: relative; height: 26px; background: #f3ecdd; border: 2.5px solid var(--ink); border-radius: 999px;
+    overflow: hidden; margin: 8px auto; max-width: 360px; }
+  .bee-fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #ffd94d, #f2a93b); transition: width .4s; }
+  .bee-bar.drill .bee-fill { background: linear-gradient(90deg, #a8c8ff, #7f9ec9); }
+  .bee-bar span { position: relative; display: block; text-align: center; font-size: 13px; font-weight: 800; line-height: 21px; color: var(--ink); }
+  .bee-mode { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #8a6a1e; margin: 8px 0 4px; }
+  .bee-mode .lvl-tag { text-transform: none; letter-spacing: 0; }
+  .bee-word { max-width: 380px; margin-left: auto; margin-right: auto; font-size: 34px; word-break: break-word; }
+  .bee-word.gaps { letter-spacing: 6px; }
+  .bee-fix { font-size: 14px; font-weight: 800; color: #b5532a; margin: 8px 0 4px; }
+  .bee-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px auto 12px; max-width: 400px; }
+  .bee-tile { width: 36px; height: 40px; display: grid; place-items: center; font-size: 22px; font-weight: 800;
+    background: #ffe9a8; border: 2.5px solid #c98a12; border-radius: 9px; color: #6a4508;
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
   #quest-action .answer-row { max-width: 320px; margin: 0 auto; }
   #quest-body { text-align: center; }
   .ql-section { margin-top: 14px; text-align: left; }
@@ -973,6 +994,7 @@
 <script src="js/art-critters-15.js"></script>
 <script src="js/art-critters-16.js"></script>
 <script src="js/art-critters-17.js"></script>
+<script src="js/art-critters-18.js"></script>
 <script src="js/world.js"></script>
 <script src="js/avatar.js"></script>
 <script src="js/orbs.js"></script>

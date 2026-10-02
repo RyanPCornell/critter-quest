@@ -2198,6 +2198,121 @@ window.CREATURES = [
     ],
     story: "Until you look at it, a Nullkin is everywhere and nowhere, doing everything and nothing. The instant you're sure you've spotted one, it turns out you were only maybe-right, and it's already maybe-gone. Trainers who catch a Nullkin are never entirely certain they have — which is, of course, exactly how the Nullkin likes it.",
   },
+  // ================ THE SECOND QUEST WAVE: NUMBERS & WORDS ================
+  //  Quest bosses for the ten newer quests. `algebra` bosses ask that kind of
+  //  problem; `spellbee` bosses ask only Spelling Bee words, from the slice of
+  //  the list given as fractions ([0, 0.25] = the first quarter).
+  {
+    id: "equilibrog", name: "Equilibrog", species: "Balance Toad", types: ["Aqua", "Stone"],
+    zone: "meadow", rarity: "mythical", quest: "q-missingweights", algebra: ["one-step", "eq-story"], guard: 2,
+    hp: 84, atk: 72, def: 86, spd: 58,
+    height: "1.1 m", weight: "whatever the other pan says",
+    powers: [
+      { n: "Opposite Hop", d: "Undoes any move with its opposite: a hop forward is cancelled by a hop back." },
+      { n: "Level Croak", d: "A deep croak that sets every scale within earshot perfectly level." },
+    ],
+    story: "An Equilibrog sits on a lily pad shaped like a scale pan and never, ever tips over. It eats exactly as many flies as it catches and croaks exactly as many times as it is croaked at. Bring it a problem with one thing missing and it will simply wait, chin on its hands, for you to work out what was taken away.",
+  },
+  {
+    id: "divvybear", name: "Divvybear", species: "Sharing Bear", types: ["Leaf", "Song"],
+    zone: "forest", rarity: "mythical", quest: "q-sharingfeast", algebra: ["div-facts", "div-story"], guard: 2,
+    hp: 96, atk: 74, def: 80, spd: 52,
+    height: "2.0 m", weight: "320 kg (after sharing)",
+    powers: [
+      { n: "Fair Shares", d: "Splits anything it holds into equal piles, one for every creature present." },
+      { n: "Picnic Paw", d: "A huge, gentle swipe that sets out plates for everyone before anyone eats." },
+    ],
+    story: "The Divvybear finds a honeycomb and cannot eat a crumb until every cub, bird and beetle nearby has exactly the same amount. It counts the guests, it counts the honey, and it divides. Forest folk say there has never been an unfair feast where a Divvybear was invited.",
+  },
+  {
+    id: "quotaur", name: "Quotaur", species: "Ledger Bull", types: ["Stone", "Gem"],
+    zone: "cavern", rarity: "mythical", quest: "q-deepledger", algebra: "long-division", guard: 2,
+    hp: 98, atk: 86, def: 90, spd: 44,
+    height: "2.4 m", weight: "1,000 kg ÷ however many ask",
+    powers: [
+      { n: "Bring Down", d: "Stamps one hoof and the next digit drops from the cave roof into place." },
+      { n: "Tally Horns", d: "Its horns carry a running total that it checks twice before charging." },
+    ],
+    story: "Deep in the Gleamcave the Quotaur works the Deep Ledger, dividing great heaps of ore into carts one digit at a time. Divide, multiply, subtract, bring down, and around again. It is slow, it is careful, and it has never once made a mistake. It respects anyone who has the patience to work the same way.",
+  },
+  {
+    id: "halvarr", name: "Halvarr", species: "Splitfin Pike", types: ["Aqua", "Lumen"],
+    zone: "lake", rarity: "mythical", quest: "q-halvarr", algebra: "div-equation", guard: 2,
+    hp: 86, atk: 82, def: 70, spd: 84,
+    height: "2.2 m", weight: "half of something",
+    powers: [
+      { n: "Splitwake", d: "Swims so fast its wake splits into equal channels behind it." },
+      { n: "Mend Whole", d: "Rejoins any split pieces by multiplying them back together." },
+    ],
+    story: "A Halvarr is a long silver pike with a seam down its middle, as though it was once split into equal parts and put back together. Anglers on Lake Lumen say that to land one you must think backwards: first undo what was added, and then multiply back what was divided.",
+  },
+  {
+    id: "sapientowl", name: "Sapientowl", species: "Examiner Owl", types: ["Gale", "Lumen"],
+    zone: "ridge", rarity: "mythical", quest: "q-owlexam", algebra: ["one-step", "two-step", "div-equation", "long-division", "eq-story", "div-story"], guard: 3,
+    hp: 90, atk: 80, def: 84, spd: 82,
+    height: "1.6 m", weight: "light as a page",
+    powers: [
+      { n: "Pop Quiz", d: "Asks a question so suddenly that its foe forgets which foot it was standing on." },
+      { n: "Show Your Work", d: "Refuses any answer it cannot see the reasoning for." },
+    ],
+    story: "The Sapientowl perches on the highest crag of Ember Ridge and sets the hardest examination in the world. It never asks the same kind of question twice in a row, because it wants to know whether you understand or whether you have only memorised. It always smiles behind its feathers when someone gets one right.",
+  },
+  {
+    id: "melliqueen", name: "Melliqueen", species: "Hive Monarch", types: ["Song", "Leaf"],
+    zone: "meadow", rarity: "mythical", quest: "q-humminghive", spellbee: [0, 0.25], guard: 2,
+    hp: 80, atk: 76, def: 74, spd: 86,
+    height: "0.9 m", weight: "a thimble of honey",
+    powers: [
+      { n: "Waggle Spell", d: "Dances the letters of a word in the air, and the whole hive spells along." },
+      { n: "Royal Jelly", d: "A sweet glow that steadies every nervous speller around it." },
+    ],
+    story: "The Melliqueen rules the Humming Hive, where every honeycomb cell holds a single letter. Her workers build words one letter at a time, and a cell in the wrong place makes the whole comb sag. She will only come out for a trainer who can spell her words without a single crooked cell.",
+  },
+  {
+    id: "tomewyrm", name: "Tomewyrm", species: "Bookworm Drake", types: ["Shade", "Leaf"],
+    zone: "forest", rarity: "mythical", quest: "q-whisperinglibrary", spellbee: [0.25, 0.5], guard: 2,
+    hp: 92, atk: 78, def: 82, spd: 60,
+    height: "4.0 m (curled)", weight: "about forty libraries",
+    powers: [
+      { n: "Dog-Ear", d: "Folds the corner of the moment so it can come back to it later." },
+      { n: "Margin Note", d: "Scribbles the correct spelling beside every mistake it sees." },
+    ],
+    story: "The Tomewyrm has eaten its way through every book in the Whispering Library and remembers all of it. It is fond of words in the way some dragons are fond of gold, and keeps the best ones curled under its belly. It will trade them only to someone who treats each letter with care.",
+  },
+  {
+    id: "glyphawk", name: "Glyphawk", species: "Lettered Falcon", types: ["Gale", "Frost"],
+    zone: "tundra", rarity: "mythical", quest: "q-lettersonthewind", spellbee: [0.5, 0.75], guard: 2,
+    hp: 82, atk: 84, def: 68, spd: 96,
+    height: "1.4 m", weight: "6 kg",
+    powers: [
+      { n: "Skywriting", d: "Carves words into the frozen air with its wingtips." },
+      { n: "Scatterwind", d: "A gust that jumbles letters, which it then dares you to put right." },
+    ],
+    story: "On clear days over Frostpeak you can see words hanging in the sky, written in frost by the wingtips of a Glyphawk. When the wind scrambles them it circles back, and it only lands for someone who can put the letters back in order.",
+  },
+  {
+    id: "scriptide", name: "Scriptide", species: "Ink Ray", types: ["Aqua", "Shade"],
+    zone: "lake", rarity: "mythical", quest: "q-tidescript", spellbee: [0.75, 1], guard: 2,
+    hp: 88, atk: 80, def: 76, spd: 78,
+    height: "2.6 m (wingspan)", weight: "75 kg",
+    powers: [
+      { n: "Ink Cloud", d: "Writes a word in ink across the water, then lets the waves wash parts away." },
+      { n: "Tide Mark", d: "Remembers every word the tide has ever written on the shore." },
+    ],
+    story: "When the tide goes out on Lake Lumen it leaves words on the sand, and the Scriptide wrote all of them. It glides under the surface with a quill-tipped tail, writing and rewriting. Half-washed words drive it to distraction; it adores anyone who can fill in the missing letters.",
+  },
+  {
+    id: "lexicorn", name: "Lexicorn", species: "Champion of the Bee", types: ["Lumen", "Song"],
+    zone: "meadow", rarity: "mythical", quest: "q-grandbee", spellbee: [0, 1], guard: 3,
+    hp: 96, atk: 88, def: 86, spd: 84,
+    height: "2.1 m", weight: "every word you know",
+    powers: [
+      { n: "Spelled Horn", d: "Its spiral horn is inscribed with every word on the Bee List, in order." },
+      { n: "Final Round", d: "Asks one last word, and does not move until it is spelled exactly." },
+    ],
+    story: "The Lexicorn appears only on the evening of the Grand Spelling Bee, when the whole of Willowmere gathers on the green. It has never been seen by anyone who has not practised. Spell every word it asks and it will bow its lettered horn, which is the highest honour a speller can be given.",
+  },
+
 ];
 
 window.CREATURE_BY_ID = {};

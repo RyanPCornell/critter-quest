@@ -26,6 +26,13 @@
     { id: "both-sides", name: "Variables on Both Sides", idea: "Move all the x's to one side first." },
     { id: "distribute", name: "The Distributive Property", idea: "Share the outside number with everything in the brackets." },
     { id: "multi",      name: "Full Multi-Step",        idea: "Distribute, gather the x's, then undo." },
+    // ---- basic algebra & division (added for the problem-solving quests) ----
+    { id: "one-step",      name: "One-Step Equations",   idea: "Do the opposite operation to get x on its own: − undoes +, ÷ undoes ×." },
+    { id: "eq-story",      name: "Story Problems",       idea: "Turn the words into an equation (x is the unknown), then solve it." },
+    { id: "div-facts",     name: "Division Facts",       idea: "Division undoes multiplication. Ask: what times the divisor makes the number?" },
+    { id: "div-story",     name: "Sharing Problems",     idea: "Sharing equally means dividing: the total ÷ the number of groups." },
+    { id: "long-division", name: "Long Division",        idea: "Divide, multiply, subtract, bring down, then repeat until no digits are left." },
+    { id: "div-equation",  name: "Equations with Division", idea: "Undo the + or − first, then multiply both sides to undo the ÷." },
   ];
   window.ALGEBRA_BY_ID = {};
   window.ALGEBRA_TYPES.forEach(function (t) { window.ALGEBRA_BY_ID[t.id] = t; });
@@ -124,12 +131,175 @@
     };
   }
 
-  var GEN = { "two-step": twoStep, "like-terms": likeTerms, "both-sides": bothSides,
-              "distribute": distribute, "multi": multi };
+  // ---- basic algebra ------------------------------------------------------
+  //  Rows may carry: check (a "put it back in" line, hidden in fill-ins once a
+  //  blank comes before it), sep (separator, default " = "), noBlank (never blanked in a
+  //  fill-in), valOnly (blank only as a typed number).
 
+  // x + a = b · x − a = b · ax = b · x ÷ a = b, then a "check" line.
+  function oneStep(kind) {
+    var a = ri(2, 12), x = ri(2, 15), v = kind || ["add", "sub", "mul", "div"][ri(0, 3)];
+    var eq, row, check;
+    if (v === "add") {
+      eq = "x + " + a + " = " + (x + a);
+      row = { opText: "Subtract " + a + " from both sides", opShort: "−" + a, left: "x", right: String(x) };
+      check = x + " + " + a + " = " + (x + a);
+    } else if (v === "sub") {
+      if (x <= a) x = a + ri(1, 9);
+      eq = "x − " + a + " = " + (x - a);
+      row = { opText: "Add " + a + " to both sides", opShort: "+" + a, left: "x", right: String(x) };
+      check = x + " − " + a + " = " + (x - a);
+    } else if (v === "mul") {
+      eq = a + "x = " + (a * x);
+      row = { opText: "Divide both sides by " + a, opShort: "÷" + a, left: "x", right: String(x) };
+      check = a + " × " + x + " = " + (a * x);
+    } else {
+      eq = "x ÷ " + a + " = " + x;
+      x = a * x;
+      row = { opText: "Multiply both sides by " + a, opShort: "×" + a, left: "x", right: String(x) };
+      check = x + " ÷ " + a + " = " + (x / a);
+    }
+    return {
+      type: "one-step", equation: eq, answer: x,
+      rows: [row, { opText: "Check it: put " + x + " back in", left: "", sep: "", right: check + " ✓", noBlank: true, check: true }],
+    };
+  }
+
+  // Word problems that become equations. "You" keeps them about the player.
+  function eqStory() {
+    var a, b, x, story, base;
+    switch (ri(0, 5)) {
+      case 0:
+        a = ri(3, 15); x = ri(4, 20);
+        story = "A Balanx starts with some pebbles. It finds " + a + " more and now has " + (x + a) + ". How many pebbles did it start with?";
+        base = oneStepFrom("x + " + a + " = " + (x + a), { opText: "Subtract " + a + " from both sides", opShort: "−" + a, left: "x", right: String(x) }, x);
+        break;
+      case 1:
+        a = ri(3, 15); x = a + ri(3, 20);
+        story = "You had some orbs. You threw " + a + " of them and have " + (x - a) + " left. How many orbs did you start with?";
+        base = oneStepFrom("x − " + a + " = " + (x - a), { opText: "Add " + a + " to both sides", opShort: "+" + a, left: "x", right: String(x) }, x);
+        break;
+      case 2:
+        a = ri(3, 9); x = ri(3, 12);
+        story = a + " identical baskets hold " + (a * x) + " berries in all. How many berries are in each basket?";
+        base = oneStepFrom(a + "x = " + (a * x), { opText: "Divide both sides by " + a, opShort: "÷" + a, left: "x", right: String(x) }, x);
+        break;
+      case 3:
+        a = ri(2, 9); b = ri(3, 12); x = a * b;
+        story = "Some acorns are shared equally among " + a + " Tallyx, and each one gets " + b + ". How many acorns were there?";
+        base = oneStepFrom("x ÷ " + a + " = " + b, { opText: "Multiply both sides by " + a, opShort: "×" + a, left: "x", right: String(x) }, x);
+        break;
+      case 4:
+        a = ri(2, 6); b = ri(3, 15); x = ri(3, 12);
+        story = "You buy " + a + " bags of seeds and a map that costs " + b + " orbs. You spend " + (a * x + b) + " orbs in all. How much does one bag of seeds cost?";
+        base = { equation: a + "x + " + b + " = " + (a * x + b), answer: x, rows: [
+          { opText: "Subtract " + b + " from both sides", opShort: "−" + b, left: cx(a), right: String(a * x) },
+          { opText: "Divide both sides by " + a, opShort: "÷" + a, left: "x", right: String(x) }] };
+        break;
+      default:
+        a = ri(2, 6); x = ri(4, 12); b = ri(2, a * x - 2);
+        story = "A Sharewing gathers " + a + " equal piles of crumbs, then drops " + b + " crumbs. It has " + (a * x - b) + " left. How many crumbs were in each pile?";
+        base = { equation: a + "x − " + b + " = " + (a * x - b), answer: x, rows: [
+          { opText: "Add " + b + " to both sides", opShort: "+" + b, left: cx(a), right: String(a * x) },
+          { opText: "Divide both sides by " + a, opShort: "÷" + a, left: "x", right: String(x) }] };
+    }
+    return {
+      type: "eq-story", story: story, equation: story, answer: base.answer,
+      ask: "Solve the story problem", placeholder: "answer",
+      result: "the answer is " + base.answer,
+      rows: [{ opText: "Write it as an equation (x is the unknown)", left: "", sep: "", right: base.equation, noBlank: true }]
+        .concat(base.rows),
+    };
+  }
+  function oneStepFrom(eq, row, x) { return { equation: eq, answer: x, rows: [row] }; }
+
+  // ---- division -----------------------------------------------------------
+
+  // a ÷ b with a whole-number answer, taught through its multiplication fact.
+  function divFacts() {
+    var b = ri(2, 12), q = ri(2, 12), a = b * q;
+    return {
+      type: "div-facts", equation: a + " ÷ " + b + " = ?", answer: q,
+      ask: "Divide", placeholder: "answer", result: a + " ÷ " + b + " = " + q,
+      rows: [
+        { opText: "Division asks: how many " + b + "s make " + a + "?", left: "? × " + b, right: String(a), noBlank: true },
+        { opText: "Use the times table: " + q + " × " + b + " = " + a, left: a + " ÷ " + b, right: String(q), valOnly: true },
+      ],
+    };
+  }
+
+  var SHARE_THINGS = ["acorns", "berries", "orbs", "seeds", "pebbles", "shells", "honey drops", "star fragments"];
+  var SHARE_WHO = ["Tallyx", "Mosswardens", "Cloudlets", "Sootpips", "Coralkits", "Breezels", "Reedlings", "trainers"];
+  function divStory() {
+    var b = ri(2, 9), q = ri(3, 12), a = b * q;
+    var thing = SHARE_THINGS[ri(0, SHARE_THINGS.length - 1)], who = SHARE_WHO[ri(0, SHARE_WHO.length - 1)];
+    var story = a + " " + thing + " are shared equally among " + b + " " + who + ". How many " + thing + " does each one get?";
+    return {
+      type: "div-story", story: story, equation: story, answer: q,
+      ask: "Solve the sharing problem", placeholder: "answer", result: a + " ÷ " + b + " = " + q + " " + thing + " each",
+      rows: [
+        { opText: "Sharing equally means dividing", left: "", sep: "", right: a + " ÷ " + b, noBlank: true },
+        { opText: "Think: what times " + b + " makes " + a + "?", left: "? × " + b, right: String(a), noBlank: true },
+        { opText: "So each one gets", left: a + " ÷ " + b, right: String(q), valOnly: true },
+      ],
+    };
+  }
+
+  // 3-digit ÷ 1-digit, no remainder, worked digit by digit:
+  // divide → multiply & subtract → bring down → repeat.
+  function longDivision() {
+    var d = ri(3, 9), q = ri(Math.ceil(100 / d), Math.floor(999 / d)), n = q * d;
+    var digits = String(n).split("").map(Number);
+    var rows = [];
+    var i = 0, chunk = digits[0];
+    if (chunk < d) { i = 1; chunk = chunk * 10 + digits[1]; }
+    while (true) {
+      var qd = Math.floor(chunk / d), prod = qd * d, rem = chunk - prod;
+      // (never blanked: the multiply line just below names this digit)
+      rows.push({ opText: "Divide: how many " + d + "s fit into " + chunk + "?", left: chunk + " ÷ " + d, sep: " → ", right: String(qd), valOnly: true, noBlank: true });
+      rows.push({ opText: "Multiply " + qd + " × " + d + " = " + prod + ", then subtract", left: chunk + " − " + prod, right: String(rem), valOnly: true });
+      i++;
+      if (i >= digits.length) break;
+      var next = rem * 10 + digits[i];
+      rows.push({ opText: "Bring down the " + digits[i], left: "bring down " + digits[i], sep: " → ", right: String(next), valOnly: true });
+      chunk = next;
+    }
+    rows.push({ opText: "Read the answer along the top", left: n + " ÷ " + d, right: String(q), valOnly: true });
+    return {
+      type: "long-division", equation: n + " ÷ " + d + " = ?", answer: q,
+      ask: "Divide (long division)", placeholder: "answer", result: n + " ÷ " + d + " = " + q,
+      rows: rows,
+    };
+  }
+
+  // x ÷ a + b = c   (or x ÷ a − b = c)
+  function divEquation() {
+    var a = ri(2, 9), k = ri(3, 12), x = a * k, b, c, minus = Math.random() < 0.35;
+    if (minus) { b = ri(1, k - 1); c = k - b; } else { b = ri(2, 15); c = k + b; }
+    return {
+      type: "div-equation", equation: "x ÷ " + a + " " + (minus ? "−" : "+") + " " + b + " = " + c, answer: x,
+      rows: [
+        { opText: (minus ? "Add " : "Subtract ") + b + " on both sides", opShort: (minus ? "+" : "−") + b, left: "x ÷ " + a, right: String(k) },
+        { opText: "Multiply both sides by " + a, opShort: "×" + a, left: "x", right: String(x) },
+      ],
+    };
+  }
+
+  var GEN = { "two-step": twoStep, "like-terms": likeTerms, "both-sides": bothSides,
+              "distribute": distribute, "multi": multi,
+              "one-step": oneStep, "eq-story": eqStory, "div-facts": divFacts,
+              "div-story": divStory, "long-division": longDivision, "div-equation": divEquation };
+
+  // `type` may be a single id or an array (a mixed bag — one picked per problem).
   window.makeAlgebraProblem = function (type) {
+    if (Array.isArray(type)) type = type[ri(0, type.length - 1)];
     var g = GEN[type] || twoStep;
-    return g();
+    var p = g();
+    // labels for the challenge UI — solve-for-x by default
+    if (!p.ask) p.ask = "Solve for x";
+    if (!p.placeholder) p.placeholder = "x = ?";
+    if (!p.result) p.result = "x = " + p.answer;
+    return p;
   };
 
   // ---- fill-in-the-blank ------------------------------------------------
@@ -140,10 +310,11 @@
   window.makeAlgebraFill = function (type, howMany) {
     var prob = window.makeAlgebraProblem(type);
     var n = prob.rows.length;
-    var want = Math.max(1, Math.min(howMany || 2, n));
-    // choose distinct rows, biased toward the earlier (more instructive) steps
+    // rows marked noBlank (a "write it as an equation" line, a check line…)
+    // are context, never gaps
     var idxs = [];
-    for (var i = 0; i < n; i++) idxs.push(i);
+    for (var i = 0; i < n; i++) if (!prob.rows[i].noBlank) idxs.push(i);
+    var want = Math.max(1, Math.min(howMany || 2, idxs.length));
     for (var s = idxs.length - 1; s > 0; s--) { var j = ri(0, s); var t = idxs[s]; idxs[s] = idxs[j]; idxs[j] = t; }
     idxs = idxs.slice(0, want).sort(function (p, q) { return p - q; });
 
@@ -153,9 +324,12 @@
       // right-hand side is a bare integer — e.g. the first line of a full
       // multi-step still reads "2x + 72", which must stay an "op" blank.
       var numericRight = /^\d+$/.test(row.right);
-      // the last row (÷ to isolate x) is most useful as an "op" blank;
-      // otherwise alternate so the player practises both kinds
-      var kind = (!numericRight || r === n - 1 || Math.random() < 0.5) ? "op" : "val";
+      // valOnly rows (long division, division facts) are always number gaps;
+      // otherwise the last row (÷ to isolate x) is most useful as an "op"
+      // blank, and the rest alternate so the player practises both kinds
+      var kind = row.valOnly && numericRight ? "val"
+        : (!numericRight || !row.opShort || r === n - 1 || Math.random() < 0.5) ? "op" : "val";
+      if (kind === "op" && !row.opShort) kind = "val";
       if (kind === "op") {
         return { row: r, kind: "op", answer: row.opShort, choices: opChoices(row.opShort) };
       }
@@ -189,13 +363,18 @@
   window.algebraWorkHTML = function (prob, opts) {
     opts = opts || {};
     var html = '<div class="alg-work">' +
-      '<div class="alg-eq start">' + prob.equation + "</div>";
+      '<div class="alg-eq start' + (prob.story ? " story" : "") + '">' + prob.equation + "</div>";
     prob.rows.forEach(function (r) {
       html += '<div class="alg-row">' +
         '<span class="alg-op">' + (opts.showOps === false ? "" : r.opText) + "</span>" +
-        '<span class="alg-res">' + r.left + " = " + r.right + "</span></div>";
+        '<span class="alg-res">' + window.algebraRowText(r) + "</span></div>";
     });
     html += "</div>";
     return html;
+  };
+  // "left = right", honouring a row's own separator (long division uses →)
+  window.algebraRowText = function (r, rightHTML) {
+    var sep = r.sep != null ? r.sep : " = ";
+    return (r.left ? r.left + sep : "") + (rightHTML != null ? rightHTML : r.right);
   };
 })();

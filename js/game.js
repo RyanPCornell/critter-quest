@@ -592,12 +592,20 @@
       ? (c.rarity === "ultra" ? "✦ An Ultra Legendary aura blazes around it! " : "⚡ A legendary aura shields it! ") +
         "Your orbs can't fly until " + ENC.guard + " correct answer" + (ENC.guard > 1 ? "s crack" : " cracks") + " its guard."
       : "It watches you curiously. Answer challenges to weaken its will, then it throws itself into your orb!");
-    startChallenges({
+    var ectx = {
       pref: S.settings.challenge, method: null, forceKangaroo: ENC.forceKangaroo,
       forceAlgebra: !!c.algebra, algebraType: c.algebra,
       mathLevel: S.settings.mathLevel, spellLevel: S.settings.spellLevel,
       actionWord: "throw your orb", doWord: "Throw!",
-    }, $("enc-challenge"), resolveAnswer, function () { return ENC.busy; });
+    };
+    var ov = encounterOverride(c);
+    if (ov.algebra) { ectx.forceAlgebra = true; ectx.algebraType = ov.algebra; ectx.forceKangaroo = false; }
+    if (ov.bee !== undefined) {
+      ectx.forceAlgebra = false; ectx.forceKangaroo = false;
+      ectx.pref = "spell"; ectx.method = "spell"; ectx.spellLevel = 5; ectx.nextWord = beePicker(ov.bee);
+      msg($("enc-msg").innerHTML + "<br>🐝 This one only answers to <b>Spelling Bee words</b>!");
+    }
+    startChallenges(ectx, $("enc-challenge"), resolveAnswer, function () { return ENC.busy; });
   }
 
   // ---- Speed Mythical catch: 30-second timer, solve 5 times-tables ----
@@ -766,14 +774,14 @@
   // stuck player is taught rather than just stopped.
   function showAlgebra(box) {
     var type = chalCtx.algebraType || "two-step";
-    var prob = makeAlgebraProblem(type);
-    var info = ALGEBRA_BY_ID[type] || {};
+    var prob = makeAlgebraProblem(type);           // type may be a mixed list
+    var info = ALGEBRA_BY_ID[prob.type] || {};
     box.appendChild(el("div", "chal-title",
-      "⚖️ Solve for <b>x</b> to " + chalCtx.actionWord + "  <span class='lvl-tag alg'>" + esc(info.name || "Algebra") + "</span>"));
-    box.appendChild(el("div", "alg-q", prob.equation));
+      "⚖️ " + esc(prob.ask) + " to " + chalCtx.actionWord + "  <span class='lvl-tag alg'>" + esc(info.name || "Algebra") + "</span>"));
+    box.appendChild(el("div", prob.story ? "alg-q story" : "alg-q", prob.equation));
     var row = el("div", "answer-row center");
     var input = document.createElement("input");
-    input.type = "number"; input.step = "1"; input.className = "answer-input"; input.placeholder = "x = ?";
+    input.type = "number"; input.step = "1"; input.className = "answer-input"; input.placeholder = prob.placeholder;
     input.autocomplete = "off";
     var btn = el("button", "big-btn go", chalCtx.doWord);
     row.appendChild(input); row.appendChild(btn);
@@ -794,7 +802,7 @@
     function submit() {
       if (chalBusy() || input.value.trim() === "") return;
       chalResolve(parseInt(input.value, 10) === prob.answer,
-        "x was <b>" + prob.answer + "</b>." + algebraWorkHTML(prob));
+        "The answer was <b>" + prob.result + "</b>." + algebraWorkHTML(prob));
     }
     btn.onclick = submit;
     input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
@@ -861,7 +869,7 @@
 
   function showSpelling(box) {
     if (+chalCtx.spellLevel === 4) { showPictureSpelling(box); return; }
-    var word = pickSpellWord(chalCtx.spellLevel, S.customWords);
+    var word = chalCtx.nextWord ? chalCtx.nextWord() : pickSpellWord(chalCtx.spellLevel, S.customWords);
     if (!word) { box.appendChild(el("div", "chal-title", "Your custom word bank is empty — add words in Settings, or switch method.")); switchLink(box, "spell"); return; }
     var flashMs = S.settings.flashMs || 2000;
     box.appendChild(el("div", "chal-title", "Memorize the word!  <span class='lvl-tag'>" + SPELL_LEVELS[chalCtx.spellLevel].name + "</span>"));
@@ -872,7 +880,7 @@
     timerBar.firstChild.style.transitionDuration = flashMs + "ms";
     requestAnimationFrame(function () { timerBar.firstChild.classList.add("run"); });
     setTimeout(function () {
-      if (mode !== "encounter" && mode !== "battle" && mode !== "evotrial") return;
+      if (mode !== "encounter" && mode !== "battle" && mode !== "evotrial" && mode !== "quest") return;
       flash.textContent = "• • •";
       flash.classList.add("hidden-word");
       timerBar.style.visibility = "hidden";
@@ -1976,7 +1984,7 @@
         teach = '<div class="alg-lesson"><div class="alg-lesson-tag">' + esc(ti.name || "") + "</div>" +
           '<div class="alg-idea">💡 ' + esc(ti.idea || "") + "</div>" +
           algebraWorkHTML(npcState.demo) +
-          '<div class="alg-answer-line">so <b>x = ' + npcState.demo.answer + "</b></div></div>" +
+          '<div class="alg-answer-line">so <b>' + npcState.demo.result + "</b></div></div>" +
           (talk.step.line2 ? '<div class="npc-line">"' + esc(talk.step.line2) + '"</div>' : "");
       }
       body.innerHTML = av +
@@ -2626,15 +2634,61 @@
   var questState = null; // dialog state for the open quest-giver
 
   function initQuests() { if (!S.quests) S.quests = {}; }
-  function questStatus(id) { var q = S.quests && S.quests[id]; return q ? q.status : "available"; }
+  // A "retired" quest has had its story removed to keep the game light; it
+  // simply reads as completed for everyone.
+  function questStatus(id) {
+    var d = QUEST_BY_ID[id];
+    if (d && d.retired) return "done";
+    var q = S.quests && S.quests[id]; return q ? q.status : "available";
+  }
   function questDef(id) { return QUEST_BY_ID[id]; }
   function curStep(id) {
     var st = S.quests && S.quests[id]; var def = questDef(id);
-    if (!st || st.status !== "active" || !def) return null;
+    if (!st || st.status !== "active" || !def || def.retired || !def.steps) return null;
     return def.steps[st.step] || null;
   }
   function activeQuestList() {
     return (window.QUESTS || []).filter(function (q) { return questStatus(q.id) === "active"; });
+  }
+
+  // A slice of the Spelling Bee list given as FRACTIONS of its length
+  // ([0, 0.25] = the first quarter), so quests keep working if the list is edited.
+  function beePool(range) {
+    var all = (SPELL_BANKS[5] || []).slice();
+    if (!range || !all.length) return all;
+    var a = Math.round(range[0] * all.length), b = Math.round(range[1] * all.length);
+    var out = all.slice(a, Math.max(b, a + 1));
+    return out.length ? out : all;
+  }
+  // random bee words from a slice, never the same word twice in a row
+  function beePicker(range) {
+    var pool = beePool(range), last = null;
+    return function () {
+      if (pool.length < 2) return pool[0];
+      var w; do { w = pool[Math.floor(Math.random() * pool.length)]; } while (w === last);
+      last = w; return w;
+    };
+  }
+  function isCounted(step) { return step.kind === "item" || step.kind === "spellbee" || step.kind === "drill"; }
+  // how many a counted step needs (a spelling step defaults to "every word once")
+  function stepCount(step) {
+    if (step.kind === "spellbee") return step.count || beePool(step.pool).length;
+    return step.count;
+  }
+  // Does this creature's encounter have to use a particular challenge? Either
+  // the creature itself demands it (bosses carry `algebra` / `spellbee`), or an
+  // active quest step targeting it says so (`challenge: "bee"` or {algebra}).
+  function encounterOverride(c) {
+    if (c.spellbee) return { bee: c.spellbee === true ? null : c.spellbee };
+    var found = {};
+    activeQuestList().forEach(function (q) {
+      var step = curStep(q.id);
+      if (!step || !step.challenge || step.creature !== c.id) return;
+      if (step.kind !== "catch" && step.kind !== "boss") return;
+      if (step.challenge === "bee") found = { bee: step.pool || null };
+      else if (step.challenge.algebra) found = { algebra: step.challenge.algebra };
+    });
+    return found;
   }
 
   // ---- quest-giver dialog (entering a house) ----
@@ -2666,6 +2720,13 @@
       };
       wireCloses(body); return;
     }
+    if (status === "done" && def.retired) {
+      body.innerHTML = head +
+        '<div class="quest-title" style="color:' + def.color + '">' + def.icon + " " + esc(def.name) + "</div>" +
+        '<div class="quest-retired">✅ Completed</div>' +
+        '<button class="big-btn go" data-close="quest">Leave</button>';
+      wireCloses(body); return;
+    }
     if (status === "done") {
       body.innerHTML = head +
         '<div class="quest-title" style="color:' + def.color + '">' + def.icon + " " + esc(def.name) + " ✓</div>" +
@@ -2677,7 +2738,7 @@
     var st = S.quests[def.id], step = def.steps[st.step];
     var listHtml = def.steps.map(function (s, i) {
       var done = i < st.step, now = i === st.step;
-      var prog = (now && s.kind === "item") ? " (" + (st.items || 0) + "/" + s.count + ")" : "";
+      var prog = (now && isCounted(s)) ? " (" + (st.items || 0) + "/" + stepCount(s) + ")" : "";
       return '<div class="quest-step ' + (done ? "done" : now ? "now" : "") + '">' +
         (done ? "✅ " : now ? "▶️ " : "○ ") + esc(s.text) + prog + "</div>";
     }).join("");
@@ -2686,6 +2747,9 @@
       '<div class="quest-steps">' + listHtml + "</div>" +
       '<div id="quest-action"></div>' +
       '<button class="switch-link" data-close="quest">Close</button>';
+    var nowEl = body.querySelector(".quest-step.now");
+    // after the dialog is shown (it may still be closed on the first render)
+    if (nowEl) setTimeout(function () { nowEl.parentNode.scrollTop = Math.max(0, nowEl.offsetTop - 40); }, 0);
     var act = $("quest-action");
     if (step.kind === "math") {
       var prob = makeMathProblem(step.level || 1); questState.prob = prob;
@@ -2716,10 +2780,10 @@
         '<div class="alg-idea">💡 ' + esc(info.idea || "") + "</div>" +
         '<div class="alg-demo-label">Watch — here is one worked all the way through:</div>' +
         algebraWorkHTML(L.demo) +
-        '<div class="alg-answer-line">so <b>x = ' + L.demo.answer + "</b></div></div>" +
+        '<div class="alg-answer-line">so <b>' + L.demo.result + "</b></div></div>" +
         '<div class="alg-your-turn">Now you try one:</div>' +
-        '<div class="alg-q">' + L.prob.equation + "</div>" +
-        '<div class="answer-row center"><input class="answer-input" id="quest-input" type="number" inputmode="numeric" placeholder="x = ?" autocomplete="off"><button class="big-btn go" id="quest-go">Solve</button></div>' +
+        '<div class="' + (L.prob.story ? "alg-q story" : "alg-q") + '">' + L.prob.equation + "</div>" +
+        '<div class="answer-row center"><input class="answer-input" id="quest-input" type="number" inputmode="numeric" placeholder="' + L.prob.placeholder + '" autocomplete="off"><button class="big-btn go" id="quest-go">Solve</button></div>' +
         '<div class="npc-feedback" id="quest-feedback"></div>';
       var lin = $("quest-input");
       function lsubmit() {
@@ -2727,7 +2791,7 @@
         if (parseInt(lin.value, 10) === L.prob.answer) { sfx("correct"); advanceQuest(def.id); renderQuestGiver(); }
         else {
           sfx("wrong");
-          $("quest-feedback").innerHTML = "❌ Not quite — x was <b>" + L.prob.answer + "</b>. Here's how:" +
+          $("quest-feedback").innerHTML = "❌ Not quite — <b>" + L.prob.result + "</b>. Here's how:" +
             algebraWorkHTML(L.prob) + "<div>Try a fresh one…</div>";
           setTimeout(function () { questState.lesson = null; renderQuestGiver(); }, 4200);
         }
@@ -2745,8 +2809,11 @@
       var byRow = {}; F.data.blanks.forEach(function (b) { byRow[b.row] = b; });
       var html = '<div class="npc-line">"' + esc(step.giverLine || "Finish the working.") + '"</div>' +
         '<div class="alg-work fill"><div class="alg-eq start">' + fp.equation + "</div>";
+      var blankSeen = false;
       fp.rows.forEach(function (r, i) {
         var b = byRow[i];
+        if (b) blankSeen = true;
+        else if (r.check && blankSeen) return;   // a "check it" row would give the blank away
         var opCell, resCell;
         if (b && b.kind === "op") {
           opCell = '<span class="alg-op"><span class="alg-choices" data-row="' + i + '">' +
@@ -2757,9 +2824,9 @@
           opCell = '<span class="alg-op">' + r.opText + "</span>";
         }
         if (b && b.kind === "val") {
-          resCell = '<span class="alg-res">' + r.left + ' = <input class="alg-blank" data-row="' + i + '" type="number" inputmode="numeric" placeholder="?"></span>';
+          resCell = '<span class="alg-res">' + algebraRowText(r, '<input class="alg-blank" data-row="' + i + '" type="number" inputmode="numeric" placeholder="?">') + "</span>";
         } else {
-          resCell = '<span class="alg-res">' + r.left + " = " + r.right + "</span>";
+          resCell = '<span class="alg-res">' + algebraRowText(r) + "</span>";
         }
         html += '<div class="alg-row" data-rowline="' + i + '">' + opCell + resCell + "</div>";
       });
@@ -2789,7 +2856,7 @@
           if (!ok) allRight = false;
         });
         if (anyBlank) { $("quest-feedback").textContent = "Fill in every blank first!"; return; }
-        if (allRight) { sfx("correct"); $("quest-feedback").innerHTML = "✅ Perfect working — so x = <b>" + fp.answer + "</b>!";
+        if (allRight) { sfx("correct"); $("quest-feedback").innerHTML = "✅ Perfect working — so <b>" + fp.result + "</b>!";
           setTimeout(function () { advanceQuest(def.id); renderQuestGiver(); }, 900); }
         else {
           sfx("wrong");
@@ -2797,6 +2864,10 @@
           setTimeout(function () { questState.fill = null; renderQuestGiver(); }, 5000);
         }
       };
+    } else if (step.kind === "spellbee") {
+      renderSpellBeeStep(def, st, step, act);
+    } else if (step.kind === "drill") {
+      renderDrillStep(def, st, step, act);
     } else if (step.kind === "riddle") {
       act.innerHTML = '<div class="npc-line">"' + esc(step.giverLine || "Answer my riddle…") + '"</div>' +
         '<div class="quest-riddle">' + esc(step.prompt) + "</div>" +
@@ -2823,6 +2894,169 @@
       act.innerHTML = '<div class="npc-line">' + esc(hint) + "</div>";
     }
     wireCloses(body);
+  }
+
+  // ---- Spelling Bee drill steps -------------------------------------------
+  // A quest giver drills a slice of the Spelling Bee list. Every word in the
+  // slice comes up (shuffled, and again if `count` asks for more than the
+  // slice holds). A miss shows the right spelling, makes you copy it once,
+  // and sends the word back into the queue so it returns a few words later.
+  // Modes: "copy" (word stays up), "flash" (memorize, then type), "gaps"
+  // (some letters hidden), "scramble" (letters jumbled), "mix" (any of those).
+  function shuffled(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function normWord(w) { return String(w).trim().toLowerCase().replace(/\s+/g, " "); }
+  function gapWord(w) {
+    var idx = [];
+    for (var i = 1; i < w.length; i++) if (/[a-z]/i.test(w[i])) idx.push(i);
+    var hide = shuffled(idx).slice(0, Math.max(1, Math.round(idx.length * 0.45)));
+    return w.split("").map(function (ch, i) { return hide.indexOf(i) !== -1 ? "_" : ch; }).join("");
+  }
+  function scrambleWord(w) {
+    var letters = w.replace(/\s+/g, "").split(""), out, tries = 0;
+    do { out = shuffled(letters).join(""); } while (out === w.replace(/\s+/g, "") && ++tries < 8);
+    return out;
+  }
+  function renderSpellBeeStep(def, st, step, act) {
+    var need = stepCount(step), key = def.id + ":" + st.step;
+    var B = questState.bee;
+    if (!B || B.key !== key) {
+      B = questState.bee = { key: key, queue: [], word: null, phase: "ask", streak: 0, mode: null };
+    }
+    function refill() { B.queue = B.queue.concat(shuffled(beePool(step.pool))); }
+    if (!B.word) {
+      if (!B.queue.length) refill();
+      B.word = B.queue.shift();
+      if (B.queue.length && B.queue[0] === B.word) B.queue.push(B.queue.shift());
+      var m = step.mode || "flash";
+      if (m === "mix") m = ["flash", "gaps", "scramble"][Math.floor(Math.random() * 3)];
+      B.mode = m;
+      B.shown = m === "gaps" ? gapWord(B.word) : m === "scramble" ? scrambleWord(B.word) : B.word;
+      B.phase = "ask";
+    }
+    var word = B.word, got = st.items || 0;
+    var modeLabel = { copy: "Copy it", flash: "Memorize it", gaps: "Fill the gaps", scramble: "Unscramble it" }[B.mode];
+    var bar = '<div class="bee-bar"><div class="bee-fill" style="width:' + Math.min(100, Math.round(100 * got / need)) + '%"></div>' +
+      '<span>🐝 ' + got + " / " + need + " words" + (B.streak >= 3 ? " · 🔥 " + B.streak + " in a row" : "") + "</span></div>";
+    var top = '<div class="npc-line">"' + esc(step.giverLine || "Spell every word on my list!") + '"</div>' + bar;
+
+    if (B.phase === "fix") {
+      act.innerHTML = top +
+        '<div class="bee-fix">Here’s how it’s spelled — type it once, just like this:</div>' +
+        '<div class="spell-flash bee-word">' + esc(word) + "</div>" +
+        '<div class="answer-row center"><input class="answer-input spell" id="bee-input" type="text" placeholder="copy it" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="big-btn go" id="bee-go">Got it</button></div>' +
+        '<div class="npc-feedback" id="quest-feedback"></div>';
+    } else {
+      var shownHtml = B.mode === "scramble"
+        ? '<div class="bee-tiles">' + B.shown.split("").map(function (ch) { return '<span class="bee-tile">' + esc(ch) + "</span>"; }).join("") + "</div>"
+        : '<div class="spell-flash bee-word' + (B.mode === "gaps" ? " gaps" : "") + '" id="bee-shown">' + esc(B.shown) + "</div>";
+      act.innerHTML = top +
+        '<div class="bee-mode">' + modeLabel + (B.mode === "scramble" ? ' <small>(' + B.shown.length + " letters)</small>" : "") + "</div>" +
+        shownHtml +
+        (B.mode === "flash" ? '<div class="flash-timer" id="bee-timer"><div class="flash-timer-fill"></div></div>' : "") +
+        '<div class="answer-row center" id="bee-row"' + (B.mode === "flash" ? ' style="visibility:hidden"' : "") + '>' +
+        '<input class="answer-input spell" id="bee-input" type="text" placeholder="type it" autocomplete="off" autocapitalize="off" spellcheck="false">' +
+        '<button class="big-btn go" id="bee-go">Spell it</button></div>' +
+        '<div class="npc-feedback" id="quest-feedback"></div>';
+    }
+    var input = $("bee-input"), fb = $("quest-feedback"), locked = false;
+    function next(delay) {
+      locked = true;
+      setTimeout(function () { if (mode === "quest" && questState.bee === B) renderQuestGiver(); }, delay);
+    }
+    function submit() {
+      if (locked || input.value.trim() === "") return;
+      var ok = normWord(input.value) === normWord(word);
+      if (B.phase === "fix") {
+        if (ok) { sfx("correct"); fb.textContent = "👍 Good — it'll come back again soon."; B.word = null; next(800); }
+        else { sfx("wrong"); fb.textContent = "Not quite — copy it letter by letter."; input.value = ""; input.focus(); }
+        return;
+      }
+      if (ok) {
+        sfx("correct");
+        B.streak++; st.items = got + 1; B.word = null;
+        persist();
+        if (st.items >= need) {
+          fb.innerHTML = "🎉 That's every word! <b>" + need + "</b> spelled correctly.";
+          locked = true;
+          setTimeout(function () { questState.bee = null; advanceQuest(def.id); if (mode === "quest") renderQuestGiver(); }, 1300);
+        } else {
+          fb.innerHTML = "✅ <b>" + esc(word) + "</b> — correct!";
+          next(700);
+        }
+      } else {
+        sfx("wrong");
+        B.streak = 0;
+        B.queue.splice(Math.min(3, B.queue.length), 0, word);   // it comes back soon
+        fb.innerHTML = "❌ You wrote <b>" + esc(input.value.trim()) + "</b>.";
+        B.phase = "fix";
+        next(1300);
+      }
+    }
+    $("bee-go").onclick = submit;
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    if (B.mode === "flash" && B.phase === "ask") {
+      var flashMs = Math.max(2500, (S.settings.flashMs || 2000) + 500);
+      var tb = $("bee-timer");
+      tb.firstChild.style.transitionDuration = flashMs + "ms";
+      requestAnimationFrame(function () { tb.firstChild.classList.add("run"); });
+      setTimeout(function () {
+        var shown = $("bee-shown");
+        if (!shown || questState.bee !== B || B.word !== word) return;
+        shown.textContent = "• • •"; shown.classList.add("hidden-word");
+        tb.style.visibility = "hidden";
+        $("bee-row").style.visibility = "";
+        input.focus();
+      }, flashMs);
+    } else setTimeout(function () { input.focus(); }, 60);
+  }
+
+  // ---- Practice drills ----------------------------------------------------
+  // `count` problems of one algebra type (or a mixed list) in a row, solved
+  // in the giver's dialog. A miss shows the full working and doesn't count.
+  function renderDrillStep(def, st, step, act) {
+    var need = stepCount(step), got = st.items || 0, key = def.id + ":" + st.step;
+    if (!questState.drill || questState.drill.key !== key) questState.drill = { key: key, prob: null, streak: 0 };
+    var D = questState.drill;
+    if (!D.prob) D.prob = makeAlgebraProblem(step.algebra);
+    var prob = D.prob, info = ALGEBRA_BY_ID[prob.type] || {};
+    act.innerHTML = '<div class="npc-line">"' + esc(step.giverLine || "Practice makes it stick. Keep going!") + '"</div>' +
+      '<div class="bee-bar drill"><div class="bee-fill" style="width:' + Math.min(100, Math.round(100 * got / need)) + '%"></div>' +
+      "<span>✏️ " + got + " / " + need + " solved" + (D.streak >= 3 ? " · 🔥 " + D.streak + " in a row" : "") + "</span></div>" +
+      '<div class="bee-mode">' + esc(prob.ask) +
+      (info.name && prob.ask.toLowerCase().indexOf(info.name.toLowerCase()) === -1 ? ' <span class="lvl-tag alg">' + esc(info.name) + "</span>" : "") + "</div>" +
+      '<div class="' + (prob.story ? "alg-q story" : "alg-q") + '">' + prob.equation + "</div>" +
+      '<div class="answer-row center"><input class="answer-input" id="quest-input" type="number" inputmode="numeric" placeholder="' + prob.placeholder + '" autocomplete="off"><button class="big-btn go" id="quest-go">Check</button></div>' +
+      '<button class="switch-link" id="drill-hint">💡 Show me the idea</button>' +
+      '<div class="npc-feedback" id="quest-feedback"></div>';
+    var input = $("quest-input"), fb = $("quest-feedback"), locked = false;
+    $("drill-hint").onclick = function () { fb.innerHTML = "💡 " + esc(info.idea || ""); };
+    function submit() {
+      if (locked || input.value.trim() === "") return;
+      locked = true;
+      if (parseInt(input.value, 10) === prob.answer) {
+        sfx("correct"); D.streak++; D.prob = null;
+        st.items = got + 1; persist();
+        if (st.items >= need) {
+          fb.innerHTML = "🎉 All " + need + " solved — so <b>" + prob.result + "</b>!";
+          setTimeout(function () { questState.drill = null; advanceQuest(def.id); if (mode === "quest") renderQuestGiver(); }, 1200);
+        } else {
+          fb.innerHTML = "✅ Yes — <b>" + prob.result + "</b>.";
+          setTimeout(function () { if (mode === "quest" && questState.drill === D) renderQuestGiver(); }, 800);
+        }
+      } else {
+        sfx("wrong"); D.streak = 0;
+        fb.innerHTML = "❌ Not quite — <b>" + prob.result + "</b>. Here's the working:" + algebraWorkHTML(prob) +
+          '<div class="catch-actions"><button class="big-btn" id="drill-next">Try another</button></div>';
+        $("drill-next").onclick = function () { D.prob = null; renderQuestGiver(); };
+      }
+    }
+    $("quest-go").onclick = submit;
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    setTimeout(function () { input.focus(); }, 60);
   }
 
   function advanceQuest(id) {
@@ -2957,7 +3191,7 @@
     active.forEach(function (q) {
       var st = S.quests[q.id], step = q.steps[st.step];
       html += '<div class="ql-card" style="border-color:' + q.color + '"><div class="ql-name">' + q.icon + " " + esc(q.name) + "</div>" +
-        '<div class="ql-step">▶️ ' + esc(step.text) + (step.kind === "item" ? " (" + (st.items || 0) + "/" + step.count + ")" : "") + "</div>" +
+        '<div class="ql-step">▶️ ' + esc(step.text) + (isCounted(step) ? " (" + (st.items || 0) + "/" + stepCount(step) + ")" : "") + "</div>" +
         '<div class="ql-giver">from ' + esc(q.giverName) + " · " + esc(q.house.name) + "</div></div>";
     });
     html += "</div>";
