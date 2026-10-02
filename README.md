@@ -138,8 +138,9 @@ Works great on desktop and iPad.
     `SPELL_BANKS[5]`, between the BEE LIST markers in `js/challenges.js`). The
     first four each take a quarter of the list (the list is *dealt* into four
     piles, so every quarter mixes all four rounds; 190 words → ~47 each) and make you spell **every word
-    in it four or five times**: *copy* it, spell it from a **flash**, fill in
-    the **gaps**, **unscramble** it, then a mixed review of 20. A miss shows the
+    in it at least twice**: *copy* it and spell it from a **flash** (every word),
+    then fill in the **gaps**, **unscramble**, and a mixed review (a random 20
+    each). A miss shows the
     right spelling, makes you copy it once, and sends the word back a few words
     later. Each quest also has a spelling tip from a townsperson, a critter to
     catch with Bee words, and a boss that only answers Bee words from that

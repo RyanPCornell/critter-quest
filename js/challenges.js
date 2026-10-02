@@ -129,7 +129,7 @@
       "versus","apprentice","albino","warrior","butterflies","fickle","interruption","quail","battalion","hurdler",
       "chisel","rebuttal","salamanders","desperate","property","geologist","carrion","territory","concentrate","pamphlet",
       "singularity","carefully","matrilineal","adrenaline","laughter","compromise","wetlands","bifocals","thimble","optometrist",
-      "arnica","civilian","exploratory","convertible","caesar","glamourous","boycotting","perimeter","fundraiser","cemetery",
+      "arnica","civilian","exploratory","convertible","caesar","glamorous","boycotting","perimeter","fundraiser","cemetery",
       "truant","kelp","integrity","cartridge","piteously","dictionary","aeolus","elliptical","materialize","tractor",
     ],
     // ----------------------------- BEE LIST END ---------------------------
