@@ -120,6 +120,17 @@
       "collateral","magnesium","cuddle","pheasants","halloween","permit","segregation","predecessor","pinata","organism",
       // --- Round 3 ---
       "cataract","psychological","eponymous","quizzically","aphrodite","solenodon","appetizing","mysticetes","tripoli","canter",
+      // --- Round 4 (added 2026-10-01) ---
+      "rendezvous","insurrection","basement","romerillo","iridium","awning","relief","haddock","monorail","initiation",
+      "tortillas","cosmodrome","synthetic","jovial","fictitious","mascara","senegal","puffy","alphabetical","lullaby",
+      "schnauzer","helium","fierce","fertilizer","suggested","atmosphere","conscious","business","buttons","dachshund",
+      "solidarity","ridiculous","investment","pentathlete","sniffling","disappear","megahertz","fascism","stragglers","bratwurst",
+      "elite","precedent","reinstate","burlap","regolith","salary","december","meticulous","lunar","staccato",
+      "versus","apprentice","albino","warrior","butterflies","fickle","interruption","quail","battalion","hurdler",
+      "chisel","rebuttal","salamanders","desperate","property","geologist","carrion","territory","concentrate","pamphlet",
+      "singularity","carefully","matrilineal","adrenaline","laughter","compromise","wetlands","bifocals","thimble","optometrist",
+      "arnica","civilian","exploratory","convertible","caesar","glamourous","boycotting","perimeter","fundraiser","cemetery",
+      "truant","kelp","integrity","cartridge","piteously","dictionary","aeolus","elliptical","materialize","tractor",
     ],
     // ----------------------------- BEE LIST END ---------------------------
   };

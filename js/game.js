@@ -2653,8 +2653,12 @@
 
   // A slice of the Spelling Bee list given as FRACTIONS of its length
   // ([0, 0.25] = the first quarter), so quests keep working if the list is edited.
+  // The list is DEALT like cards into four piles first (words 1, 5, 9… then
+  // 2, 6, 10…), so each quarter samples every round of the list evenly:
+  // newly added words land in all four spelling quests, not just the last one.
   function beePool(range) {
-    var all = (SPELL_BANKS[5] || []).slice();
+    var src = SPELL_BANKS[5] || [], all = [];
+    for (var k = 0; k < 4; k++) for (var i = k; i < src.length; i += 4) all.push(src[i]);
     if (!range || !all.length) return all;
     var a = Math.round(range[0] * all.length), b = Math.round(range[1] * all.length);
     var out = all.slice(a, Math.max(b, a + 1));
