@@ -138,9 +138,10 @@ Works great on desktop and iPad.
     `SPELL_BANKS[5]`, between the BEE LIST markers in `js/challenges.js`). The
     first four each take a quarter of the list (the list is *dealt* into four
     piles, so every quarter mixes all four rounds; 190 words → ~47 each) and make you spell **every word
-    in it at least twice**: *copy* it and spell it from a **flash** (every word),
-    then fill in the **gaps**, **unscramble**, and a mixed review (a random 20
-    each). A miss shows the
+    in it**, 15 words per pass: *copy*, spell from a **flash**, fill in the
+    **gaps**, **unscramble**, and a mixed review. Words the quest has not asked
+    yet always come first (`beeSeen` in the quest state), so the passes add up
+    to the whole quarter before any word repeats. A miss shows the
     right spelling, makes you copy it once, and sends the word back a few words
     later. Each quest also has a spelling tip from a townsperson, a critter to
     catch with Bee words, and a boss that only answers Bee words from that
@@ -149,9 +150,8 @@ Works great on desktop and iPad.
       **📚 The Whispering Library** (Librarian Sorrel) → **Tomewyrm**;
       **🪁 Letters on the Wind** (Kitewright Juno) → **Glyphawk**;
       **🖋️ The Tide Script** (Inkmaker Mira) → **Scriptide**.
-    - **🏆 The Grand Spelling Bee** (Judge Marigold): three rounds of 30 words
-      from the whole list, then a **Championship Round of every word on the
-      list**, then **Lexicorn**. Progress is saved word by word, so it can be
+    - **🏆 The Grand Spelling Bee** (Judge Marigold): four rounds of 15 words from
+      the whole list (new words first), then **Lexicorn**. Progress is saved word by word, so it can be
       done over several sittings.
     Because the quests slice the list by *fraction*, editing the word list
     keeps them working (and their counts update on their own).

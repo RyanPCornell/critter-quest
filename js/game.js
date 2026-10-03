@@ -2930,7 +2930,14 @@
     if (!B || B.key !== key) {
       B = questState.bee = { key: key, queue: [], word: null, phase: "ask", streak: 0, mode: null };
     }
-    function refill() { B.queue = B.queue.concat(shuffled(beePool(step.pool))); }
+    // Words this quest hasn't asked yet come first (st.beeSeen persists across
+    // its passes), so short passes still add up to the whole slice.
+    function refill() {
+      var pool = beePool(step.pool), seen = st.beeSeen || [];
+      var fresh = pool.filter(function (w) { return seen.indexOf(w) === -1; });
+      var old = pool.filter(function (w) { return seen.indexOf(w) !== -1; });
+      B.queue = B.queue.concat(shuffled(fresh), shuffled(old));
+    }
     if (!B.word) {
       if (!B.queue.length) refill();
       B.word = B.queue.shift();
@@ -2982,6 +2989,8 @@
       if (ok) {
         sfx("correct");
         B.streak++; st.items = got + 1; B.word = null;
+        st.beeSeen = st.beeSeen || [];
+        if (st.beeSeen.indexOf(word) === -1) st.beeSeen.push(word);
         persist();
         if (st.items >= need) {
           fb.innerHTML = "🎉 That's every word! <b>" + need + "</b> spelled correctly.";
