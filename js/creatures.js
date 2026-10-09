@@ -2288,7 +2288,7 @@ window.CREATURES = [
       { n: "Skywriting", d: "Carves words into the frozen air with its wingtips." },
       { n: "Scatterwind", d: "A gust that jumbles letters, which it then dares you to put right." },
     ],
-    story: "On clear days over Frostpeak you can see words hanging in the sky, written in frost by the wingtips of a Glyphawk. When the wind scrambles them it circles back, and it only lands for someone who can put the letters back in order.",
+    story: "On clear days over Frostpeak you can see words hanging in the sky, written in frost by the wingtips of a Glyphawk. When the wind blurs them it circles back, and it only lands for someone who can tell the true spelling from the false ones.",
   },
   {
     id: "scriptide", name: "Scriptide", species: "Ink Ray", types: ["Aqua", "Shade"],

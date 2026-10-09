@@ -550,10 +550,12 @@
   .bee-word { max-width: 380px; margin-left: auto; margin-right: auto; font-size: 34px; word-break: break-word; }
   .bee-word.gaps { letter-spacing: 6px; }
   .bee-fix { font-size: 14px; font-weight: 800; color: #b5532a; margin: 8px 0 4px; }
-  .bee-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px auto 12px; max-width: 400px; }
-  .bee-tile { width: 36px; height: 40px; display: grid; place-items: center; font-size: 22px; font-weight: 800;
-    background: #ffe9a8; border: 2.5px solid #c98a12; border-radius: 9px; color: #6a4508;
-    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+  .bee-choices { display: flex; flex-direction: column; gap: 8px; margin: 8px auto 12px; max-width: 320px; }
+  .bee-choice { font-family: inherit; font-size: 24px; font-weight: 800; line-height: 1.2; letter-spacing: 1px; color: var(--ink); padding: 10px 14px; border: 3px solid var(--ink); border-radius: 12px;
+    background: #fffdf5; cursor: pointer; }
+  .bee-choice:hover { background: #fff3c4; }
+  .bee-choice.good { background: #e7f6e0; border-color: #5cb85c; }
+  .bee-choice.bad { background: #ffe6e6; border-color: #e8703a; text-decoration: line-through; }
   #quest-action .answer-row { max-width: 320px; margin: 0 auto; }
   #quest-body { text-align: center; }
   .ql-section { margin-top: 14px; text-align: left; }

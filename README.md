@@ -139,7 +139,8 @@ Works great on desktop and iPad.
     first four each take a quarter of the list (the list is *dealt* into four
     piles, so every quarter mixes all four rounds; 190 words → ~47 each) and make you spell **every word
     in it**, 15 words per pass: *copy*, spell from a **flash**, fill in the
-    **gaps**, **unscramble**, and a mixed review. Words the quest has not asked
+    **gaps**, **pick the right spelling** (one correct and two believable
+    misspellings), and a mixed review. Words the quest has not asked
     yet always come first (`beeSeen` in the quest state), so the passes add up
     to the whole quarter before any word repeats. A miss shows the
     right spelling, makes you copy it once, and sends the word back a few words

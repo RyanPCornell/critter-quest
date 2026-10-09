@@ -2906,7 +2906,8 @@
   // slice holds). A miss shows the right spelling, makes you copy it once,
   // and sends the word back into the queue so it returns a few words later.
   // Modes: "copy" (word stays up), "flash" (memorize, then type), "gaps"
-  // (some letters hidden), "scramble" (letters jumbled), "mix" (any of those).
+  // (some letters hidden), "choose" (tap the right spelling out of three),
+  // "mix" (any of flash / gaps / choose).
   function shuffled(a) {
     a = a.slice();
     for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
@@ -2919,9 +2920,56 @@
     var hide = shuffled(idx).slice(0, Math.max(1, Math.round(idx.length * 0.45)));
     return w.split("").map(function (ch, i) { return hide.indexOf(i) !== -1 ? "_" : ch; }).join("");
   }
-  function scrambleWord(w) {
-    var letters = w.replace(/\s+/g, "").split(""), out, tries = 0;
-    do { out = shuffled(letters).join(""); } while (out === w.replace(/\s+/g, "") && ++tries < 8);
+  // Believable misspellings: the slips real spellers make (a doubled or
+  // dropped letter, a swapped vowel, ie/ei, a sound-alike), never another
+  // real word from the Bee list.
+  var VOWEL_SWAP = { a: "e", e: "i", i: "e", o: "u", u: "o" };
+  // [pattern, replacement]: each only where the sounds really do match
+  var SOUND_ALIKE = [[/ph/, "f"], [/tion/, "sion"], [/sion/, "tion"], [/ous/, "us"], [/ck/, "k"], [/ie/, "ei"], [/ei/, "ie"],
+    [/c(?=[aoulr])/, "k"], [/s(?=[eiy])/, "c"], [/ce/, "se"], [/y$/, "ie"], [/er/, "ur"], [/or/, "er"], [/al$/, "le"],
+    [/ent/, "ant"], [/ant/, "ent"], [/(..)ee/, "$1ea"], [/(..)ea/, "$1ee"], [/([^aeiou])e$/, "$1"]];
+  function misspellOnce(w, loose) {
+    var i, kind = Math.floor(Math.random() * (loose ? 6 : 5)), L = w.length, V = /[aeiouy]/;
+    if (kind === 0) {                                     // double a middle consonant
+      i = 1 + Math.floor(Math.random() * Math.max(1, L - 2));
+      if (i < L - 1 && /[bcdfglmnprstz]/.test(w[i]) && V.test(w[i - 1]) && V.test(w[i + 1])) return w.slice(0, i) + w[i] + w.slice(i);
+    } else if (kind === 1) {                              // undouble a double
+      var m = w.match(/([a-z])\1/);
+      if (m) return w.slice(0, m.index) + w.slice(m.index + 1);
+    } else if (kind === 2) {                              // wrong vowel
+      i = 1 + Math.floor(Math.random() * (L - 1));
+      if (VOWEL_SWAP[w[i]]) return w.slice(0, i) + VOWEL_SWAP[w[i]] + w.slice(i + 1);
+    } else if (kind === 3) {                              // sound-alike (never the first letter)
+      var opts = SOUND_ALIKE.filter(function (p) { return p[0].test(w.slice(1)); });
+      if (opts.length) { var p = opts[Math.floor(Math.random() * opts.length)];
+        return w[0] + w.slice(1).replace(p[0], p[1]); }
+    } else if (kind === 4 && L > 5) {                     // drop a consonant from a cluster
+      i = 1 + Math.floor(Math.random() * (L - 2));
+      if (!V.test(w[i]) && (!V.test(w[i - 1]) || !V.test(w[i + 1])) && w[i] !== w[i - 1]) return w.slice(0, i) + w.slice(i + 1);
+    } else {                                              // (fallback, short words) a stray e,
+      if (/[^aeiouy]$/.test(w)) return w + "e";            // a doubled last letter, or a
+      if (/[^aeiou]e$/.test(w)) return w.slice(0, -1);     // swapped pair of vowels
+      var vv = w.search(/[aeiou][aeiou]/);
+      if (vv > 0 && w[vv] !== w[vv + 1]) return w.slice(0, vv) + w[vv + 1] + w[vv] + w.slice(vv + 2);
+      return /y$/.test(w) ? w.slice(0, -1) + "ey" : w + w[L - 1];
+    }
+    return null;
+  }
+  var REAL_WORDS = null;   // every word in every spelling bank: a "misspelling" must not be one
+  function misspellings(w, n) {
+    if (!REAL_WORDS) {
+      REAL_WORDS = {};
+      Object.keys(SPELL_BANKS).forEach(function (k) { (SPELL_BANKS[k] || []).forEach(function (x) { REAL_WORDS[x] = 1; }); });
+      ["pear", "thirty", "heard", "hart", "pomp", "trick", "bear", "beer", "deer", "dear", "here", "hear", "peach", "reach",
+       "still", "stile", "rich", "ditch", "mosey", "drank", "sweeter", "even", "oven", "fear", "fair", "clews", "pier", "per", "pimp", "clams"].forEach(function (x) { REAL_WORDS[x] = 1; });
+    }
+    var bank = REAL_WORDS, out = [];
+    for (var tries = 0; out.length < n && tries < 300; tries++) {
+      var m = misspellOnce(w, tries >= 200);              // realistic slips first
+      if (m && m !== w && out.indexOf(m) === -1 && !bank[m]) out.push(m);
+    }
+    // last resort for very short words: a stray final e, or a doubled last letter
+    [w + "e", w + w[w.length - 1]].forEach(function (m) { if (out.length < n && out.indexOf(m) === -1 && !bank[m]) out.push(m); });
     return out;
   }
   function renderSpellBeeStep(def, st, step, act) {
@@ -2943,13 +2991,14 @@
       B.word = B.queue.shift();
       if (B.queue.length && B.queue[0] === B.word) B.queue.push(B.queue.shift());
       var m = step.mode || "flash";
-      if (m === "mix") m = ["flash", "gaps", "scramble"][Math.floor(Math.random() * 3)];
+      if (m === "mix") m = ["flash", "gaps", "choose"][Math.floor(Math.random() * 3)];
       B.mode = m;
-      B.shown = m === "gaps" ? gapWord(B.word) : m === "scramble" ? scrambleWord(B.word) : B.word;
+      B.shown = m === "gaps" ? gapWord(B.word) : B.word;
+      if (m === "choose") B.options = shuffled([B.word].concat(misspellings(B.word, 2)));
       B.phase = "ask";
     }
     var word = B.word, got = st.items || 0;
-    var modeLabel = { copy: "Copy it", flash: "Memorize it", gaps: "Fill the gaps", scramble: "Unscramble it" }[B.mode];
+    var modeLabel = { copy: "Copy it", flash: "Memorize it", gaps: "Fill the gaps", choose: "Pick the right spelling" }[B.mode];
     var bar = '<div class="bee-bar"><div class="bee-fill" style="width:' + Math.min(100, Math.round(100 * got / need)) + '%"></div>' +
       '<span>🐝 ' + got + " / " + need + " words" + (B.streak >= 3 ? " · 🔥 " + B.streak + " in a row" : "") + "</span></div>";
     var top = '<div class="npc-line">"' + esc(step.giverLine || "Spell every word on my list!") + '"</div>' + bar;
@@ -2961,16 +3010,18 @@
         '<div class="answer-row center"><input class="answer-input spell" id="bee-input" type="text" placeholder="copy it" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="big-btn go" id="bee-go">Got it</button></div>' +
         '<div class="npc-feedback" id="quest-feedback"></div>';
     } else {
-      var shownHtml = B.mode === "scramble"
-        ? '<div class="bee-tiles">' + B.shown.split("").map(function (ch) { return '<span class="bee-tile">' + esc(ch) + "</span>"; }).join("") + "</div>"
+      var shownHtml = B.mode === "choose"
+        ? '<div class="bee-choices">' + B.options.map(function (o) {
+            return '<button class="bee-choice" data-word="' + esc(o) + '">' + esc(o) + "</button>"; }).join("") + "</div>"
         : '<div class="spell-flash bee-word' + (B.mode === "gaps" ? " gaps" : "") + '" id="bee-shown">' + esc(B.shown) + "</div>";
       act.innerHTML = top +
-        '<div class="bee-mode">' + modeLabel + (B.mode === "scramble" ? ' <small>(' + B.shown.length + " letters)</small>" : "") + "</div>" +
+        '<div class="bee-mode">' + modeLabel + "</div>" +
         shownHtml +
         (B.mode === "flash" ? '<div class="flash-timer" id="bee-timer"><div class="flash-timer-fill"></div></div>' : "") +
+        (B.mode === "choose" ? "" :
         '<div class="answer-row center" id="bee-row"' + (B.mode === "flash" ? ' style="visibility:hidden"' : "") + '>' +
         '<input class="answer-input spell" id="bee-input" type="text" placeholder="type it" autocomplete="off" autocapitalize="off" spellcheck="false">' +
-        '<button class="big-btn go" id="bee-go">Spell it</button></div>' +
+        '<button class="big-btn go" id="bee-go">Spell it</button></div>') +
         '<div class="npc-feedback" id="quest-feedback"></div>';
     }
     var input = $("bee-input"), fb = $("quest-feedback"), locked = false;
@@ -2980,7 +3031,9 @@
     }
     function submit() {
       if (locked || input.value.trim() === "") return;
-      var ok = normWord(input.value) === normWord(word);
+      grade(normWord(input.value) === normWord(word), input.value.trim());
+    }
+    function grade(ok, answer) {
       if (B.phase === "fix") {
         if (ok) { sfx("correct"); fb.textContent = "👍 Good — it'll come back again soon."; B.word = null; next(800); }
         else { sfx("wrong"); fb.textContent = "Not quite — copy it letter by letter."; input.value = ""; input.focus(); }
@@ -3004,10 +3057,22 @@
         sfx("wrong");
         B.streak = 0;
         B.queue.splice(Math.min(3, B.queue.length), 0, word);   // it comes back soon
-        fb.innerHTML = "❌ You wrote <b>" + esc(input.value.trim()) + "</b>.";
+        fb.innerHTML = B.mode === "choose" ? "❌ <b>" + esc(answer) + "</b> is misspelled."
+          : "❌ You wrote <b>" + esc(answer) + "</b>.";
         B.phase = "fix";
         next(1300);
       }
+    }
+    if (B.mode === "choose" && B.phase === "ask") {
+      act.querySelectorAll(".bee-choice").forEach(function (btn) {
+        btn.onclick = function () {
+          if (locked) return;
+          var pick = btn.getAttribute("data-word"), ok = pick === word;
+          btn.classList.add(ok ? "good" : "bad");
+          grade(ok, pick);
+        };
+      });
+      return;
     }
     $("bee-go").onclick = submit;
     input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
