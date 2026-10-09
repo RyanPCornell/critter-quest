@@ -2914,10 +2914,17 @@
     return a;
   }
   function normWord(w) { return String(w).trim().toLowerCase().replace(/\s+/g, " "); }
+  // How many letters to hide: short words 1–2, medium 2, long words only 2–3
+  // (a long word with half its letters gone was too hard). Gaps are never
+  // side by side, so every missing letter has letters around it.
   function gapWord(w) {
-    var idx = [];
-    for (var i = 1; i < w.length; i++) if (/[a-z]/i.test(w[i])) idx.push(i);
-    var hide = shuffled(idx).slice(0, Math.max(1, Math.round(idx.length * 0.45)));
+    var idx = [], L = w.length;
+    for (var i = 1; i < L; i++) if (/[a-z]/i.test(w[i])) idx.push(i);
+    var want = L <= 5 ? Math.max(1, Math.round(idx.length * 0.4)) : L <= 8 ? 2 : 2 + Math.floor(Math.random() * 2);
+    var hide = [];
+    shuffled(idx).forEach(function (i) {
+      if (hide.length < want && hide.indexOf(i - 1) === -1 && hide.indexOf(i + 1) === -1) hide.push(i);
+    });
     return w.split("").map(function (ch, i) { return hide.indexOf(i) !== -1 ? "_" : ch; }).join("");
   }
   // Believable misspellings: the slips real spellers make (a doubled or
