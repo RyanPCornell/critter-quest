@@ -3045,13 +3045,20 @@
         st.beeSeen = st.beeSeen || [];
         if (st.beeSeen.indexOf(word) === -1) st.beeSeen.push(word);
         persist();
+        // After picking the right spelling, show it big for a moment so the
+        // correct form is what sticks.
+        var showOff = B.mode === "choose";
+        if (showOff) {
+          var ch = act.querySelector(".bee-choices");
+          if (ch) ch.outerHTML = '<div class="bee-celebrate">' + esc(word) + "</div>";
+        }
         if (st.items >= need) {
           fb.innerHTML = "🎉 That's every word! <b>" + need + "</b> spelled correctly.";
           locked = true;
-          setTimeout(function () { questState.bee = null; advanceQuest(def.id); if (mode === "quest") renderQuestGiver(); }, 1300);
+          setTimeout(function () { questState.bee = null; advanceQuest(def.id); if (mode === "quest") renderQuestGiver(); }, showOff ? 2600 : 1300);
         } else {
-          fb.innerHTML = "✅ <b>" + esc(word) + "</b> — correct!";
-          next(700);
+          fb.innerHTML = showOff ? "✅ That's right! Take a good look." : "✅ <b>" + esc(word) + "</b> — correct!";
+          next(showOff ? 2500 : 700);
         }
       } else {
         sfx("wrong");

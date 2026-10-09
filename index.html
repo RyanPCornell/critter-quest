@@ -556,6 +556,10 @@
   .bee-choice:hover { background: #fff3c4; }
   .bee-choice.good { background: #e7f6e0; border-color: #5cb85c; }
   .bee-choice.bad { background: #ffe6e6; border-color: #e8703a; text-decoration: line-through; }
+  .bee-celebrate { font-size: clamp(30px, 8vw, 52px); font-weight: 800; letter-spacing: 3px; color: #2f7a3a; text-align: center; word-break: break-word;
+    background: #e7f6e0; border: 3px solid #5cb85c; border-radius: 16px; padding: 22px 14px; margin: 10px auto 12px; max-width: 420px;
+    animation: bee-pop .35s ease-out; }
+  @keyframes bee-pop { from { transform: scale(.8); opacity: .3; } to { transform: scale(1); opacity: 1; } }
   #quest-action .answer-row { max-width: 320px; margin: 0 auto; }
   #quest-body { text-align: center; }
   .ql-section { margin-top: 14px; text-align: left; }
