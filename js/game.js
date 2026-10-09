@@ -22,6 +22,7 @@
     ultras: null,         // active Ultra Legendaries: [{id, tx, ty}]
     arenas: {},           // arenaId -> {creatureId, level, owner, placedAt}
     quests: {},           // questId -> {status, step, items}
+    beeStats: {},         // Spelling Bee word -> {s: times shown, r: spelled right, m: missed}
     pos: null,            // {tx, ty}
   };
 
@@ -140,7 +141,7 @@
     SaveStore.save(S.name, {
       name: S.name, xp: S.xp, dex: S.dex, settings: S.settings,
       customWords: S.customWords, friends: S.friends, orbs: S.orbs,
-      ultras: S.ultras, arenas: S.arenas, quests: S.quests, orbOfEntry: !!S.orbOfEntry, pos: S.pos, updated: Date.now(),
+      ultras: S.ultras, arenas: S.arenas, quests: S.quests, beeStats: S.beeStats, orbOfEntry: !!S.orbOfEntry, pos: S.pos, updated: Date.now(),
     });
   }
 
@@ -872,6 +873,7 @@
     var word = chalCtx.nextWord ? chalCtx.nextWord() : pickSpellWord(chalCtx.spellLevel, S.customWords);
     if (!word) { box.appendChild(el("div", "chal-title", "Your custom word bank is empty — add words in Settings, or switch method.")); switchLink(box, "spell"); return; }
     var flashMs = S.settings.flashMs || 2000;
+    if (+chalCtx.spellLevel === 5) beeShown(word);
     box.appendChild(el("div", "chal-title", "Memorize the word!  <span class='lvl-tag'>" + SPELL_LEVELS[chalCtx.spellLevel].name + "</span>"));
     var flash = el("div", "spell-flash", word);
     var timerBar = el("div", "flash-timer", "<div class='flash-timer-fill'></div>");
@@ -894,7 +896,9 @@
       switchLink(box, "spell");
       function submit() {
         if (chalBusy() || input.value.trim() === "") return;
-        chalResolve(input.value.trim().toLowerCase() === word.toLowerCase(), "It was spelled <b>" + word + "</b>.");
+        var ok = spellMatch(input.value, word);
+        if (+chalCtx.spellLevel === 5) beeResult(word, ok);
+        chalResolve(ok, "It was spelled <b>" + word + "</b>.");
       }
       btn.onclick = submit;
       input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
@@ -1701,7 +1705,7 @@
       var DIRS = { ArrowUp: [0,-1], KeyW: [0,-1], ArrowDown: [0,1], KeyS: [0,1], ArrowLeft: [-1,0], KeyA: [-1,0], ArrowRight: [1,0], KeyD: [1,0] };
       if (mode === "world" && DIRS[e.code]) { queuedDir = DIRS[e.code]; queuedAt = performance.now(); }
       if (e.code === "Escape") {
-        ["dex","settings","help","friends","bag","npc","shop","arena","square","quest","questlog","guardian","evotrial"].forEach(function (m) {
+        ["dex","settings","help","friends","bag","npc","shop","arena","square","quest","questlog","guardian","evotrial","beetracker"].forEach(function (m) {
           if (mode === m) closeModal(m);
         });
       }
@@ -2665,11 +2669,21 @@
     return out.length ? out : all;
   }
   // random bee words from a slice, never the same word twice in a row
+  // ---- Spelling Bee word tracker: per word, times shown / right / missed ----
+  function beeStat(w) { return S.beeStats[w] || (S.beeStats[w] = { s: 0, r: 0, m: 0 }); }
+  function beeShown(w) { beeStat(w).s++; }
+  function beeResult(w, ok) { var t = beeStat(w); if (ok) t.r++; else t.m++; }
+  // "unseen" = never spelled right yet; those words are always asked first
+  function beeUnseen(pool) { return pool.filter(function (w) { return !(S.beeStats[w] && S.beeStats[w].r); }); }
+  // random bee words from a slice, never the same word twice in a row, and
+  // words the player hasn't spelled yet anywhere picked first
   function beePicker(range) {
     var pool = beePool(range), last = null;
     return function () {
       if (pool.length < 2) return pool[0];
-      var w; do { w = pool[Math.floor(Math.random() * pool.length)]; } while (w === last);
+      var fresh = beeUnseen(pool).filter(function (x) { return x !== last; });
+      var from = fresh.length ? fresh : pool, w;
+      do { w = from[Math.floor(Math.random() * from.length)]; } while (w === last && from.length > 1);
       last = w; return w;
     };
   }
@@ -2913,7 +2927,6 @@
     for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
     return a;
   }
-  function normWord(w) { return String(w).trim().toLowerCase().replace(/\s+/g, " "); }
   // How many letters to hide: short words 1–2, medium 2, long words only 2–3
   // (a long word with half its letters gone was too hard). Gaps are never
   // side by side, so every missing letter has letters around it.
@@ -2952,7 +2965,8 @@
         return w[0] + w.slice(1).replace(p[0], p[1]); }
     } else if (kind === 4 && L > 5) {                     // drop a consonant from a cluster
       i = 1 + Math.floor(Math.random() * (L - 2));
-      if (!V.test(w[i]) && (!V.test(w[i - 1]) || !V.test(w[i + 1])) && w[i] !== w[i - 1]) return w.slice(0, i) + w.slice(i + 1);
+      if (/[a-z]/.test(w[i]) && !V.test(w[i]) && (/[b-df-hj-np-tv-z]/.test(w[i - 1]) || /[b-df-hj-np-tv-z]/.test(w[i + 1])) && w[i] !== w[i - 1])
+        return w.slice(0, i) + w.slice(i + 1);
     } else {                                              // (fallback, short words) a stray e,
       if (/[^aeiouy]$/.test(w)) return w + "e";            // a doubled last letter, or a
       if (/[^aeiou]e$/.test(w)) return w.slice(0, -1);     // swapped pair of vowels
@@ -2985,18 +2999,18 @@
     if (!B || B.key !== key) {
       B = questState.bee = { key: key, queue: [], word: null, phase: "ask", streak: 0, mode: null };
     }
-    // Words this quest hasn't asked yet come first (st.beeSeen persists across
-    // its passes), so short passes still add up to the whole slice.
+    // Words the player hasn't spelled right yet (anywhere in the game, S.beeStats)
+    // come first, so short passes still work through the whole list.
     function refill() {
-      var pool = beePool(step.pool), seen = st.beeSeen || [];
-      var fresh = pool.filter(function (w) { return seen.indexOf(w) === -1; });
-      var old = pool.filter(function (w) { return seen.indexOf(w) !== -1; });
+      var pool = beePool(step.pool), fresh = beeUnseen(pool);
+      var old = pool.filter(function (w) { return fresh.indexOf(w) === -1; });
       B.queue = B.queue.concat(shuffled(fresh), shuffled(old));
     }
     if (!B.word) {
       if (!B.queue.length) refill();
       B.word = B.queue.shift();
       if (B.queue.length && B.queue[0] === B.word) B.queue.push(B.queue.shift());
+      beeShown(B.word);
       var m = step.mode || "flash";
       if (m === "mix") m = ["flash", "gaps", "choose"][Math.floor(Math.random() * 3)];
       B.mode = m;
@@ -3038,7 +3052,7 @@
     }
     function submit() {
       if (locked || input.value.trim() === "") return;
-      grade(normWord(input.value) === normWord(word), input.value.trim());
+      grade(spellMatch(input.value, word), input.value.trim());
     }
     function grade(ok, answer) {
       if (B.phase === "fix") {
@@ -3049,8 +3063,7 @@
       if (ok) {
         sfx("correct");
         B.streak++; st.items = got + 1; B.word = null;
-        st.beeSeen = st.beeSeen || [];
-        if (st.beeSeen.indexOf(word) === -1) st.beeSeen.push(word);
+        beeResult(word, true);
         persist();
         // After picking the right spelling, show it big for a moment so the
         // correct form is what sticks.
@@ -3070,6 +3083,7 @@
       } else {
         sfx("wrong");
         B.streak = 0;
+        beeResult(word, false); persist();
         B.queue.splice(Math.min(3, B.queue.length), 0, word);   // it comes back soon
         fb.innerHTML = B.mode === "choose" ? "❌ <b>" + esc(answer) + "</b> is misspelled."
           : "❌ You wrote <b>" + esc(answer) + "</b>.";
@@ -3270,6 +3284,72 @@
     else toast("✨ " + step.itemName + " " + st.items + "/" + step.count);
   }
 
+  // ---- Spelling Bee Word Tracker ----
+  // Every word on the list with how often it has been shown, spelled right and
+  // missed (quests, bee-word catches, Spelling Trials, Spelling Bee level).
+  var beeView = { filter: "all", sort: "list", q: "" };
+  function beeState(t) {
+    if (!t || !t.s) return "new";
+    if (t.r >= 3 && t.r >= 3 * t.m) return "got";
+    if (t.m > 0 && t.r <= t.m) return "tricky";
+    return "learning";
+  }
+  function openBeeTracker() {
+    mode = "beetracker";
+    renderBeeTracker();
+    $("beetracker").classList.add("open");
+  }
+  function renderBeeTracker() {
+    var words = SPELL_BANKS[5] || [], body = $("beetracker-body");
+    var rows = words.map(function (w, i) { var t = S.beeStats[w] || { s: 0, r: 0, m: 0 }; return { w: w, n: i + 1, t: t, st: beeState(t) }; });
+    var count = { new: 0, learning: 0, tricky: 0, got: 0 }, right = 0, tries = 0, everRight = 0;
+    rows.forEach(function (x) { count[x.st]++; right += x.t.r; tries += x.t.r + x.t.m; if (x.t.r) everRight++; });
+    var shown = rows.filter(function (x) {
+      if (beeView.filter !== "all" && x.st !== beeView.filter) return false;
+      return !beeView.q || x.w.indexOf(beeView.q) !== -1;
+    });
+    var by = {
+      list: function (a, b) { return a.n - b.n; },
+      most: function (a, b) { return (b.t.r + b.t.m) - (a.t.r + a.t.m) || a.n - b.n; },
+      missed: function (a, b) { return b.t.m - a.t.m || a.t.r - b.t.r || a.n - b.n; },
+      az: function (a, b) { return a.w.localeCompare(b.w); },
+    };
+    shown.sort(by[beeView.sort]);
+    var LABEL = { new: "Not seen yet", learning: "Learning", tricky: "Needs practice", got: "Got it!" };
+    function chip(id, text) {
+      return '<button class="bt-chip' + (beeView.filter === id ? " on" : "") + '" data-f="' + id + '">' + text + "</button>";
+    }
+    body.innerHTML =
+      '<div class="bt-tiles">' +
+        '<div class="bt-tile"><b>' + everRight + "</b><span>of " + words.length + " words spelled right</span></div>" +
+        '<div class="bt-tile"><b>' + right + "</b><span>correct spellings in all</span></div>" +
+        '<div class="bt-tile"><b>' + (tries ? Math.round(100 * right / tries) + "%" : "—") + "</b><span>of all answers right</span></div>" +
+      "</div>" +
+      '<div class="bt-bar">' + ["got", "learning", "tricky", "new"].map(function (k) {
+        return '<i class="bt-' + k + '" style="width:' + (100 * count[k] / Math.max(1, words.length)) + '%"></i>'; }).join("") + "</div>" +
+      '<div class="bt-chips">' + chip("all", "All " + words.length) + chip("got", "✅ Got it " + count.got) +
+        chip("learning", "📘 Learning " + count.learning) + chip("tricky", "⚠️ Needs practice " + count.tricky) +
+        chip("new", "○ Not seen " + count.new) + "</div>" +
+      '<div class="bt-tools"><input id="bt-q" type="search" placeholder="find a word" value="' + esc(beeView.q) + '" autocomplete="off" spellcheck="false">' +
+        '<select id="bt-sort"><option value="list">List order</option><option value="most">Most practised</option>' +
+        '<option value="missed">Most missed</option><option value="az">A → Z</option></select></div>' +
+      '<div class="bt-table"><div class="bt-row bt-head"><span>#</span><span>Word</span><span>Seen</span><span>Right</span><span>Missed</span></div>' +
+      (shown.length ? shown.map(function (x) {
+        return '<div class="bt-row bt-' + x.st + '" title="' + LABEL[x.st] + '"><span>' + x.n + "</span><span>" + esc(x.w) + "</span><span>" + x.t.s +
+          "</span><span>" + x.t.r + "</span><span>" + x.t.m + "</span></div>"; }).join("")
+        : '<div class="soc-empty">No words here yet.</div>') +
+      "</div>" +
+      '<div class="bt-key">✅ Got it = spelled right 3+ times, and mostly right · ⚠️ Needs practice = missed as often as spelled right · Seen = times the word came up</div>';
+    $("bt-sort").value = beeView.sort;
+    body.querySelectorAll(".bt-chip").forEach(function (b) { b.onclick = function () { beeView.filter = b.getAttribute("data-f"); renderBeeTracker(); }; });
+    $("bt-sort").onchange = function () { beeView.sort = this.value; renderBeeTracker(); };
+    var q = $("bt-q");
+    q.oninput = function () {
+      beeView.q = q.value.trim().toLowerCase(); renderBeeTracker();
+      var nq = $("bt-q"); nq.focus(); nq.setSelectionRange(nq.value.length, nq.value.length);
+    };
+  }
+
   // ---- Quest Log ----
   function openQuestLog() {
     mode = "questlog";
@@ -3277,7 +3357,7 @@
     var active = activeQuestList();
     var avail = (window.QUESTS || []).filter(function (q) { return questStatus(q.id) === "available"; });
     var done = (window.QUESTS || []).filter(function (q) { return questStatus(q.id) === "done"; });
-    var html = "";
+    var html = '<button class="big-btn bee-open" id="ql-bee">🐝 Spelling Bee Word Tracker</button>';
     html += '<div class="ql-section"><h3>▶️ Active</h3>';
     if (!active.length) html += '<div class="soc-empty">No active quests. Enter a house with a 📜 or ❗ to find one!</div>';
     active.forEach(function (q) {
@@ -3301,6 +3381,7 @@
       html += "</div>";
     }
     body.innerHTML = html;
+    $("ql-bee").onclick = function () { $("questlog").classList.remove("open"); openBeeTracker(); };
     $("questlog").classList.add("open");
   }
 
@@ -3325,6 +3406,14 @@
       S.arenas = save.arenas || {};
       S.quests = save.quests || {};
       S.orbOfEntry = save.orbOfEntry || false;
+      S.beeStats = save.beeStats || {};
+      // older saves kept a per-quest list of words spelled right; fold it in
+      Object.keys(S.quests).forEach(function (q) {
+        (S.quests[q].beeSeen || []).forEach(function (w) {
+          if (!S.beeStats[w]) S.beeStats[w] = { s: 1, r: 1, m: 0 };
+        });
+        delete S.quests[q].beeSeen;
+      });
       if (save.pos && walkable(save.pos.tx, save.pos.ty)) { P.tx = save.pos.tx; P.ty = save.pos.ty; }
     }
     if (!S.orbs || !Object.keys(S.orbs).length) S.orbs = startingOrbs();

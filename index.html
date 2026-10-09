@@ -563,6 +563,32 @@
   #quest-action .answer-row { max-width: 320px; margin: 0 auto; }
   #quest-body { text-align: center; }
   .ql-section { margin-top: 14px; text-align: left; }
+  .bee-open { width: 100%; margin-bottom: 4px; }
+  /* ---- Spelling Bee word tracker ---- */
+  .bt-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 6px 0 10px; }
+  .bt-tile { background: var(--card); border: 2.5px solid var(--ink); border-radius: 12px; padding: 8px 6px; text-align: center; }
+  .bt-tile b { display: block; font-size: 24px; }
+  .bt-tile span { font-size: 11.5px; color: #6e604a; line-height: 1.2; display: block; }
+  .bt-bar { display: flex; height: 12px; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; background: #f3ecdd; margin-bottom: 10px; }
+  .bt-bar i { display: block; height: 100%; }
+  .bt-bar .bt-got { background: #5cb85c; } .bt-bar .bt-learning { background: #7f9ec9; }
+  .bt-bar .bt-tricky { background: #f2a93b; } .bt-bar .bt-new { background: transparent; }
+  .bt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .bt-chip { font-family: inherit; font-size: 12.5px; font-weight: 800; padding: 5px 10px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; cursor: pointer; }
+  .bt-chip.on { background: #ffd94d; }
+  .bt-tools { display: flex; gap: 8px; margin-bottom: 8px; }
+  .bt-tools input, .bt-tools select { font-family: inherit; font-size: 14px; padding: 6px 10px; border: 2.5px solid var(--ink); border-radius: 10px; background: #fff; }
+  .bt-tools input { flex: 1; min-width: 0; }
+  .bt-table { max-height: 46vh; overflow-y: auto; border: 2.5px solid var(--ink); border-radius: 12px; background: #fffdf5; text-align: left; }
+  .bt-row { display: grid; grid-template-columns: 38px 1fr 50px 50px 56px; gap: 4px; padding: 5px 10px; font-size: 15px; border-bottom: 1px solid #eadfc6; }
+  .bt-row span:nth-child(n+3) { text-align: center; }
+  .bt-row span:first-child { color: #9a8a6a; font-size: 12px; align-self: center; }
+  .bt-head { position: sticky; top: 0; background: #f3ecdd; font-weight: 800; font-size: 13px; z-index: 1; }
+  .bt-row.bt-got span:nth-child(2) { color: #2f7a3a; font-weight: 800; }
+  .bt-row.bt-tricky { background: #fff4e0; }
+  .bt-row.bt-tricky span:nth-child(2) { color: #b5532a; font-weight: 800; }
+  .bt-row.bt-new span:nth-child(2) { color: #a89a80; }
+  .bt-key { font-size: 11.5px; color: #8a7a5e; margin-top: 8px; line-height: 1.4; }
   .ql-section h3 { font-size: 16px; margin-bottom: 8px; }
   .ql-card { background: var(--card); border: 3px solid var(--ink); border-radius: 14px; padding: 10px 14px; margin-bottom: 9px; }
   .ql-card.done { opacity: .7; }
@@ -814,6 +840,14 @@
     <button class="modal-close" data-close="questlog">✕</button>
     <h2>📜 Quest Log</h2>
     <div id="questlog-body"></div>
+  </div>
+</div>
+
+<div class="overlay" id="beetracker">
+  <div class="modal" style="max-width:600px">
+    <button class="modal-close" data-close="beetracker">✕</button>
+    <h2>🐝 Spelling Bee Word Tracker</h2>
+    <div id="beetracker-body"></div>
   </div>
 </div>
 

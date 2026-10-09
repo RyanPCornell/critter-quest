@@ -134,15 +134,18 @@ Works great on desktop and iPad.
       division** (x ÷ a ± b = c: undo the ±, then multiply) → **Halvarr**.
     - **🦉 The Owl's Examination** (Proctor Elba): five practice "papers" mixing
       everything above → **Sapientowl**, which never asks the same kind twice.
-  - **Five spelling quests** that drill the **Spelling Bee list** (the words in
-    `SPELL_BANKS[5]`, between the BEE LIST markers in `js/challenges.js`). The
-    first four each take a quarter of the list (the list is *dealt* into four
-    piles, so every quarter mixes all four rounds; 190 words → ~47 each) and make you spell **every word
-    in it**, 15 words per pass: *copy*, spell from a **flash**, fill in the
+  - **Five spelling quests** that drill the **Spelling Bee list**: the full
+    450-word 2026–27 School Spelling Bee study list, easiest first
+    (`SPELL_BANKS[5]`, between the BEE LIST markers in `js/challenges.js`).
+    Answers ignore capitals, extra spaces and accents (piñata = pinata), and
+    the list's alternate spellings count (`SPELL_ALTS`: brasier, glycerine,
+    kerosine). The first four quests each take a quarter of the list (the list
+    is *dealt* into four piles, so every quarter mixes easy and hard words;
+    ~112 each), 15 words per pass: *copy*, spell from a **flash**, fill in the
     **gaps**, **pick the right spelling** (one correct and two believable
-    misspellings), and a mixed review. Words the quest has not asked
-    yet always come first (`beeSeen` in the quest state), so the passes add up
-    to the whole quarter before any word repeats. A miss shows the
+    misspellings), and a mixed review. Words never yet spelled right
+    **anywhere in the game** come first, so quests, bee-word catches and
+    Spelling Trials together work through the whole list before repeating. A miss shows the
     right spelling, makes you copy it once, and sends the word back a few words
     later. Each quest also has a spelling tip from a townsperson, a critter to
     catch with Bee words, and a boss that only answers Bee words from that
@@ -156,6 +159,16 @@ Works great on desktop and iPad.
       done over several sittings.
     Because the quests slice the list by *fraction*, editing the word list
     keeps them working (and their counts update on their own).
+- **🐝 Spelling Bee Word Tracker** (button at the top of the 📜 Quest Log):
+  every word on the list with how many times it has been **seen**, spelled
+  **right** and **missed** — counted in quest drills, bee-word catches,
+  Spelling Trials and Spelling-Bee-level encounters (`S.beeStats`, saved with
+  the trainer as `{word: {s, r, m}}`). Totals at the top (words spelled right
+  so far, total correct spellings, overall accuracy), a progress bar, filters
+  (✅ Got it = right 3+ times and mostly right · 📘 Learning · ⚠️ Needs
+  practice = missed as often as right · ○ Not seen), sorting (list order,
+  most practised, most missed, A→Z) and search. The same stats decide which
+  words come up next: never-spelled-right words first.
 - **Battle animations:** attacks lunge, the target shakes and flashes, and a
   floating damage number pops up on each hit.
 - **Village Square:** talk to the Bulletin Keeper and answer two problems in a
