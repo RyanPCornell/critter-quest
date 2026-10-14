@@ -871,6 +871,7 @@
     parts.push('<g id="ultra-layer"></g>');
     parts.push('<g id="spawn-layer"></g>');
     parts.push('<g id="player-layer"><g id="player-sprite" class="player-idle">' + PLAYER_ART.down + "</g></g>");
+    parts.push('<g id="hush-layer" pointer-events="none"></g>');   // the Hush fog over Frostpeak (game.js)
     svg.innerHTML = parts.join("");
   }
 

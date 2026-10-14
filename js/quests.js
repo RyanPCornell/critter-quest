@@ -20,7 +20,11 @@
 //               the list as fractions ([0, 0.25] = first quarter); `count`
 //               defaults to every word in the slice (all quests use 15);
 //               words not yet asked in this quest come first; `mode` is copy, flash,
-//               gaps, choose (tap the right spelling of three) or mix. A missed word comes back a few later.
+//               gaps, choose (tap the right spelling of three), listen (the
+//               word is only spoken, via SAY in speak.js) or mix; `words:
+//               "heard"` drills the quest's Words of Warding instead of `pool`
+//               A missed word comes back a few later.
+//    hearword — meet `count` hard words by sight and sound (kept in st.heard)
 //  quest-only creatures (creatures.js `quest` field) and quest items only show
 //  up while their quest step is active.
 //
@@ -479,6 +483,70 @@ window.QUESTS = [
     ],
     reward: { xp: 1200, orbs: { meadow: 6, prism: 5 } },
     outro: "The Lexicorn lowers its lettered horn to you, and all of Willowmere bursts into applause. Judge Marigold hangs a golden medal round your neck. \"Champion of the Grand Spelling Bee,\" she announces. \"Every word, spelled true.\"",
+  },
+  // ======================== THE HUSH OVER FROSTPEAK =====================
+  //  Announced by a one-time cinematic (game.js, playHushIntro). Mixes every
+  //  spelling mode, adds LISTEN-only spelling (the word is spoken, never
+  //  shown), and "Words of Warding": five hard words met early by sight and
+  //  sound, then asked for by sound alone near the end and by the boss.
+  {
+    id: "q-frosthush", name: "The Hush over Frostpeak", color: "#6a5fa0", icon: "🌫️", epic: true,
+    house: { id: "house-lantern-lodge", name: "Sigrid's Lantern Lodge", tx: 27, ty: 11, deco: "house2" },
+    giverName: "Lorekeeper Sigrid", giverAv: { skin: 1, hair: 0, shirt: 5, pants: 1, hat: "beanie", glasses: "round" },
+    intro: "You felt it too, didn't you? The cold that isn't snow. Three nights ago a mist rolled down from the top of Frostpeak, and wherever it drifts, words freeze. The signposts are blank. My books are empty pages. The snow owls have forgotten how to call. We call it the Hush. The old stories say a thief of words lives at its heart, and that it can only be driven out by someone who spells words aloud, true and unafraid. I think that someone is you.",
+    steps: [
+      { kind: "talk", npc: "npc-icewright", npcName: "Icewright Thora",
+        line: "Look at my carvings. Every letter I cut into the ice last week has melted off, and the ice is as smooth as glass. It wasn't the sun. Something ate them. I can still carve, but I can't remember the words to carve. You'll have to remember them for all of us.",
+        text: "Icewright Thora's carvings went blank overnight. Go and see." },
+      { kind: "hearword", count: 5,
+        giverLine: "These are the five Words of Warding, the hardest words in my oldest book. Hear each one, look at it, and write it once. Remember how each one SOUNDS. When you reach the top of the peak, the Hush will have stolen the letters, and the sound is all you'll have.",
+        text: "Learn the five Words of Warding: hear each one, see it, and seal it." },
+      { kind: "spellbee", pool: [0, 1], mode: "flash", count: 15,
+        giverLine: "The Hush froze the signposts. Look at each word quickly, then write it back before the frost covers it again.",
+        text: "Thaw the frozen signposts: spell 15 words from memory." },
+      { kind: "catch", creature: "hushling", zone: "tundra", challenge: "bee", pool: [0, 1],
+        text: "Little Hushlings are drifting through the tundra. Spell Bee words to befriend one." },
+      { kind: "item", item: "warding-candle", itemName: "Warding Candle", emoji: "🕯️", count: 4, zone: "tundra",
+        text: "Gather 4 Warding Candles. Their light keeps the Hush back." },
+      { kind: "spellbee", pool: [0, 1], mode: "listen", count: 15,
+        giverLine: "Now the real training. In the Hush you can't see letters, only hear echoes. Press the bell to hear a word, then spell it. If you're unsure what it means, the book can tell you.",
+        text: "Echoes in the mist: spell 15 words you can only HEAR." },
+      { kind: "talk", npc: "npc-scout", npcName: "Scout Bly",
+        line: "I've been tracking the mist. It's thickest near the old bell on the west side, and it gets colder and quieter the higher you climb. Up at the very top there's something tall and dark. I didn't stay to look. Whatever you do, keep spelling out loud. It flinches at every word.",
+        text: "Scout Bly has been tracking the mist. Find out where it leads." },
+      { kind: "spellbee", pool: [0, 1], mode: "gaps", count: 15,
+        giverLine: "The Hush has nibbled letters out of these words. Spell each whole word.",
+        text: "Mend the frost-bitten words: fill in the gaps of 15 words." },
+      { kind: "catch", creature: "hushwing", zone: "tundra", challenge: "bee", pool: [0, 1],
+        text: "A Hushwing glides past without a sound. Spell Bee words to befriend it." },
+      { kind: "spellbee", pool: [0, 1], mode: "choose", count: 15,
+        giverLine: "The Hush is cunning. It whispers words with the letters twisted. Only one spelling of each is true.",
+        text: "See through the Hush's tricks: pick the true spelling of 15 words." },
+      { kind: "spellbee", words: "heard", mode: "listen", count: 5,
+        giverLine: "Do you still remember the Words of Warding? I won't show them to you. Listen, and spell each one.",
+        text: "Practise the Words of Warding by ear (all 5)." },
+      { kind: "goto", loc: "loc-silentbell", locName: "the Silent Bell", tx: 6, ty: 5, zone: "tundra",
+        text: "Climb to the Silent Bell on the west slope (now on your map)." },
+      { kind: "boss", creature: "lumenbell", loc: "loc-silentbell", tx: 6, ty: 5, zone: "tundra",
+        text: "The Lumenbell's spirit stirs. It only rings for words it HEARS. Listen and spell to wake it." },
+      { kind: "spellbee", pool: [0, 1], mode: "mix", count: 15,
+        giverLine: "The bell rang! The mist is thinner already. Fifteen more words, any style, to push it back up the mountain.",
+        text: "Push back the Hush: spell 15 words in any style." },
+      { kind: "catch", creature: "wraithfox", zone: "tundra", challenge: "bee", pool: [0, 1],
+        text: "A Wraithfox is playing tricks in the snow. Spell Bee words to befriend it." },
+      { kind: "talk", npc: "npc-icewright", npcName: "Icewright Thora",
+        line: "You've been spelling so loudly I've remembered some of my words! I've carved warding runes into this ice charm for you. When the Rimewraith breathes the Hush at you, the charm will hold the sounds steady. Listen carefully, and don't rush.",
+        text: "Icewright Thora has made you something. Go and collect it." },
+      { kind: "spellbee", pool: [0.5, 1], mode: "listen", count: 15,
+        giverLine: "The last climb is the coldest. These are harder words, and you'll only hear them. Take your time. Press the bell as often as you need.",
+        text: "The last echoes: spell 15 harder words by ear." },
+      { kind: "goto", loc: "loc-rimeheart", locName: "the Rimeheart", tx: 9, ty: 1, zone: "tundra",
+        text: "Climb to the Rimeheart at the top of Frostpeak (now on your map)." },
+      { kind: "boss", creature: "rimewraith", loc: "loc-rimeheart", tx: 9, ty: 1, zone: "tundra",
+        text: "The Rimewraith rises from the mist! Spell the Words of Warding by ear, then every word it throws at you." },
+    ],
+    reward: { xp: 1400, orbs: { tundra: 8, prism: 6 } },
+    outro: "The last word rings out across the peak, spelled true, and the Rimewraith's frost cracks like a frozen lake in spring. The Hush pours back into the sky and is gone. Down in the valley the snow owls start calling again, and every blank signpost slowly fills with letters. Sigrid's books have their words back. \"You didn't just remember those words,\" she says. \"You gave them back to everyone. Frostpeak won't forget it.\"",
   },
 ];
 

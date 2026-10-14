@@ -23,6 +23,7 @@
     arenas: {},           // arenaId -> {creatureId, level, owner, placedAt}
     quests: {},           // questId -> {status, step, items}
     beeStats: {},         // Spelling Bee word -> {s: times shown, r: spelled right, m: missed}
+    events: {},           // one-time story moments already shown, e.g. {hushIntro: true}
     pos: null,            // {tx, ty}
   };
 
@@ -141,7 +142,7 @@
     SaveStore.save(S.name, {
       name: S.name, xp: S.xp, dex: S.dex, settings: S.settings,
       customWords: S.customWords, friends: S.friends, orbs: S.orbs,
-      ultras: S.ultras, arenas: S.arenas, quests: S.quests, beeStats: S.beeStats, orbOfEntry: !!S.orbOfEntry, pos: S.pos, updated: Date.now(),
+      ultras: S.ultras, arenas: S.arenas, quests: S.quests, beeStats: S.beeStats, events: S.events, orbOfEntry: !!S.orbOfEntry, pos: S.pos, updated: Date.now(),
     });
   }
 
@@ -603,8 +604,12 @@
     if (ov.algebra) { ectx.forceAlgebra = true; ectx.algebraType = ov.algebra; ectx.forceKangaroo = false; }
     if (ov.bee !== undefined) {
       ectx.forceAlgebra = false; ectx.forceKangaroo = false;
-      ectx.pref = "spell"; ectx.method = "spell"; ectx.spellLevel = 5; ectx.nextWord = beePicker(ov.bee);
-      msg($("enc-msg").innerHTML + "<br>🐝 This one only answers to <b>Spelling Bee words</b>!");
+      ectx.pref = "spell"; ectx.method = "spell"; ectx.spellLevel = 5; ectx.listen = !!ov.listen;
+      var pick = beePicker(ov.bee), first = ov.first || [];
+      ectx.nextWord = function () { return first.length ? first.shift() : pick(); };
+      msg($("enc-msg").innerHTML + (ov.listen
+        ? "<br>🔊 It only answers to <b>spoken words</b>. Listen, then spell!"
+        : "<br>🐝 This one only answers to <b>Spelling Bee words</b>!"));
     }
     startChallenges(ectx, $("enc-challenge"), resolveAnswer, function () { return ENC.busy; });
   }
@@ -874,6 +879,7 @@
     if (!word) { box.appendChild(el("div", "chal-title", "Your custom word bank is empty — add words in Settings, or switch method.")); switchLink(box, "spell"); return; }
     var flashMs = S.settings.flashMs || 2000;
     if (+chalCtx.spellLevel === 5) beeShown(word);
+    if (chalCtx.listen) { showListenSpelling(box, word); return; }
     box.appendChild(el("div", "chal-title", "Memorize the word!  <span class='lvl-tag'>" + SPELL_LEVELS[chalCtx.spellLevel].name + "</span>"));
     var flash = el("div", "spell-flash", word);
     var timerBar = el("div", "flash-timer", "<div class='flash-timer-fill'></div>");
@@ -904,6 +910,51 @@
       input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
       setTimeout(function () { input.focus(); }, 60);
     }, flashMs);
+  }
+
+  // Spell a word you only HEAR (bosses of the Hush quest). The word is never
+  // shown; 🔊 replays it and 📖 gives a definition with the word blanked out.
+  function showListenSpelling(box, word) {
+    box.appendChild(el("div", "chal-title", "Listen, then spell!  <span class='lvl-tag'>Spelling Bee Words</span>"));
+    box.appendChild(listenControls(word));
+    var row = el("div", "answer-row");
+    var input = document.createElement("input");
+    input.type = "text"; input.className = "answer-input spell"; input.placeholder = "type what you hear";
+    input.autocomplete = "off"; input.autocapitalize = "off"; input.spellcheck = false;
+    var btn = el("button", "big-btn go", chalCtx.doWord);
+    row.appendChild(input); row.appendChild(btn);
+    box.appendChild(row);
+    function submit() {
+      if (chalBusy() || input.value.trim() === "") return;
+      var ok = spellMatch(input.value, word);
+      beeResult(word, ok);
+      chalResolve(ok, "It was spelled <b>" + word + "</b>.");
+    }
+    btn.onclick = submit;
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    setTimeout(function () { input.focus(); }, 60);
+  }
+  // 🔊 Hear it (plays once on its own) + 📖 What does it mean?
+  function listenControls(word, noAuto) {
+    var wrap = el("div", "listen-box");
+    var hear = el("button", "big-btn listen-btn", "🔊 Hear the word");
+    var mean = el("button", "switch-link", "📖 What does it mean?");
+    var note = el("div", "listen-note", "");
+    function play() {
+      hear.classList.add("playing");
+      SAY.speak(word).then(function (how) {
+        hear.classList.remove("playing");
+        if (how === "none") note.textContent = "No sound on this device. Ask a grown-up to read it to you.";
+      });
+    }
+    hear.onclick = play;
+    mean.onclick = function () {
+      note.textContent = "Looking it up…";
+      SAY.meaning(word).then(function (d) { note.textContent = d ? "📖 " + d : "No definition found for this one."; });
+    };
+    wrap.appendChild(hear); wrap.appendChild(mean); wrap.appendChild(note);
+    if (!noAuto) setTimeout(play, 250);
+    return wrap;
   }
 
   // Easiest spelling mode: a picture is shown and the player types the
@@ -2687,7 +2738,7 @@
       last = w; return w;
     };
   }
-  function isCounted(step) { return step.kind === "item" || step.kind === "spellbee" || step.kind === "drill"; }
+  function isCounted(step) { return step.kind === "item" || step.kind === "spellbee" || step.kind === "drill" || step.kind === "hearword"; }
   // how many a counted step needs (a spelling step defaults to "every word once")
   function stepCount(step) {
     if (step.kind === "spellbee") return step.count || beePool(step.pool).length;
@@ -2697,7 +2748,10 @@
   // the creature itself demands it (bosses carry `algebra` / `spellbee`), or an
   // active quest step targeting it says so (`challenge: "bee"` or {algebra}).
   function encounterOverride(c) {
-    if (c.spellbee) return { bee: c.spellbee === true ? null : c.spellbee };
+    // `listen` creatures only hear words; `heardFirst` bosses ask the quest's
+    // Words of Warding (st.heard) before anything else
+    if (c.spellbee) return { bee: c.spellbee === true ? null : c.spellbee, listen: !!c.listen,
+      first: c.heardFirst && S.quests[c.quest] ? (S.quests[c.quest].heard || []).slice() : null };
     var found = {};
     activeQuestList().forEach(function (q) {
       var step = curStep(q.id);
@@ -2886,6 +2940,8 @@
       renderSpellBeeStep(def, st, step, act);
     } else if (step.kind === "drill") {
       renderDrillStep(def, st, step, act);
+    } else if (step.kind === "hearword") {
+      renderHearStep(def, st, step, act);
     } else if (step.kind === "riddle") {
       act.innerHTML = '<div class="npc-line">"' + esc(step.giverLine || "Answer my riddle…") + '"</div>' +
         '<div class="quest-riddle">' + esc(step.prompt) + "</div>" +
@@ -3002,7 +3058,8 @@
     // Words the player hasn't spelled right yet (anywhere in the game, S.beeStats)
     // come first, so short passes still work through the whole list.
     function refill() {
-      var pool = beePool(step.pool), fresh = beeUnseen(pool);
+      // words: "heard" drills only this quest's Words of Warding
+      var pool = step.words === "heard" ? (st.heard || []).slice() : beePool(step.pool), fresh = beeUnseen(pool);
       var old = pool.filter(function (w) { return fresh.indexOf(w) === -1; });
       B.queue = B.queue.concat(shuffled(fresh), shuffled(old));
     }
@@ -3019,7 +3076,7 @@
       B.phase = "ask";
     }
     var word = B.word, got = st.items || 0;
-    var modeLabel = { copy: "Copy it", flash: "Memorize it", gaps: "Fill the gaps", choose: "Pick the right spelling" }[B.mode];
+    var modeLabel = { copy: "Copy it", flash: "Memorize it", gaps: "Fill the gaps", choose: "Pick the right spelling", listen: "Listen and spell" }[B.mode];
     var bar = '<div class="bee-bar"><div class="bee-fill" style="width:' + Math.min(100, Math.round(100 * got / need)) + '%"></div>' +
       '<span>🐝 ' + got + " / " + need + " words" + (B.streak >= 3 ? " · 🔥 " + B.streak + " in a row" : "") + "</span></div>";
     var top = '<div class="npc-line">"' + esc(step.giverLine || "Spell every word on my list!") + '"</div>' + bar;
@@ -3034,6 +3091,7 @@
       var shownHtml = B.mode === "choose"
         ? '<div class="bee-choices">' + B.options.map(function (o) {
             return '<button class="bee-choice" data-word="' + esc(o) + '">' + esc(o) + "</button>"; }).join("") + "</div>"
+        : B.mode === "listen" ? '<div id="bee-listen"></div>'
         : '<div class="spell-flash bee-word' + (B.mode === "gaps" ? " gaps" : "") + '" id="bee-shown">' + esc(B.shown) + "</div>";
       act.innerHTML = top +
         '<div class="bee-mode">' + modeLabel + "</div>" +
@@ -3045,6 +3103,7 @@
         '<button class="big-btn go" id="bee-go">Spell it</button></div>') +
         '<div class="npc-feedback" id="quest-feedback"></div>';
     }
+    if (B.mode === "listen" && B.phase === "ask") $("bee-listen").appendChild(listenControls(word));
     var input = $("bee-input"), fb = $("quest-feedback"), locked = false;
     function next(delay) {
       locked = true;
@@ -3067,10 +3126,11 @@
         persist();
         // After picking the right spelling, show it big for a moment so the
         // correct form is what sticks.
-        var showOff = B.mode === "choose";
+        var showOff = B.mode === "choose" || B.mode === "listen";
         if (showOff) {
-          var ch = act.querySelector(".bee-choices");
+          var ch = act.querySelector(".bee-choices") || $("bee-listen");
           if (ch) ch.outerHTML = '<div class="bee-celebrate">' + esc(word) + "</div>";
+          var ar = $("bee-row"); if (ar) ar.style.display = "none";
         }
         if (st.items >= need) {
           fb.innerHTML = "🎉 That's every word! <b>" + need + "</b> spelled correctly.";
@@ -3118,6 +3178,50 @@
         input.focus();
       }, flashMs);
     } else setTimeout(function () { input.focus(); }, 60);
+  }
+
+  // ---- Words of Warding: meet a hard word by sight AND sound ---------------
+  // The quest picks `count` hard words (from the last third of the list, not
+  // yet mastered) and keeps them in st.heard. Each is shown big and spoken;
+  // the player types it once to "seal" it. Later steps (`words: "heard"`,
+  // mode "listen") and the boss (`heardFirst`) ask for them by sound alone.
+  function pickHardWords(n) {
+    var list = SPELL_BANKS[5] || [], start = Math.floor(list.length * 2 / 3);
+    var hard = list.slice(start).filter(function (w) { return /^[a-z]+$/.test(w); });
+    var fresh = hard.filter(function (w) { return beeState(S.beeStats[w]) !== "got"; });
+    return shuffled(fresh.length >= n ? fresh : hard).slice(0, n);
+  }
+  function renderHearStep(def, st, step, act) {
+    var need = stepCount(step);
+    if (!st.heard || st.heard.length < need) { st.heard = pickHardWords(need); persist(); }
+    var i = Math.min(st.items || 0, need - 1), word = st.heard[i];
+    var key = def.id + ":" + st.step + ":" + i;
+    if (!questState.hear || questState.hear !== key) { questState.hear = key; beeShown(word); SAY.preload(word); }
+    act.innerHTML = '<div class="npc-line">"' + esc(step.giverLine || "Hear it, see it, write it.") + '"</div>' +
+      '<div class="bee-mode">Word of Warding ' + (i + 1) + " of " + need + "</div>" +
+      '<div class="spell-flash bee-word warding">' + esc(word) + "</div>" +
+      '<div id="hear-ctl"></div>' +
+      '<div class="bee-fix" style="color:#4a5f8a">Type it once to seal it in your memory:</div>' +
+      '<div class="answer-row center"><input class="answer-input spell" id="bee-input" type="text" placeholder="type it" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="big-btn go" id="bee-go">Seal it</button></div>' +
+      '<div class="npc-feedback" id="quest-feedback"></div>';
+    $("hear-ctl").appendChild(listenControls(word));
+    var input = $("bee-input"), fb = $("quest-feedback"), locked = false;
+    function submit() {
+      if (locked || input.value.trim() === "") return;
+      if (!spellMatch(input.value, word)) { sfx("wrong"); fb.textContent = "Not quite — copy it letter by letter."; input.value = ""; input.focus(); return; }
+      locked = true; sfx("correct");
+      st.items = i + 1; persist();
+      if (st.items >= need) {
+        fb.innerHTML = "✨ All " + need + " Words of Warding are sealed. Remember how they <i>sound</i>…";
+        setTimeout(function () { advanceQuest(def.id); if (mode === "quest") renderQuestGiver(); }, 1800);
+      } else {
+        fb.innerHTML = "✨ <b>" + esc(word) + "</b> is sealed.";
+        setTimeout(function () { if (mode === "quest") renderQuestGiver(); }, 1100);
+      }
+    }
+    $("bee-go").onclick = submit;
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    setTimeout(function () { input.focus(); }, 60);
   }
 
   // ---- Practice drills ----------------------------------------------------
@@ -3183,6 +3287,101 @@
     persist(); renderPois(); renderQuestMarkers(); updateHUD();
     sfx("level");
     toast("🎉 Quest complete: " + def.name + "!  +" + (rw.xp || 0) + " XP", 4200);
+    if (id === HUSH_QUEST) liftHush();
+  }
+
+  // ============================================== THE HUSH OVER FROSTPEAK
+  // A one-time cinematic ~10 s after logging in (mist rolls over the screen,
+  // eerie music, the story appears), then a fog that hangs over Frostpeak
+  // Tundra on the map until the quest is finished.
+  var HUSH_QUEST = "q-frosthush";
+  function scheduleHushIntro() {
+    if (S.events.hushIntro || questStatus(HUSH_QUEST) !== "available") return;
+    var tries = 0;
+    setTimeout(function wait() {
+      if (S.events.hushIntro) return;
+      if (mode !== "world" && ++tries < 90) { setTimeout(wait, 2000); return; }   // wait out any open dialog
+      playHushIntro();
+    }, 10000);
+  }
+  function playHushIntro() {
+    var ov = $("hush-intro");
+    ov.classList.remove("text", "out");
+    ov.classList.add("open");
+    mode = "cinematic";
+    eerieMusic();
+    setTimeout(function () { ov.classList.add("text"); }, 3200);
+    $("hush-go").onclick = function () {
+      S.events.hushIntro = true; persist();
+      ov.classList.add("out");
+      setTimeout(function () { ov.classList.remove("open", "text", "out"); mode = "world"; }, 900);
+      toast("❄️ Visit Sigrid's Lantern Lodge, just south of the snow, to begin.", 5200);
+    };
+  }
+  // Low dissonant drone, a slow tolling bell, a ghostly wavering tone and a
+  // gust of wind, all made in Web Audio (~7 s, no sound files).
+  function eerieMusic() {
+    if (!S.settings.sound) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      var A = audioCtx, t0 = A.currentTime + 0.05, END = 7.5;
+      var out = A.createGain(); out.gain.value = 0.9; out.connect(A.destination);
+      function env(g, peak, a, hold, r) {
+        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(peak, t0 + a);
+        g.gain.setValueAtTime(peak, t0 + a + hold); g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + hold + r);
+      }
+      // drone: two detuned saws a semitone apart, muffled
+      var lp = A.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 320; lp.connect(out);
+      var dg = A.createGain(); env(dg, 0.16, 1.8, 3.6, 2); dg.connect(lp);
+      [55, 58.27, 82.4].forEach(function (f) {
+        var o = A.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.connect(dg); o.start(t0); o.stop(t0 + END);
+      });
+      // ghost tone: a high sine that wavers and slides down
+      var go = A.createOscillator(), gg = A.createGain(), lfo = A.createOscillator(), lg = A.createGain();
+      go.type = "sine"; go.frequency.setValueAtTime(988, t0 + 1); go.frequency.linearRampToValueAtTime(740, t0 + 6.5);
+      lfo.frequency.value = 5.5; lg.gain.value = 14; lfo.connect(lg); lg.connect(go.frequency);
+      gg.gain.setValueAtTime(0.0001, t0); gg.gain.exponentialRampToValueAtTime(0.035, t0 + 2.4);
+      gg.gain.exponentialRampToValueAtTime(0.0001, t0 + 7);
+      go.connect(gg); gg.connect(out); go.start(t0); lfo.start(t0); go.stop(t0 + END); lfo.stop(t0 + END);
+      // tolling bell, twice
+      [0.4, 3.6].forEach(function (at) {
+        [[196, 0.14], [392 * 1.01, 0.05], [587, 0.03]].forEach(function (p) {
+          var o = A.createOscillator(), g = A.createGain(); o.type = "triangle"; o.frequency.value = p[0];
+          g.gain.setValueAtTime(p[1], t0 + at); g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + 3);
+          o.connect(g); g.connect(out); o.start(t0 + at); o.stop(t0 + at + 3.1);
+        });
+      });
+      // wind: filtered noise sweeping up and down
+      var buf = A.createBuffer(1, A.sampleRate * END, A.sampleRate), d = buf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      var nz = A.createBufferSource(), bp = A.createBiquadFilter(), ng = A.createGain();
+      nz.buffer = buf; bp.type = "bandpass"; bp.Q.value = 0.9;
+      bp.frequency.setValueAtTime(300, t0); bp.frequency.linearRampToValueAtTime(900, t0 + 3); bp.frequency.linearRampToValueAtTime(250, t0 + END);
+      env(ng, 0.09, 1.2, 4, 2); nz.connect(bp); bp.connect(ng); ng.connect(out); nz.start(t0); nz.stop(t0 + END);
+    } catch (e) {}
+  }
+  // The fog over Frostpeak (x < 30, y < 10 on the map) while the Hush lasts
+  function renderHush() {
+    var layer = $("hush-layer");
+    if (!layer) return;
+    if (questStatus(HUSH_QUEST) === "done" || !QUEST_BY_ID[HUSH_QUEST]) { layer.innerHTML = ""; return; }
+    var w = 30 * TILE, h = 10 * TILE, puffs = "";
+    for (var i = 0; i < 14; i++) {
+      var cx = (i * 97) % 28 * TILE + TILE, cy = ((i * 53) % 9 + 0.5) * TILE, r = TILE * (2.2 + (i % 4) * 0.6);
+      puffs += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (r * 1.6) + '" ry="' + r + '" fill="url(#hush-puff)">' +
+        '<animateTransform attributeName="transform" type="translate" values="0 0;' + (i % 2 ? 60 : -60) + ' 8;0 0" dur="' + (14 + i % 5 * 3) + 's" repeatCount="indefinite"/></ellipse>';
+    }
+    layer.innerHTML =
+      '<defs><radialGradient id="hush-puff"><stop offset="0%" stop-color="#4b3d6b" stop-opacity=".55"/><stop offset="100%" stop-color="#4b3d6b" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="hush-veil" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2140" stop-opacity=".42"/>' +
+      '<stop offset="85%" stop-color="#3a2f55" stop-opacity=".22"/><stop offset="100%" stop-color="#3a2f55" stop-opacity="0"/></linearGradient></defs>' +
+      '<rect x="0" y="0" width="' + w + '" height="' + (h + TILE) + '" fill="url(#hush-veil)"/>' + puffs;
+  }
+  function liftHush() {
+    var layer = $("hush-layer");
+    if (layer) { layer.classList.add("lifting"); setTimeout(function () { layer.classList.remove("lifting"); renderHush(); }, 3000); }
+    toast("☀️ The Hush has lifted. Frostpeak Tundra can speak again!", 5200);
   }
 
   // ---- quest world content: location markers, creature & item spawns ----
@@ -3407,6 +3606,7 @@
       S.quests = save.quests || {};
       S.orbOfEntry = save.orbOfEntry || false;
       S.beeStats = save.beeStats || {};
+      S.events = save.events || {};
       // older saves kept a per-quest list of words spelled right; fold it in
       Object.keys(S.quests).forEach(function (q) {
         (S.quests[q].beeSeen || []).forEach(function (w) {
@@ -3437,13 +3637,31 @@
     renderQuestMarkers();
     initUltras();
     renderUltras();
+    renderHush();
+    scheduleHushIntro();
     persist();
     SOCIAL.init(S.name, function () { refreshSocial(false); });
     if (SOCIAL.available()) { refreshSocial(false); SOCIAL.startPolling(20000); }
   }
 
+  // iPads (and some browsers) only allow sound that was started from a tap,
+  // so wake the audio up on the very first tap or key press. The Hush music
+  // plays seconds later, without a tap of its own.
+  function unlockAudio() {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      g.gain.value = 0; o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.01);
+    } catch (e) {}
+    window.removeEventListener("pointerdown", unlockAudio, true);
+    window.removeEventListener("keydown", unlockAudio, true);
+  }
+
   // =================================================================== BOOT
   function boot() {
+    window.addEventListener("pointerdown", unlockAudio, true);
+    window.addEventListener("keydown", unlockAudio, true);
     map = WORLD.build();
     svg = $("world-svg");
     WORLD.render(map, svg);
@@ -3498,7 +3716,7 @@
         spawnNear: function (id) { addSpawn({ kind: "creature", creature: CREATURE_BY_ID[id], orb: null }, P.tx + 4, P.ty + 1); },
         guardianFight: function () { openGuardianFight(null); },
         guardianExpire: function () { if (GUARDIAN) GUARDIAN.deadline = Date.now(); },
-        state: S,
+        state: S, hushIntro: playHushIntro,
       };
     }
     frame();

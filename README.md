@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **213 original critters** by solving **math
+hand-drawn SVG world and catch **218 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -159,6 +159,29 @@ Works great on desktop and iPad.
       done over several sittings.
     Because the quests slice the list by *fraction*, editing the word list
     keeps them working (and their counts update on their own).
+- **🌫️ The Hush over Frostpeak** (epic quest, Lorekeeper Sigrid's Lantern
+  Lodge, just south of the snow at 27,11). Announced by a **one-time cinematic**
+  about 10 seconds after a trainer next logs in: a dark mist rolls over the
+  screen, eerie music plays (drone, tolling bell, ghost tone and wind, all
+  made in Web Audio, no sound files), and the story appears (`playHushIntro`;
+  `S.events.hushIntro` stops it repeating; `__cqDebug.hushIntro()` replays
+  it). Until the quest is done a purple fog hangs over Frostpeak Tundra on
+  the map (`#hush-layer`), and it lifts when the Rimewraith is caught.
+  19 steps: five **Words of Warding** (hard words from the last third of the
+  list) are shown and **spoken aloud** early on (`hearword` step, kept in the
+  quest state as `heard`), then drills in every mode including **listen**
+  (the word is only spoken, never shown), a by-ear review of the Words of
+  Warding, three tundra critters caught with Bee words (Hushling, Hushwing,
+  Wraithfox), the **Lumenbell** at the Silent Bell (listen-only), and the
+  **Rimewraith** at the top of the peak, which asks the five Words of Warding
+  **by sound alone** before anything else.
+- **Hearing words** (`js/speak.js`, `SAY`): 🔊 plays a real recording from
+  Wiktionary / Wikimedia Commons (as MP3, so iPads can play it); when there
+  isn't one, or Wiktionary can't be reached, the browser's text-to-speech
+  voice reads the word. 📖 shows a short Wiktionary definition with the word
+  (and close relatives like neurology/neurological) blanked out. Lookups are
+  cached per device; failed lookups are retried later rather than cached.
+  Sound is unlocked on the first tap so it works on iPads.
 - **🐝 Spelling Bee Word Tracker** (button at the top of the 📜 Quest Log):
   every word on the list with how many times it has been **seen**, spelled
   **right** and **missed** — counted in quest drills, bee-word catches,
@@ -246,12 +269,13 @@ python3 -m http.server 7839
 
 - `index.html` — UI shell, all CSS, modals (encounter / dex / settings / help)
 - `js/creatures.js` — the 213-creature roster: stats, types, rarity, guard, evolution links, powers, stories (`algebra` / `spellbee` fields force a challenge type)
-- `js/art-critters-1..18.js` — hand-drawn SVG art per critter (`-6` = the Ultra Legendaries incl. Sergio; `-18` = the ten number/spelling quest bosses)
+- `js/art-critters-1..18.js` — hand-drawn SVG art per critter (`-6` = the Ultra Legendaries incl. Sergio; `-18` = the ten number/spelling quest bosses; `-19` = the Hush creatures)
 - `js/world.js` — tile art defs, map generation (72×52 grid, 8 zones), world renderer
 - `js/avatar.js` — customizable hand-drawn trainer sprite (hat/skin/hair/shirt/pants)
 - `js/orbs.js` — orb type definitions, hand-drawn orb art, helpers
 - `js/pictures.js` — 130+ picture words (emoji + hand-drawn SVG) for Picture Words spelling
 - `js/kangaroo.js` — visual Math-Kangaroo problem generators (hand-drawn SVG, numeric + multiple-choice)
+- `js/speak.js` — word audio (Wiktionary recordings, text-to-speech fallback) and blanked-out definitions
 - `js/challenges.js` — math problem generator + spelling word banks / parser (the Spelling Bee list sits between the BEE LIST markers)
 - `js/algebra.js` — algebra & division problem generators with worked solutions (one-step, story problems, division facts, sharing problems, long division, equations with division, plus the older two-step → multi-step tiers)
 - `js/quests.js` — quest definitions (20 retired stubs + 10 active quests); the header comment lists every step kind

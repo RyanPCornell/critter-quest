@@ -2313,6 +2313,64 @@ window.CREATURES = [
     story: "The Lexicorn appears only on the evening of the Grand Spelling Bee, when the whole of Willowmere gathers on the green. It has never been seen by anyone who has not practised. Spell every word it asks and it will bow its lettered horn, which is the highest honour a speller can be given.",
   },
 
+  // ===================== THE HUSH OVER FROSTPEAK ======================
+  //  Creatures of the Hush quest. `listen` encounters only SAY the word (it is
+  //  never shown); `heardFirst` asks the quest's Words of Warding first.
+  {
+    id: "hushling", name: "Hushling", species: "Mist Mote", types: ["Shade", "Frost"],
+    zone: "tundra", rarity: "uncommon", quest: "q-frosthush", spellbee: [0, 1],
+    hp: 40, atk: 42, def: 38, spd: 64,
+    height: "0.3 m", weight: "a sigh",
+    powers: [
+      { n: "Muffle", d: "Wraps a sound in mist until it is too soft to hear." },
+      { n: "Drift", d: "Floats away from danger on the faintest breeze." },
+    ],
+    story: "Hushlings are the smallest pieces of the Hush, little puffs of mist that drift off from the main cloud. They are not wicked, only lost, and they settle happily on anyone who speaks kindly and spells clearly. A Hushling that has heard enough real words slowly turns from grey to a soft, pearly white.",
+  },
+  {
+    id: "hushwing", name: "Hushwing", species: "Silent Owl", types: ["Shade", "Gale"],
+    zone: "tundra", rarity: "rare", quest: "q-frosthush", spellbee: [0, 1],
+    hp: 58, atk: 66, def: 52, spd: 78,
+    height: "0.8 m", weight: "4 kg",
+    powers: [
+      { n: "Soundless Flight", d: "Glides so quietly that even the snow forgets it passed." },
+      { n: "Stolen Hoot", d: "Hoots with a voice it took from somewhere else." },
+    ],
+    story: "Frostpeak's snow owls used to call to each other across the valleys every night. Since the Hush came, one of them flies with no sound at all: its hoot was frozen out of its throat. The Hushwing listens hungrily to every word you spell, as if hoping one of them might be its voice.",
+  },
+  {
+    id: "wraithfox", name: "Wraithfox", species: "Mist Fox", types: ["Frost", "Shade"],
+    zone: "tundra", rarity: "rare", quest: "q-frosthush", spellbee: [0, 1],
+    hp: 56, atk: 70, def: 50, spd: 84,
+    height: "0.9 m", weight: "lighter than it looks",
+    powers: [
+      { n: "Fade", d: "Becomes mist from the tail up and slips through any gap." },
+      { n: "Trick Tracks", d: "Leaves footprints that lead in three directions at once." },
+    ],
+    story: "A Wraithfox is a snow fox that wandered too deep into the Hush and came out half made of mist. It still loves to play, but its games are tricky now: it whispers words with the letters swapped and waits to see whether you notice. Spell them right and it will trot along beside you, a little more solid each time.",
+  },
+  {
+    id: "lumenbell", name: "Lumenbell", species: "Warding Bell", types: ["Lumen", "Song"],
+    zone: "tundra", rarity: "rare", quest: "q-frosthush", spellbee: [0, 1], listen: true, guard: 1,
+    hp: 64, atk: 58, def: 72, spd: 46,
+    height: "1.0 m", weight: "bronze and starlight",
+    powers: [
+      { n: "Clear Peal", d: "One ring of its bell pushes back the mist in a wide, bright circle." },
+      { n: "Echo Chamber", d: "Holds a spoken word inside its bell and rings it out again, louder." },
+    ],
+    story: "Long ago Frostpeak's people hung a great bell on the mountainside, and its ringing kept the winter mists away. The Hush froze its clapper solid. What is left is the bell's spirit, the Lumenbell, which can only ring for words it hears spoken aloud and then spelled exactly right.",
+  },
+  {
+    id: "rimewraith", name: "Rimewraith", species: "Thief of Words", types: ["Frost", "Shade"],
+    zone: "tundra", rarity: "mythical", quest: "q-frosthush", spellbee: [0.5, 1], listen: true, heardFirst: true, guard: 3,
+    hp: 98, atk: 92, def: 86, spd: 74,
+    height: "4.2 m", weight: "every word it ever stole",
+    powers: [
+      { n: "The Hush", d: "Breathes out a mist that freezes every word it touches." },
+      { n: "Black Rime", d: "Coats its foe in dark frost that steals the next thing they meant to say." },
+    ],
+    story: "No one knows where the Rimewraith came from, only that it is hungry for words. It has gathered so many that its cloak is woven from frozen letters, and the Hush pours from its sleeves as it walks. It cannot bear a word that is spoken aloud and spelled true, because a word spelled true cannot be stolen. Spell enough of them and its frost begins to thaw.",
+  },
 ];
 
 window.CREATURE_BY_ID = {};
