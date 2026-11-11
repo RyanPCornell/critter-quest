@@ -3,7 +3,7 @@
 **▶ Play it live: https://ryanpcornell.github.io/critter-quest/**
 
 A Pokémon-Go-style catching game with an educational twist: you roam a
-hand-drawn SVG world and catch **218 original critters** by solving **math
+hand-drawn SVG world and catch **220 original critters** by solving **math
 problems** or **spelling words** (including a picture-based fill-in mode).
 Works great on desktop and iPad.
 
@@ -159,6 +159,19 @@ Works great on desktop and iPad.
       done over several sittings.
     Because the quests slice the list by *fraction*, editing the word list
     keeps them working (and their counts update on their own).
+- **🥈🥇 The Two Bee Trials** (Coach Hollis, The Two Bee Clubhouse 40,26 →
+  Twinbuzz at the Copper Hive 41,20; Coach Juniper, Honeycomb Hall 28,40 →
+  Waxwarden at the Golden Comb 7,13). The study list runs easiest to hardest
+  in three levels of 150: One Bee (1–150), **Two Bee (151–300)**, Three Bee
+  (301–450). Each quest takes half of the Two Bee words with **typed spelling
+  only** (copy, flash, fill-in-the-blank with meaning, listen, and `mixtype`;
+  no multiple choice): six passes of 15, unseen words first, so all 75 come
+  up. Pools use `{first, last}` list positions.
+- **Fill in the blank shows the meaning** (Wiktionary, word blanked out). For
+  "plural of…" / "past tense of…" entries the base word's meaning is used, and
+  the sense that still says something once the word is blanked is chosen.
+- **Updating devices:** every local script tag carries `?v=YYYYMMDD`. Change it
+  on each deploy so iPads load the new code instead of an old cached copy.
 - **🌫️ The Hush over Frostpeak** (epic quest, Lorekeeper Sigrid's Lantern
   Lodge, just south of the snow at 27,11). Announced by a **one-time cinematic**
   about 10 seconds after a trainer next logs in: a dark mist rolls over the
@@ -269,7 +282,7 @@ python3 -m http.server 7839
 
 - `index.html` — UI shell, all CSS, modals (encounter / dex / settings / help)
 - `js/creatures.js` — the 213-creature roster: stats, types, rarity, guard, evolution links, powers, stories (`algebra` / `spellbee` fields force a challenge type)
-- `js/art-critters-1..18.js` — hand-drawn SVG art per critter (`-6` = the Ultra Legendaries incl. Sergio; `-18` = the ten number/spelling quest bosses; `-19` = the Hush creatures)
+- `js/art-critters-1..18.js` — hand-drawn SVG art per critter (`-6` = the Ultra Legendaries incl. Sergio; `-18` = the ten number/spelling quest bosses; `-19` = the Hush creatures + Two Bee bosses)
 - `js/world.js` — tile art defs, map generation (72×52 grid, 8 zones), world renderer
 - `js/avatar.js` — customizable hand-drawn trainer sprite (hat/skin/hair/shirt/pants)
 - `js/orbs.js` — orb type definitions, hand-drawn orb art, helpers

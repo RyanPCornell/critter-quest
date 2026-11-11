@@ -599,6 +599,8 @@
   .listen-btn { font-size: 20px; padding: 12px 22px; }
   .listen-btn.playing { box-shadow: 0 0 0 4px #b8d4ff; }
   .listen-note { font-size: 13.5px; color: #4a5f8a; max-width: 380px; line-height: 1.4; min-height: 1em; }
+  .bee-def { max-width: 400px; margin: -2px auto 10px; font-size: 14.5px; line-height: 1.45; color: #4a5f8a;
+    background: #f2f6ff; border: 2px dashed #a8bde6; border-radius: 12px; padding: 8px 12px; text-align: left; }
   .bee-word.warding { color: #3d3266; border-color: #8f7fc4; background: #f4f0ff; }
   /* ---- Spelling Bee word tracker ---- */
   .bt-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 6px 0 10px; }
@@ -1062,39 +1064,40 @@
 <!-- Firebase (compat) — optional; the game falls back to local saves -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<!-- ?v= forces every device to load new code after a deploy: change it each time -->
+<script src="firebase-config.js?v=20261110"></script>
 
-<script src="js/creatures.js"></script>
-<script src="js/art-critters-1.js"></script>
-<script src="js/art-critters-2.js"></script>
-<script src="js/art-critters-3.js"></script>
-<script src="js/art-critters-4.js"></script>
-<script src="js/art-critters-5.js"></script>
-<script src="js/art-critters-6.js"></script>
-<script src="js/art-critters-7.js"></script>
-<script src="js/art-critters-8.js"></script>
-<script src="js/art-critters-9.js"></script>
-<script src="js/art-critters-10.js"></script>
-<script src="js/art-critters-11.js"></script>
-<script src="js/art-critters-12.js"></script>
-<script src="js/art-critters-13.js"></script>
-<script src="js/art-critters-14.js"></script>
-<script src="js/art-critters-15.js"></script>
-<script src="js/art-critters-16.js"></script>
-<script src="js/art-critters-17.js"></script>
-<script src="js/art-critters-18.js"></script>
-<script src="js/art-critters-19.js"></script>
-<script src="js/speak.js"></script>
-<script src="js/world.js"></script>
-<script src="js/avatar.js"></script>
-<script src="js/orbs.js"></script>
-<script src="js/pictures.js"></script>
-<script src="js/kangaroo.js"></script>
-<script src="js/quests.js"></script>
-<script src="js/challenges.js"></script>
-<script src="js/algebra.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/social.js"></script>
-<script src="js/game.js"></script>
+<script src="js/creatures.js?v=20261110"></script>
+<script src="js/art-critters-1.js?v=20261110"></script>
+<script src="js/art-critters-2.js?v=20261110"></script>
+<script src="js/art-critters-3.js?v=20261110"></script>
+<script src="js/art-critters-4.js?v=20261110"></script>
+<script src="js/art-critters-5.js?v=20261110"></script>
+<script src="js/art-critters-6.js?v=20261110"></script>
+<script src="js/art-critters-7.js?v=20261110"></script>
+<script src="js/art-critters-8.js?v=20261110"></script>
+<script src="js/art-critters-9.js?v=20261110"></script>
+<script src="js/art-critters-10.js?v=20261110"></script>
+<script src="js/art-critters-11.js?v=20261110"></script>
+<script src="js/art-critters-12.js?v=20261110"></script>
+<script src="js/art-critters-13.js?v=20261110"></script>
+<script src="js/art-critters-14.js?v=20261110"></script>
+<script src="js/art-critters-15.js?v=20261110"></script>
+<script src="js/art-critters-16.js?v=20261110"></script>
+<script src="js/art-critters-17.js?v=20261110"></script>
+<script src="js/art-critters-18.js?v=20261110"></script>
+<script src="js/art-critters-19.js?v=20261110"></script>
+<script src="js/speak.js?v=20261110"></script>
+<script src="js/world.js?v=20261110"></script>
+<script src="js/avatar.js?v=20261110"></script>
+<script src="js/orbs.js?v=20261110"></script>
+<script src="js/pictures.js?v=20261110"></script>
+<script src="js/kangaroo.js?v=20261110"></script>
+<script src="js/quests.js?v=20261110"></script>
+<script src="js/challenges.js?v=20261110"></script>
+<script src="js/algebra.js?v=20261110"></script>
+<script src="js/storage.js?v=20261110"></script>
+<script src="js/social.js?v=20261110"></script>
+<script src="js/game.js?v=20261110"></script>
 </body>
 </html>

@@ -2711,8 +2711,14 @@
   // The list is DEALT like cards into four piles first (words 1, 5, 9… then
   // 2, 6, 10…), so each quarter samples every round of the list evenly:
   // newly added words land in all four spelling quests, not just the last one.
+  // A pool may also be {first, last}: positions on the printed list (1-based,
+  // inclusive, in the list's own order), e.g. the Two Bee words {151, 300}.
   function beePool(range) {
     var src = SPELL_BANKS[5] || [], all = [];
+    if (range && range.first) {
+      var part = src.slice(range.first - 1, range.last);
+      return part.length ? part : src.slice();
+    }
     for (var k = 0; k < 4; k++) for (var i = k; i < src.length; i += 4) all.push(src[i]);
     if (!range || !all.length) return all;
     var a = Math.round(range[0] * all.length), b = Math.round(range[1] * all.length);
@@ -3005,7 +3011,7 @@
     [/c(?=[aoulr])/, "k"], [/s(?=[eiy])/, "c"], [/ce/, "se"], [/y$/, "ie"], [/er/, "ur"], [/or/, "er"], [/al$/, "le"],
     [/ent/, "ant"], [/ant/, "ent"], [/(..)ee/, "$1ea"], [/(..)ea/, "$1ee"], [/([^aeiou])e$/, "$1"]];
   function misspellOnce(w, loose) {
-    var i, kind = Math.floor(Math.random() * (loose ? 6 : 5)), L = w.length, V = /[aeiouy]/;
+    var i, kind = Math.floor(Math.random() * 5), L = w.length, V = /[aeiouy]/;
     if (kind === 0) {                                     // double a middle consonant
       i = 1 + Math.floor(Math.random() * Math.max(1, L - 2));
       if (i < L - 1 && /[bcdfglmnprstz]/.test(w[i]) && V.test(w[i - 1]) && V.test(w[i + 1])) return w.slice(0, i) + w[i] + w.slice(i);
@@ -3070,6 +3076,7 @@
       beeShown(B.word);
       var m = step.mode || "flash";
       if (m === "mix") m = ["flash", "gaps", "choose"][Math.floor(Math.random() * 3)];
+      if (m === "mixtype") m = ["flash", "gaps", "listen"][Math.floor(Math.random() * 3)];   // always typed
       B.mode = m;
       B.shown = m === "gaps" ? gapWord(B.word) : B.word;
       if (m === "choose") B.options = shuffled([B.word].concat(misspellings(B.word, 2)));
@@ -3092,7 +3099,8 @@
         ? '<div class="bee-choices">' + B.options.map(function (o) {
             return '<button class="bee-choice" data-word="' + esc(o) + '">' + esc(o) + "</button>"; }).join("") + "</div>"
         : B.mode === "listen" ? '<div id="bee-listen"></div>'
-        : '<div class="spell-flash bee-word' + (B.mode === "gaps" ? " gaps" : "") + '" id="bee-shown">' + esc(B.shown) + "</div>";
+        : '<div class="spell-flash bee-word' + (B.mode === "gaps" ? " gaps" : "") + '" id="bee-shown">' + esc(B.shown) + "</div>" +
+          (B.mode === "gaps" ? '<div class="bee-def" id="bee-def">📖 <i>Looking up what it means…</i></div>' : "");
       act.innerHTML = top +
         '<div class="bee-mode">' + modeLabel + "</div>" +
         shownHtml +
@@ -3104,6 +3112,15 @@
         '<div class="npc-feedback" id="quest-feedback"></div>';
     }
     if (B.mode === "listen" && B.phase === "ask") $("bee-listen").appendChild(listenControls(word));
+    // fill-in-the-blank shows what the word means (Wiktionary, word blanked out)
+    if (B.mode === "gaps" && B.phase === "ask") {
+      SAY.meaning(word).then(function (d) {
+        var box = $("bee-def");
+        if (!box || B.word !== word) return;
+        if (d) box.innerHTML = "📖 " + esc(d);
+        else box.style.display = "none";
+      });
+    }
     var input = $("bee-input"), fb = $("quest-feedback"), locked = false;
     function next(delay) {
       locked = true;

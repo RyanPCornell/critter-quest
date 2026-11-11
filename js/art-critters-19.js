@@ -98,4 +98,46 @@ window.CRITTER_ART = window.CRITTER_ART || {};
   <!-- hands spilling the Hush -->
   <g fill="#8a7fb8" opacity=".6" class="sway"><circle cx="18" cy="74" r="7"/><circle cx="10" cy="64" r="4"/><circle cx="102" cy="74" r="7"/><circle cx="110" cy="64" r="4"/></g>
   <path d="M26 66 C20 70 18 76 22 80 M94 66 C100 70 102 76 98 80" fill="none" stroke="#cfe8ff" stroke-width="3" stroke-linecap="round"/>`;
+  // ------------------------------- Twinbuzz (two-headed bee) --------------
+  A.twinbuzz = `
+  <defs><linearGradient id="tbz-b" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffd88a"/><stop offset="100%" stop-color="#c27a2c"/></linearGradient></defs>
+  <ellipse cx="60" cy="108" rx="26" ry="4" fill="#000" opacity=".13"/>
+  <g fill="#eaf7ff" stroke="#3a2b28" stroke-width="2" opacity=".9" class="sway">
+    <ellipse cx="34" cy="50" rx="18" ry="10" transform="rotate(-30 34 50)"/><ellipse cx="86" cy="50" rx="18" ry="10" transform="rotate(30 86 50)"/></g>
+  <ellipse cx="60" cy="80" rx="22" ry="24" fill="url(#tbz-b)" stroke="#3a2b28" stroke-width="3"/>
+  <g stroke="#3a2b28" stroke-width="5" fill="none" stroke-linecap="round"><path d="M41 74 Q60 80 79 74"/><path d="M40 88 Q60 94 80 88"/></g>
+  <path d="M60 104 L56 112 L64 112 Z" fill="#3a2b28"/>
+  <!-- two heads, one a little behind the other -->
+  <circle cx="70" cy="44" r="13" fill="url(#tbz-b)" stroke="#3a2b28" stroke-width="2.8" opacity=".95"/>
+  <circle cx="50" cy="46" r="14" fill="url(#tbz-b)" stroke="#3a2b28" stroke-width="3"/>
+  <circle cx="45" cy="45" r="4" fill="#fff"/><circle cx="46" cy="45" r="2.2" fill="#3a2b28"/>
+  <circle cx="55" cy="45" r="4" fill="#fff"/><circle cx="56" cy="45" r="2.2" fill="#3a2b28"/>
+  <circle cx="73" cy="42" r="3.4" fill="#fff"/><circle cx="74" cy="42" r="1.9" fill="#3a2b28"/>
+  <circle cx="80" cy="43" r="3.4" fill="#fff"/><circle cx="81" cy="43" r="1.9" fill="#3a2b28"/>
+  <path d="M46 53 C49 56 53 56 56 53 M73 50 C75 52 78 52 80 50" fill="none" stroke="#3a2b28" stroke-width="2" stroke-linecap="round"/>
+  <path d="M44 33 C40 22 34 22 32 24 M56 33 C58 22 64 20 66 22 M70 31 C72 22 78 20 80 22" fill="none" stroke="#3a2b28" stroke-width="2" stroke-linecap="round"/>
+  <g font-size="9" font-weight="800" fill="#c27a2c" text-anchor="middle"><text x="14" y="90">2</text><text x="106" y="92">2</text></g>`;
+
+  // ------------------------------- Waxwarden (honeycomb keeper) ----------
+  A.waxwarden = `
+  <defs><linearGradient id="wxw-b" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffe08a"/><stop offset="100%" stop-color="#b8861c"/></linearGradient></defs>
+  <ellipse cx="60" cy="110" rx="38" ry="5" fill="#000" opacity=".18"/>
+  <!-- a body built of honeycomb -->
+  <path d="M60 30 L88 44 L92 76 L80 104 L40 104 L28 76 L32 44 Z" fill="url(#wxw-b)" stroke="#3a2b28" stroke-width="3" stroke-linejoin="round"/>
+  <g fill="#ffd34d" stroke="#9a6a14" stroke-width="1.6">
+    <path d="M46 60 l6 -4 6 4 v7 l-6 4 -6 -4 Z"/><path d="M62 60 l6 -4 6 4 v7 l-6 4 -6 -4 Z"/>
+    <path d="M38 74 l6 -4 6 4 v7 l-6 4 -6 -4 Z"/><path d="M54 74 l6 -4 6 4 v7 l-6 4 -6 -4 Z"/><path d="M70 74 l6 -4 6 4 v7 l-6 4 -6 -4 Z"/>
+    <path d="M46 88 l6 -4 6 4 v7 l-6 4 -6 -4 Z"/><path d="M62 88 l6 -4 6 4 v7 l-6 4 -6 -4 Z"/></g>
+  <g font-size="6.5" font-weight="800" fill="#7a4e10" text-anchor="middle"><text x="52" y="66">a</text><text x="68" y="66">b</text><text x="60" y="80">c</text></g>
+  <!-- leafy arms holding a sealed cell -->
+  <path d="M30 56 C16 60 12 74 18 84 M90 56 C104 60 108 74 102 84" fill="none" stroke="#5f8a4a" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="14" cy="80" rx="7" ry="4" fill="#7fc24a" stroke="#3a2b28" stroke-width="1.6" transform="rotate(-30 14 80)"/>
+  <ellipse cx="106" cy="80" rx="7" ry="4" fill="#7fc24a" stroke="#3a2b28" stroke-width="1.6" transform="rotate(30 106 80)"/>
+  <!-- head -->
+  <path d="M60 10 L76 18 L76 36 L60 44 L44 36 L44 18 Z" fill="url(#wxw-b)" stroke="#3a2b28" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="53" cy="27" r="4.2" fill="#fff"/><circle cx="54" cy="28" r="2.2" fill="#3a2b28"/>
+  <circle cx="67" cy="27" r="4.2" fill="#fff"/><circle cx="68" cy="28" r="2.2" fill="#3a2b28"/>
+  <path d="M54 36 h12" stroke="#3a2b28" stroke-width="2.2" stroke-linecap="round"/>`;
 })(window.CRITTER_ART);

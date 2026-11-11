@@ -2286,7 +2286,7 @@ window.CREATURES = [
     height: "1.4 m", weight: "6 kg",
     powers: [
       { n: "Skywriting", d: "Carves words into the frozen air with its wingtips." },
-      { n: "Scatterwind", d: "A gust that jumbles letters, which it then dares you to put right." },
+      { n: "Scatterwind", d: "A gust that blurs letters, which it then dares you to set right." },
     ],
     story: "On clear days over Frostpeak you can see words hanging in the sky, written in frost by the wingtips of a Glyphawk. When the wind blurs them it circles back, and it only lands for someone who can tell the true spelling from the false ones.",
   },
@@ -2370,6 +2370,31 @@ window.CREATURES = [
       { n: "Black Rime", d: "Coats its foe in dark frost that steals the next thing they meant to say." },
     ],
     story: "No one knows where the Rimewraith came from, only that it is hungry for words. It has gathered so many that its cloak is woven from frozen letters, and the Hush pours from its sleeves as it walks. It cannot bear a word that is spoken aloud and spelled true, because a word spelled true cannot be stolen. Spell enough of them and its frost begins to thaw.",
+  },
+  // ====================== THE TWO BEE TRIALS ===========================
+  //  Bosses of the two Two Bee quests: they only answer to Two Bee words
+  //  (positions 151–300 on the study list), typed in full.
+  {
+    id: "twinbuzz", name: "Twinbuzz", species: "Two-Bee Drone", types: ["Song", "Gale"],
+    zone: "meadow", rarity: "mythical", quest: "q-twobee-copper", spellbee: { first: 151, last: 225 }, guard: 2,
+    hp: 84, atk: 80, def: 70, spd: 90,
+    height: "0.8 m", weight: "two bees' worth",
+    powers: [
+      { n: "Double Buzz", d: "Two heads hum the same word at once, one slightly behind the other, like an echo." },
+      { n: "Letter by Letter", d: "Dances each letter in the air so the whole meadow can follow along." },
+    ],
+    story: "A Twinbuzz is two bees who were raised in the same honeycomb cell and never learned to fly apart. One head spells and the other checks, and they argue about every letter until they agree. They give their friendship only to spellers who can do both jobs at once.",
+  },
+  {
+    id: "waxwarden", name: "Waxwarden", species: "Honeycomb Keeper", types: ["Stone", "Leaf"],
+    zone: "forest", rarity: "mythical", quest: "q-twobee-golden", spellbee: { first: 226, last: 300 }, guard: 2,
+    hp: 96, atk: 76, def: 92, spd: 48,
+    height: "2.6 m", weight: "a hive's whole harvest",
+    powers: [
+      { n: "Sealed Cell", d: "Caps each correctly spelled word in wax so it can never be lost." },
+      { n: "Golden Wall", d: "Raises a wall of honeycomb that only a perfectly spelled word can pass." },
+    ],
+    story: "Deep in the Whispering Woods stands the Golden Comb, the oldest beehive in the land, and the Waxwarden keeps its door. Every cell of the comb holds one word from the Two Bee list. It stands aside only for a speller who can name every word it guards, without a single letter out of place.",
   },
 ];
 

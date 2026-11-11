@@ -17,10 +17,12 @@
 //    fillstep — fill in the missing moves of a worked algebra solution
 //    drill    — solve `count` algebra problems in a row (one type or a list)
 //    spellbee — spell words from the Spelling Bee list. `pool` is a slice of
-//               the list as fractions ([0, 0.25] = first quarter); `count`
+//               the list as fractions ([0, 0.25] = first quarter), or
+//               {first, last} positions on the printed list; `count`
 //               defaults to every word in the slice (all quests use 15);
 //               words not yet asked in this quest come first; `mode` is copy, flash,
-//               gaps, choose (tap the right spelling of three), listen (the
+//               gaps (shows the meaning), choose (tap the right spelling of
+//               three), mixtype (flash/gaps/listen, always typed), listen (the
 //               word is only spoken, via SAY in speak.js) or mix; `words:
 //               "heard"` drills the quest's Words of Warding instead of `pool`
 //               A missed word comes back a few later.
@@ -381,7 +383,7 @@ window.QUESTS = [
     id: "q-lettersonthewind", name: "Letters on the Wind", color: "#5fa8de", icon: "🪁",
     house: { id: "house-kite", name: "Juno's Kite Hut", tx: 15, ty: 2, deco: "house2" },
     giverName: "Kitewright Juno", giverAv: { skin: 0, hair: 7, shirt: 1, pants: 2, hat: "beanie", glasses: "none" },
-    intro: "My kites write words across the sky over Frostpeak. But the north wind keeps scrambling the letters, and the Glyphawk that rides it only lands for someone who can put them right. Learn my sky words and we'll fly the biggest kite of all.",
+    intro: "My kites write words across the sky over Frostpeak. But the north wind keeps blurring the letters, and the Glyphawk that rides it only lands for someone who can put them right. Learn my sky words and we'll fly the biggest kite of all.",
     steps: [
       { kind: "spellbee", pool: [0.5, 0.75], mode: "copy", count: 15,
         giverLine: "Copy each sky word onto a kite tail. Neat letters fly better!",
@@ -547,6 +549,95 @@ window.QUESTS = [
     ],
     reward: { xp: 1400, orbs: { tundra: 8, prism: 6 } },
     outro: "The last word rings out across the peak, spelled true, and the Rimewraith's frost cracks like a frozen lake in spring. The Hush pours back into the sky and is gone. Down in the valley the snow owls start calling again, and every blank signpost slowly fills with letters. Sigrid's books have their words back. \"You didn't just remember those words,\" she says. \"You gave them back to everyone. Frostpeak won't forget it.\"",
+  },
+  // ========================= THE TWO BEE TRIALS ========================
+  //  Every Two Bee word (positions 151–300 on the study list), and only
+  //  typed spelling: no multiple choice. Each quest takes half of them; six
+  //  passes of 15 (unseen words first) reach all 75 before any repeats.
+  {
+    id: "q-twobee-copper", name: "Two Bee Trials: The Copper Comb", color: "#c27a2c", icon: "🥈",
+    house: { id: "house-twobee-club", name: "The Two Bee Clubhouse", tx: 40, ty: 26, deco: "house1" },
+    giverName: "Coach Hollis", giverAv: { skin: 3, hair: 4, shirt: 3, pants: 0, hat: "cap", glasses: "none" },
+    intro: "Welcome to the Two Bee Clubhouse! The study list comes in three levels: One Bee, Two Bee and Three Bee. You've got One Bee words in your pocket already. Now it's time for the middle level, where the words get longer and trickier. These Trials take the first half of the Two Bee words, and I'm not giving you any choices to pick from. You type every single one.",
+    steps: [
+      { kind: "talk", npc: "npc-scribe", npcName: "Scribe Tessel",
+        line: "Two Bee words love to hide letters in the middle: the silent t in 'listen', the double l, the extra e. When you practise, say every letter out loud as you type it. Your mouth remembers what your eyes forget.",
+        text: "Scribe Tessel trained the last Two Bee champion. Ask for a tip." },
+      { kind: "spellbee", pool: { first: 151, last: 225 }, mode: "copy", count: 15,
+        giverLine: "First, copy each word exactly. Say the letters as you go.",
+        text: "Warm-up: copy 15 Two Bee words." },
+      { kind: "spellbee", pool: { first: 151, last: 225 }, mode: "flash", count: 15,
+        giverLine: "Now from memory. You get one look, then type it.",
+        text: "Spell 15 Two Bee words from memory." },
+      { kind: "spellbee", pool: { first: 151, last: 225 }, mode: "gaps", count: 15,
+        giverLine: "Some letters are missing. Read what the word means, then type the whole word.",
+        text: "Fill in the blanks: spell 15 Two Bee words (with their meanings)." },
+      { kind: "catch", creature: "puffodil", zone: "meadow", challenge: "bee", pool: { first: 151, last: 225 },
+        text: "A Puffodil is humming Two Bee words. Spell them to befriend it." },
+      { kind: "spellbee", pool: { first: 151, last: 225 }, mode: "listen", count: 15,
+        giverLine: "At a real bee you only hear the word. Press the bell, listen, and spell.",
+        text: "Spell 15 Two Bee words you can only hear." },
+      { kind: "item", item: "copper-tag", itemName: "Copper Bee Tag", emoji: "🥉", count: 4, zone: "meadow",
+        text: "Find 4 Copper Bee Tags around the meadow." },
+      { kind: "talk", npc: "npc-baker", npcName: "Baker Tilly",
+        line: "When I'm unsure of a spelling I ask the judge for the word in a sentence. Hearing it in a sentence tells you what it means, and what it means often tells you how it's spelled. That's why the meanings help!",
+        text: "Baker Tilly once won the Willowmere Bee. Ask how." },
+      { kind: "spellbee", pool: { first: 151, last: 225 }, mode: "mixtype", count: 15,
+        giverLine: "A mixed round: some flashes, some blanks, some by ear. All typed.",
+        text: "Mixed round: spell 15 Two Bee words." },
+      { kind: "catch", creature: "breezel", zone: "meadow", challenge: "bee", pool: { first: 151, last: 225 },
+        text: "A Breezel is blowing Two Bee words across the grass. Spell them to befriend it." },
+      { kind: "spellbee", pool: { first: 151, last: 225 }, mode: "flash", count: 15,
+        giverLine: "Last round before the Twinbuzz. From memory, and steady.",
+        text: "Final round: spell 15 more Two Bee words from memory." },
+      { kind: "goto", loc: "loc-copperhive", locName: "the Copper Hive", tx: 41, ty: 20, zone: "meadow",
+        text: "Go to the Copper Hive (now on your map)." },
+      { kind: "boss", creature: "twinbuzz", loc: "loc-copperhive", tx: 41, ty: 20, zone: "meadow",
+        text: "The Twinbuzz buzzes out! Spell its Two Bee words to befriend it." },
+    ],
+    reward: { xp: 900, orbs: { meadow: 6, prism: 3 } },
+    outro: "Both of the Twinbuzz's heads hum your name at once, which Coach Hollis says has never happened before. \"Half the Two Bee list, every word typed by hand,\" the coach grins. \"The Golden Comb in the woods has the other half. Whenever you're ready.\"",
+  },
+  {
+    id: "q-twobee-golden", name: "Two Bee Trials: The Golden Comb", color: "#d9a520", icon: "🥇",
+    house: { id: "house-honeycomb-hall", name: "Honeycomb Hall", tx: 28, ty: 40, deco: "house2" },
+    giverName: "Coach Juniper", giverAv: { skin: 1, hair: 6, shirt: 6, pants: 1, hat: "flower", glasses: "round" },
+    intro: "The second half of the Two Bee list lives in the Golden Comb, deep in the Whispering Woods, and the Waxwarden won't let anyone near it who can't spell every one. These are the hardest Two Bee words: Senegal, rendezvous, schnauzer and friends. No picking from choices here. You'll type every word yourself.",
+    steps: [
+      { kind: "talk", npc: "npc-ranger", npcName: "Ranger Fenn",
+        line: "Long words are like long trails. You don't walk them all at once: you go from one marker to the next. Break each word into its sounds, spell one chunk at a time, and check each chunk before you move on.",
+        text: "Ranger Fenn knows a trick for long words. Go and ask." },
+      { kind: "spellbee", pool: { first: 226, last: 300 }, mode: "copy", count: 15,
+        giverLine: "Copy each word carefully, one chunk at a time.",
+        text: "Warm-up: copy 15 Two Bee words." },
+      { kind: "spellbee", pool: { first: 226, last: 300 }, mode: "gaps", count: 15,
+        giverLine: "Here's what each word means, with a few letters missing. Type the whole word.",
+        text: "Fill in the blanks: spell 15 Two Bee words (with their meanings)." },
+      { kind: "spellbee", pool: { first: 226, last: 300 }, mode: "flash", count: 15,
+        giverLine: "One look, then from memory.",
+        text: "Spell 15 Two Bee words from memory." },
+      { kind: "catch", creature: "owlume", zone: "forest", challenge: "bee", pool: { first: 226, last: 300 },
+        text: "An Owlume is hooting Two Bee words in the woods. Spell them to befriend it." },
+      { kind: "spellbee", pool: { first: 226, last: 300 }, mode: "listen", count: 15,
+        giverLine: "Listen closely and spell what you hear. Ask the book what it means if you need to.",
+        text: "Spell 15 Two Bee words you can only hear." },
+      { kind: "item", item: "golden-tag", itemName: "Golden Bee Tag", emoji: "🏅", count: 4, zone: "forest",
+        text: "Find 4 Golden Bee Tags hidden in the Whispering Woods." },
+      { kind: "spellbee", pool: { first: 226, last: 300 }, mode: "mixtype", count: 15,
+        giverLine: "A mixed round, all typed: flashes, blanks and words by ear.",
+        text: "Mixed round: spell 15 Two Bee words." },
+      { kind: "catch", creature: "twigby", zone: "forest", challenge: "bee", pool: { first: 226, last: 300 },
+        text: "A Twigby is guarding the path to the Comb. Spell Two Bee words to befriend it." },
+      { kind: "spellbee", pool: { first: 226, last: 300 }, mode: "listen", count: 15,
+        giverLine: "One more round by ear. This is how the Waxwarden will test you.",
+        text: "Final round: spell 15 more Two Bee words by ear." },
+      { kind: "goto", loc: "loc-goldencomb", locName: "the Golden Comb", tx: 7, ty: 13, zone: "forest",
+        text: "Go to the Golden Comb in the Whispering Woods (now on your map)." },
+      { kind: "boss", creature: "waxwarden", loc: "loc-goldencomb", tx: 7, ty: 13, zone: "forest",
+        text: "The Waxwarden blocks the Golden Comb! Spell its Two Bee words to befriend it." },
+    ],
+    reward: { xp: 1000, orbs: { forest: 6, prism: 4 } },
+    outro: "The Waxwarden seals your last word into the Golden Comb, then steps aside. Coach Juniper whoops so loudly the bees go quiet. \"That's the whole Two Bee list,\" she says. \"Every word, spelled by your own hand. Three Bee is waiting whenever you are.\"",
   },
 ];
 
