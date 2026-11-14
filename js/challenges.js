@@ -168,8 +168,10 @@
     // ----------------------------- BEE LIST END ---------------------------
   };
 
-  // Alternate spellings the bee list also accepts (marked ** on the list).
-  window.SPELL_ALTS = { brazier: ["brasier"], glycerin: ["glycerine"], kerosene: ["kerosine"] };
+  // Alternate spellings the bee list also accepts ("OR …" on the list: ** marks
+  // the preferred spelling, * a British spelling).
+  window.SPELL_ALTS = { brazier: ["brasier"], glycerin: ["glycerine"], kerosene: ["kerosine"],
+    fertilizer: ["fertiliser"], materialize: ["materialise"], odorant: ["odourant"] };
 
   // Is `typed` a correct spelling of `word`? Case, extra spaces and accents
   // (piñata / pinata) don't matter; listed alternate spellings count too.
